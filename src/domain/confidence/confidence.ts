@@ -38,7 +38,10 @@ export function computeDisagreement(
  * MEDIUM = primary projection + market, missing history
  * LOW    = missing projection/market or unresolved disagreement
  */
-export function dataConfidence(player: EnginePlayer, disagreement: DisagreementReport[]): {
+export function dataConfidence(
+  player: EnginePlayer,
+  disagreement: DisagreementReport[],
+): {
   confidence: DataConfidence;
   warnings: string[];
 } {
@@ -50,7 +53,8 @@ export function dataConfidence(player: EnginePlayer, disagreement: DisagreementR
   if (player.positions.length === 0) warnings.push('No position eligibility.');
   if (player.positionsSource === 'PROVIDER') warnings.push('Positions from projection provider, not Yahoo.');
   const flagged = disagreement.filter((d) => d.flagged);
-  if (flagged.length) warnings.push(`Projection disagreement vs ${flagged.map((d) => d.provider).join(', ')}.`);
+  if (flagged.length)
+    warnings.push(`Projection disagreement vs ${flagged.map((d) => d.provider).join(', ')}.`);
   let confidence: DataConfidence;
   if (!player.proj || !player.market || flagged.length) confidence = 'LOW';
   else if (player.history.length === 0) confidence = 'MEDIUM';

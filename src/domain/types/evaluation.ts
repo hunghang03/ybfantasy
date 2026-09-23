@@ -121,7 +121,11 @@ export interface MarketBlock {
 
 export interface PlanningBlock {
   pairScore: number;
-  nextBestConservative: { playerId: string | null; ddpRaw: number; tier: 'CONSERVATIVE' | 'NEUTRAL' | 'FALLBACK' | 'NONE' };
+  nextBestConservative: {
+    playerId: string | null;
+    ddpRaw: number;
+    tier: 'CONSERVATIVE' | 'NEUTRAL' | 'FALLBACK' | 'NONE';
+  };
   missCost: number;
   missRel: number;
 }

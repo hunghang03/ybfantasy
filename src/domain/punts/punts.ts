@@ -48,7 +48,10 @@ export function recoverability(
   const { standing, k, totalRounds, cohortMean, teamSdBase, availableByBpv, teams } = inputs;
   const eps = config.numeric.eps;
   const sigmaFinal = Math.sqrt(totalRounds) * teamSdBase[c];
-  const required = Math.max(0, standing.B[c] + config.recoverability.competitiveTarget * sigmaFinal - standing.s[c]);
+  const required = Math.max(
+    0,
+    standing.B[c] + config.recoverability.competitiveTarget * sigmaFinal - standing.s[c],
+  );
   if (required <= eps) return { required, gain: 0, rec: 1 };
   const candCount = Math.max(1, Math.round(config.recoverability.candidateRounds * teams));
   const cand = availableByBpv.slice(0, candCount);
@@ -110,12 +113,15 @@ export function computePunts(inputs: PuntInputs, config: StrategyConfig): PuntRe
     const affinity = D > 0 ? (config.puntPriorAffinity[c] ?? 0) : 0;
     const score = D * (floor + (1 - floor) * Irr) * (cb + (1 - cb) * Coh) + affinity;
     const ungated = Math.min(cap, S * clamp01(score));
-    const gatePassed = D >= g.minDeficit && Coh >= g.minCoherence && r.rec <= g.maxRecoverability && k >= g.minRosterSize;
+    const gatePassed =
+      D >= g.minDeficit && Coh >= g.minCoherence && r.rec <= g.maxRecoverability && k >= g.minRosterSize;
     const piAuto = gatePassed ? ungated : Math.min(ungated, config.hardGateCeiling);
     return { D, Coh, rec: r.rec, required: r.required, gain: r.gain, score, ungated, gatePassed, piAuto };
   });
   // Multi-punt resistance: rank by π_auto desc (tiebreak category order), damp 2nd/3rd…
-  const order = [...CATEGORIES].sort((a, b) => partial[b].piAuto - partial[a].piAuto || CATEGORIES.indexOf(a) - CATEGORIES.indexOf(b));
+  const order = [...CATEGORIES].sort(
+    (a, b) => partial[b].piAuto - partial[a].piAuto || CATEGORIES.indexOf(a) - CATEGORIES.indexOf(b),
+  );
   const damping = mapCategories(() => 1);
   order.forEach((c, i) => {
     damping[c] = config.multiPuntDamping[Math.min(i, config.multiPuntDamping.length - 1)]!;
@@ -163,6 +169,10 @@ export function computePunts(inputs: PuntInputs, config: StrategyConfig): PuntRe
       severity: 'critical',
     });
   else if (hardCount >= config.hardPuntLimitWarnings.hardPuntsWarn)
-    warnings.push({ code: 'TWO_HARD_PUNTS', message: `${hardCount} categories are hard punts. Protect the rest.`, severity: 'warn' });
+    warnings.push({
+      code: 'TWO_HARD_PUNTS',
+      message: `${hardCount} categories are hard punts. Protect the rest.`,
+      severity: 'warn',
+    });
   return { entries, m, warnings, hardCount, softOrHigherCount };
 }

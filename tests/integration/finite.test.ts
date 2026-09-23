@@ -1,7 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import type { Dataset } from '@/domain/types/data';
 import { appendResync } from '@/domain/draft/replay';
-import { emptyDraft, league, run, synthDataset, synthPool, withSynth, type SynthSpec } from '../helpers/fixtures';
+import {
+  emptyDraft,
+  league,
+  run,
+  synthDataset,
+  synthPool,
+  withSynth,
+  type SynthSpec,
+} from '../helpers/fixtures';
 import type { DraftEvaluation } from '@/domain/recommendations/engine';
 
 const LABELS = ['DRAFT_NOW', 'LEAN_DRAFT', 'WAIT', 'SAFE_WAIT', 'PASS'];
@@ -13,7 +21,8 @@ function assertFinite(x: unknown, path = ''): void {
   }
   if (x instanceof Map) return;
   if (Array.isArray(x)) x.forEach((v, i) => assertFinite(v, `${path}[${i}]`));
-  else if (x && typeof x === 'object') for (const [k, v] of Object.entries(x)) assertFinite(v, `${path}.${k}`);
+  else if (x && typeof x === 'object')
+    for (const [k, v] of Object.entries(x)) assertFinite(v, `${path}.${k}`);
 }
 
 function check(ev: DraftEvaluation) {
@@ -31,20 +40,57 @@ function check(ev: DraftEvaluation) {
   expect(ev.finiteRepairs).toEqual([]);
 }
 
-const same = (n: number, over: Partial<SynthSpec> = {}): SynthSpec[] => Array.from({ length: n }, (_, i) => ({ id: `P${i}`, adp: i + 1, ...over }));
+const same = (n: number, over: Partial<SynthSpec> = {}): SynthSpec[] =>
+  Array.from({ length: n }, (_, i) => ({ id: `P${i}`, adp: i + 1, ...over }));
 
 const cases: [string, () => Dataset][] = [
   ['all identical players (σ = 0 everywhere)', () => synthDataset(same(250))],
   ['one constant category', () => synthDataset(synthPool(250).map((s) => ({ ...s, blk: 1 })))],
-  ['zero FGA/FTA for everyone', () => synthDataset(synthPool(250).map((s) => ({ ...s, fgm: 0, fga: 0, ftm: 0, fta: 0 })))],
+  [
+    'zero FGA/FTA for everyone',
+    () => synthDataset(synthPool(250).map((s) => ({ ...s, fgm: 0, fga: 0, ftm: 0, fta: 0 }))),
+  ],
   ['exactly 30 eligible players', () => synthDataset(synthPool(30))],
   ['fewer than 30 players (INSUFFICIENT_DATA)', () => synthDataset(synthPool(10))],
   ['P larger than the pool', () => synthDataset(synthPool(120))],
   ['single player', () => synthDataset(synthPool(1))],
   ['everyone missing ADP', () => synthDataset(synthPool(250, 3, { withMarket: false }))],
-  ['GP = 0 for many', () => synthDataset(synthPool(250).map((s, i) => ({ ...s, gp: i % 3 === 0 ? 0 : s.gp })))],
-  ['extreme values', () => withSynth(synthDataset(synthPool(250)), [{ id: 'HUGE', pts: 1e6, reb: 1e6, ast: 1e6, stl: 1e6, blk: 1e6, threes: 1e6, to: 1e6, fgm: 1e6, fga: 1e6, ftm: 1e6, fta: 1e6, adp: 1 }])],
-  ['empty dataset', () => ({ identities: [], market: [], projections: [], availability: [], context: [], playoffSchedule: [] })],
+  [
+    'GP = 0 for many',
+    () => synthDataset(synthPool(250).map((s, i) => ({ ...s, gp: i % 3 === 0 ? 0 : s.gp }))),
+  ],
+  [
+    'extreme values',
+    () =>
+      withSynth(synthDataset(synthPool(250)), [
+        {
+          id: 'HUGE',
+          pts: 1e6,
+          reb: 1e6,
+          ast: 1e6,
+          stl: 1e6,
+          blk: 1e6,
+          threes: 1e6,
+          to: 1e6,
+          fgm: 1e6,
+          fga: 1e6,
+          ftm: 1e6,
+          fta: 1e6,
+          adp: 1,
+        },
+      ]),
+  ],
+  [
+    'empty dataset',
+    () => ({
+      identities: [],
+      market: [],
+      projections: [],
+      availability: [],
+      context: [],
+      playoffSchedule: [],
+    }),
+  ],
 ];
 
 describe('T-FINITE-1: all normalization stays finite on pathological datasets', () => {

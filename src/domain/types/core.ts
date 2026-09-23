@@ -36,13 +36,25 @@ export const SLOT_ELIGIBILITY: Record<ActiveSlot, readonly Position[]> = {
 
 export type ProviderId = string;
 
-export const INJURY_STATUSES = ['HEALTHY', 'DTD', 'OUT_SHORT', 'OUT_LONG', 'OUT_SEASON', 'SUSPENDED'] as const;
+export const INJURY_STATUSES = [
+  'HEALTHY',
+  'DTD',
+  'OUT_SHORT',
+  'OUT_LONG',
+  'OUT_SEASON',
+  'SUSPENDED',
+] as const;
 export type InjuryStatus = (typeof INJURY_STATUSES)[number];
 
 export const RECURRENCES = ['LOW', 'MODERATE', 'HIGH', 'UNCLASSIFIED'] as const;
 export type Recurrence = (typeof RECURRENCES)[number];
 
-export const ROLE_TAGS = ['STARTER_OPPORTUNITY', 'INJURY_AWAY_ROLE', 'DEPTH_CHART_RISE', 'ROOKIE_ROLE'] as const;
+export const ROLE_TAGS = [
+  'STARTER_OPPORTUNITY',
+  'INJURY_AWAY_ROLE',
+  'DEPTH_CHART_RISE',
+  'ROOKIE_ROLE',
+] as const;
 export type RoleTag = (typeof ROLE_TAGS)[number];
 
 export type CategoryRecord<T> = Record<Category, T>;

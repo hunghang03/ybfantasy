@@ -81,7 +81,8 @@ export function marketOrder(available: readonly StaticPlayer[]): StaticPlayer[] 
   return [...available].sort((a, b) => {
     const ra = marketRef(a.player.market).value;
     const rb = marketRef(b.player.market).value;
-    if (ra !== null && rb !== null) return ra - rb || b.value.basePlayerValue - a.value.basePlayerValue || cmpId(a.player.id, b.player.id);
+    if (ra !== null && rb !== null)
+      return ra - rb || b.value.basePlayerValue - a.value.basePlayerValue || cmpId(a.player.id, b.player.id);
     if (ra !== null) return -1;
     if (rb !== null) return 1;
     return b.value.basePlayerValue - a.value.basePlayerValue || cmpId(a.player.id, b.player.id);
@@ -100,13 +101,18 @@ export function timingLabel(i: LabelInput, config: StrategyConfig): { label: Tim
   const t = config.marketTimingThresholds;
   const { ddpRel, band, missRel } = i;
   if (ddpRel < t.passBelowRel) return { label: 'PASS', rule: 'P1: ddpRel below pass threshold' };
-  if (i.avoid && ddpRel < t.avoidPassBelowRel) return { label: 'PASS', rule: 'P1: avoided and ddpRel below avoid threshold' };
+  if (i.avoid && ddpRel < t.avoidPassBelowRel)
+    return { label: 'PASS', rule: 'P1: avoided and ddpRel below avoid threshold' };
   if (ddpRel >= t.draftNowRel && (band === 'GONE' || band === 'UNLIKELY'))
     return { label: 'DRAFT_NOW', rule: 'D1: strong value and unlikely to last' };
-  if (ddpRel >= t.draftNowTossupRel && band === 'TOSSUP') return { label: 'DRAFT_NOW', rule: 'D2: top value and toss-up' };
+  if (ddpRel >= t.draftNowTossupRel && band === 'TOSSUP')
+    return { label: 'DRAFT_NOW', rule: 'D2: top value and toss-up' };
   if (ddpRel >= t.draftNowRel && band === 'TOSSUP' && missRel >= t.draftNowTossupMissRel)
     return { label: 'DRAFT_NOW', rule: 'D3: toss-up with high miss cost' };
-  if (ddpRel >= t.leanDraftRel && (band === 'GONE' || band === 'UNLIKELY' || band === 'TOSSUP' || band === 'UNKNOWN'))
+  if (
+    ddpRel >= t.leanDraftRel &&
+    (band === 'GONE' || band === 'UNLIKELY' || band === 'TOSSUP' || band === 'UNKNOWN')
+  )
     return { label: 'LEAN_DRAFT', rule: 'L1: good value, at risk (or unknown market)' };
   if (band === 'LIKELY' && missRel >= t.leanDraftLikelyMissRel)
     return { label: 'LEAN_DRAFT', rule: 'L2: likely to last but costly to miss' };

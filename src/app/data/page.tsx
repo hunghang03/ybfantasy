@@ -18,7 +18,13 @@ const KIND_LABEL: Record<ImportKind, string> = {
   CONTEXT: 'Player context (age, status, upside, tags)',
   PLAYOFF: 'Playoff schedule (team games per week)',
 };
-const DEFAULT_PROVIDER: Record<ImportKind, string> = { PROJECTION: 'hashtag', YAHOO_MARKET: 'yahoo', AVAILABILITY: 'manual', CONTEXT: 'manual', PLAYOFF: 'manual' };
+const DEFAULT_PROVIDER: Record<ImportKind, string> = {
+  PROJECTION: 'hashtag',
+  YAHOO_MARKET: 'yahoo',
+  AVAILABILITY: 'manual',
+  CONTEXT: 'manual',
+  PLAYOFF: 'manual',
+};
 
 export default function DataPage() {
   return (
@@ -36,7 +42,13 @@ function ImportWizard() {
   const config = useApp((s) => s.config);
   const commitImport = useApp((s) => s.commitImport);
   const notify = useApp((s) => s.notify);
-  const [spec, setSpec] = useState<ImportSpec>({ kind: 'PROJECTION', provider: 'hashtag', season: '2026-27', description: '', createPolicy: 'AUTO' });
+  const [spec, setSpec] = useState<ImportSpec>({
+    kind: 'PROJECTION',
+    provider: 'hashtag',
+    season: '2026-27',
+    description: '',
+    createPolicy: 'AUTO',
+  });
   const [fileName, setFileName] = useState<string | null>(null);
   const [table, setTable] = useState<ParsedTable | null>(null);
   const [columnMap, setColumnMap] = useState<Record<string, string | null>>({});
@@ -45,7 +57,10 @@ function ImportWizard() {
   const [drag, setDrag] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const plan = useMemo(() => (table ? buildPlan(spec, table, columnMap, dataset.identities, mappings, config) : null), [spec, table, columnMap, dataset.identities, mappings, config]);
+  const plan = useMemo(
+    () => (table ? buildPlan(spec, table, columnMap, dataset.identities, mappings, config) : null),
+    [spec, table, columnMap, dataset.identities, mappings, config],
+  );
 
   const loadFile = async (f: File) => {
     if (f.size > 5 * 1024 * 1024) {
@@ -73,7 +88,9 @@ function ImportWizard() {
       setReport(plan);
       setTable(null);
       setFileName(null);
-      notify(`Imported ${plan.batch.counts.matched} rows (${plan.batch.counts.created} new players, ${plan.batch.counts.unmatched} to review, ${plan.batch.counts.rejected} rejected).`);
+      notify(
+        `Imported ${plan.batch.counts.matched} rows (${plan.batch.counts.created} new players, ${plan.batch.counts.unmatched} to review, ${plan.batch.counts.rejected} rejected).`,
+      );
     } catch (e) {
       notify(`Import failed and was rolled back: ${e instanceof Error ? e.message : String(e)}`);
     } finally {
@@ -114,7 +131,11 @@ function ImportWizard() {
     >
       <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
         <Field label="Dataset type">
-          <Select data-testid="import-kind" value={spec.kind} onChange={(e) => changeKind(e.target.value as ImportKind)}>
+          <Select
+            data-testid="import-kind"
+            value={spec.kind}
+            onChange={(e) => changeKind(e.target.value as ImportKind)}
+          >
             {IMPORT_KINDS.map((k) => (
               <option key={k} value={k}>
                 {KIND_LABEL[k]}
@@ -123,16 +144,32 @@ function ImportWizard() {
           </Select>
         </Field>
         <Field label="Provider id" hint={spec.kind === 'PROJECTION' ? 'e.g. hashtag, bbm, yahoo' : undefined}>
-          <Input data-testid="import-provider" value={spec.provider} maxLength={40} onChange={(e) => setSpec({ ...spec, provider: e.target.value.trim().toLowerCase() })} />
+          <Input
+            data-testid="import-provider"
+            value={spec.provider}
+            maxLength={40}
+            onChange={(e) => setSpec({ ...spec, provider: e.target.value.trim().toLowerCase() })}
+          />
         </Field>
         <Field label="Season">
-          <Input value={spec.season} maxLength={12} onChange={(e) => setSpec({ ...spec, season: e.target.value })} />
+          <Input
+            value={spec.season}
+            maxLength={12}
+            onChange={(e) => setSpec({ ...spec, season: e.target.value })}
+          />
         </Field>
         <Field label="Source / version note">
-          <Input value={spec.description} maxLength={120} onChange={(e) => setSpec({ ...spec, description: e.target.value })} />
+          <Input
+            value={spec.description}
+            maxLength={120}
+            onChange={(e) => setSpec({ ...spec, description: e.target.value })}
+          />
         </Field>
         <Field label="Unmatched players" hint="Ambiguous names are never merged">
-          <Select value={spec.createPolicy} onChange={(e) => setSpec({ ...spec, createPolicy: e.target.value as ImportSpec['createPolicy'] })}>
+          <Select
+            value={spec.createPolicy}
+            onChange={(e) => setSpec({ ...spec, createPolicy: e.target.value as ImportSpec['createPolicy'] })}
+          >
             <option value="AUTO">Auto (create only on first import)</option>
             <option value="CREATE_UNMATCHED">Create new players for no-match rows</option>
             <option value="NEVER">Send all unmatched to review</option>
@@ -152,9 +189,16 @@ function ImportWizard() {
           const f = e.dataTransfer.files[0];
           if (f) void loadFile(f);
         }}
-        className={cx('mt-3 flex items-center justify-center gap-2 rounded border-2 border-dashed p-4 text-sm', drag ? 'border-blue-500 bg-blue-50 dark:bg-blue-950' : 'border-slate-300 dark:border-slate-700')}
+        className={cx(
+          'mt-3 flex items-center justify-center gap-2 rounded border-2 border-dashed p-4 text-sm',
+          drag ? 'border-blue-500 bg-blue-50 dark:bg-blue-950' : 'border-slate-300 dark:border-slate-700',
+        )}
       >
-        <span>{fileName ? `Loaded: ${fileName} (${table?.rows.length ?? 0} rows)` : 'Drag & drop a CSV/JSON file here, or'}</span>
+        <span>
+          {fileName
+            ? `Loaded: ${fileName} (${table?.rows.length ?? 0} rows)`
+            : 'Drag & drop a CSV/JSON file here, or'}
+        </span>
         <Button size="sm" onClick={() => fileRef.current?.click()}>
           Choose file…
         </Button>
@@ -174,7 +218,9 @@ function ImportWizard() {
 
       {table && (
         <div className="mt-3 space-y-3">
-          {table.errors.length > 0 && <p className="text-xs text-amber-700">Parser notes: {table.errors.slice(0, 5).join(' · ')}</p>}
+          {table.errors.length > 0 && (
+            <p className="text-xs text-amber-700">Parser notes: {table.errors.slice(0, 5).join(' · ')}</p>
+          )}
           <div>
             <h3 className="mb-1 text-xs font-semibold uppercase text-slate-500">Column mapping</h3>
             <div className="grid grid-cols-2 gap-2 md:grid-cols-4 lg:grid-cols-6">
@@ -195,11 +241,17 @@ function ImportWizard() {
                 </Field>
               ))}
             </div>
-            {spec.kind === 'PLAYOFF' && <p className="mt-1 text-xs text-slate-500">Week columns detected: {Object.keys(weekCols).join(', ') || 'none (use W18, W19, …)'}</p>}
+            {spec.kind === 'PLAYOFF' && (
+              <p className="mt-1 text-xs text-slate-500">
+                Week columns detected: {Object.keys(weekCols).join(', ') || 'none (use W18, W19, …)'}
+              </p>
+            )}
           </div>
 
           <div className="overflow-x-auto">
-            <h3 className="mb-1 text-xs font-semibold uppercase text-slate-500">Preview (first rows, validated)</h3>
+            <h3 className="mb-1 text-xs font-semibold uppercase text-slate-500">
+              Preview (first rows, validated)
+            </h3>
             <table className="w-full text-xs">
               <thead>
                 <tr className="text-left text-slate-500">
@@ -223,7 +275,9 @@ function ImportWizard() {
                           {r[h]}
                         </td>
                       ))}
-                      <td className={v.ok ? 'text-emerald-700' : 'text-red-700'}>{v.ok ? (v.warnings.length ? `OK (${v.warnings[0]})` : 'OK') : v.errors.join(' ')}</td>
+                      <td className={v.ok ? 'text-emerald-700' : 'text-red-700'}>
+                        {v.ok ? (v.warnings.length ? `OK (${v.warnings[0]})` : 'OK') : v.errors.join(' ')}
+                      </td>
                     </tr>
                   );
                 })}
@@ -237,7 +291,12 @@ function ImportWizard() {
             <Button
               variant="primary"
               data-testid="commit-import"
-              disabled={busy || !plan || plan.missingRequiredColumns.length > 0 || plan.batch.counts.matched + plan.unmatched.length === 0}
+              disabled={
+                busy ||
+                !plan ||
+                plan.missingRequiredColumns.length > 0 ||
+                plan.batch.counts.matched + plan.unmatched.length === 0
+              }
               onClick={commit}
             >
               Import {plan ? `${plan.batch.counts.matched} rows` : ''}
@@ -255,9 +314,14 @@ function ImportWizard() {
       )}
 
       {report && (
-        <div className="mt-3 rounded border border-emerald-300 bg-emerald-50 p-2 text-xs dark:border-emerald-800 dark:bg-emerald-950" data-testid="import-report">
-          <b>Import report</b> — {report.batch.kind} / {report.batch.provider}: {report.batch.counts.matched} imported, {report.batch.counts.created} new players,{' '}
-          {report.batch.counts.unmatched} unmatched (see review below), {report.rejected.length} rejected, {report.duplicates.length} duplicates. Matched via:{' '}
+        <div
+          className="mt-3 rounded border border-emerald-300 bg-emerald-50 p-2 text-xs dark:border-emerald-800 dark:bg-emerald-950"
+          data-testid="import-report"
+        >
+          <b>Import report</b> — {report.batch.kind} / {report.batch.provider}: {report.batch.counts.matched}{' '}
+          imported, {report.batch.counts.created} new players, {report.batch.counts.unmatched} unmatched (see
+          review below), {report.rejected.length} rejected, {report.duplicates.length} duplicates. Matched
+          via:{' '}
           {Object.entries(report.matchedVia)
             .map(([k, v]) => `${k} ${v}`)
             .join(', ') || '—'}
@@ -271,9 +335,14 @@ function PlanSummary({ plan }: { plan: ImportPlan }) {
   const c = plan.batch.counts;
   return (
     <div className="rounded bg-slate-50 p-2 text-xs dark:bg-slate-800" data-testid="import-summary">
-      {plan.missingRequiredColumns.length > 0 && <p className="font-semibold text-red-700">Missing required columns: {plan.missingRequiredColumns.join(', ')}</p>}
+      {plan.missingRequiredColumns.length > 0 && (
+        <p className="font-semibold text-red-700">
+          Missing required columns: {plan.missingRequiredColumns.join(', ')}
+        </p>
+      )}
       <p>
-        Rows {c.rows} · will import <b>{c.matched}</b> · new players <b>{c.created}</b> · to review <b>{c.unmatched}</b> · rejected <b>{plan.rejected.length}</b> · duplicates{' '}
+        Rows {c.rows} · will import <b>{c.matched}</b> · new players <b>{c.created}</b> · to review{' '}
+        <b>{c.unmatched}</b> · rejected <b>{plan.rejected.length}</b> · duplicates{' '}
         <b>{plan.duplicates.length}</b> · warnings <b>{plan.rowWarnings.length}</b>
       </p>
       {plan.rejected.length > 0 && (
@@ -335,8 +404,15 @@ function UnmatchedReview() {
   };
   return (
     <Panel title={`Unmatched players — manual review (${unmatched.length})`}>
-      <p className="mb-2 text-xs text-slate-500">Decisions are saved as manual mappings and reused on every future import from the same provider.</p>
-      <Input placeholder="Search players to map…" value={filter} onChange={(e) => setFilter(e.target.value)} className="mb-2 w-64" />
+      <p className="mb-2 text-xs text-slate-500">
+        Decisions are saved as manual mappings and reused on every future import from the same provider.
+      </p>
+      <Input
+        placeholder="Search players to map…"
+        value={filter}
+        onChange={(e) => setFilter(e.target.value)}
+        className="mb-2 w-64"
+      />
       <table className="w-full text-xs">
         <thead className="text-left text-slate-500">
           <tr>
@@ -348,9 +424,23 @@ function UnmatchedReview() {
         </thead>
         <tbody>
           {unmatched.slice(0, 200).map((u) => {
-            const sugg = u.reason === 'AMBIGUOUS' ? u.candidateIds.map((id) => byId.get(id)).filter(Boolean) : suggestCandidates(idx, u.rawName).map((s) => byId.get(s.canonicalPlayerId));
-            const searched = filter.length >= 2 ? identities.filter((i) => i.canonicalName.toLowerCase().includes(filter.toLowerCase())).slice(0, 20) : [];
-            const options = [...new Map([...sugg, ...searched].filter((x): x is NonNullable<typeof x> => !!x).map((x) => [x.canonicalPlayerId, x])).values()];
+            const sugg =
+              u.reason === 'AMBIGUOUS'
+                ? u.candidateIds.map((id) => byId.get(id)).filter(Boolean)
+                : suggestCandidates(idx, u.rawName).map((s) => byId.get(s.canonicalPlayerId));
+            const searched =
+              filter.length >= 2
+                ? identities
+                    .filter((i) => i.canonicalName.toLowerCase().includes(filter.toLowerCase()))
+                    .slice(0, 20)
+                : [];
+            const options = [
+              ...new Map(
+                [...sugg, ...searched]
+                  .filter((x): x is NonNullable<typeof x> => !!x)
+                  .map((x) => [x.canonicalPlayerId, x]),
+              ).values(),
+            ];
             return (
               <tr key={u.id} className="border-t border-slate-100 dark:border-slate-800">
                 <td className="py-1">
@@ -361,7 +451,10 @@ function UnmatchedReview() {
                 </td>
                 <td>{u.reason === 'AMBIGUOUS' ? 'Ambiguous' : 'No match'}</td>
                 <td>
-                  <Select value={choice[u.id] ?? ''} onChange={(e) => setChoice({ ...choice, [u.id]: e.target.value })}>
+                  <Select
+                    value={choice[u.id] ?? ''}
+                    onChange={(e) => setChoice({ ...choice, [u.id]: e.target.value })}
+                  >
                     <option value="">— choose player —</option>
                     {options.map((o) => (
                       <option key={o.canonicalPlayerId} value={o.canonicalPlayerId}>
@@ -371,7 +464,12 @@ function UnmatchedReview() {
                   </Select>
                 </td>
                 <td className="space-x-1 whitespace-nowrap text-right">
-                  <Button size="xs" variant="primary" disabled={!choice[u.id]} onClick={() => run(u.id, { canonicalPlayerId: choice[u.id]! })}>
+                  <Button
+                    size="xs"
+                    variant="primary"
+                    disabled={!choice[u.id]}
+                    onClick={() => run(u.id, { canonicalPlayerId: choice[u.id]! })}
+                  >
                     Map
                   </Button>
                   <Button size="xs" onClick={() => run(u.id, { create: true })}>
@@ -420,14 +518,21 @@ function BatchHistory() {
               <td className="num">
                 {b.counts.matched}/{b.counts.rows}
               </td>
-              <td className={b.status === 'ACTIVE' ? 'font-semibold text-emerald-700' : 'text-slate-500'}>{b.status}</td>
+              <td className={b.status === 'ACTIVE' ? 'font-semibold text-emerald-700' : 'text-slate-500'}>
+                {b.status}
+              </td>
               <td className="text-right">
                 {b.status === 'ACTIVE' && (
                   <Button
                     size="xs"
                     variant="ghost"
                     onClick={() => {
-                      if (window.confirm('Revert this import? The previous version of this source becomes active again.')) void revert(b.id);
+                      if (
+                        window.confirm(
+                          'Revert this import? The previous version of this source becomes active again.',
+                        )
+                      )
+                        void revert(b.id);
                     }}
                   >
                     Revert

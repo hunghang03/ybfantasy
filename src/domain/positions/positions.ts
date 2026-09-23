@@ -15,7 +15,10 @@ export function slotInstances(roster: RosterSettings): readonly Position[][] {
   return out;
 }
 
-export function maxMatching(players: readonly (readonly Position[])[], slots: readonly (readonly Position[])[]): number {
+export function maxMatching(
+  players: readonly (readonly Position[])[],
+  slots: readonly (readonly Position[])[],
+): number {
   const slotOwner = new Array<number>(slots.length).fill(-1);
   const canFill = (pi: number, si: number) => players[pi]!.some((p) => slots[si]!.includes(p));
   const tryAssign = (pi: number, seen: boolean[]): boolean => {
@@ -30,7 +33,8 @@ export function maxMatching(players: readonly (readonly Position[])[], slots: re
     return false;
   };
   let matched = 0;
-  for (let pi = 0; pi < players.length; pi++) if (tryAssign(pi, new Array<boolean>(slots.length).fill(false))) matched++;
+  for (let pi = 0; pi < players.length; pi++)
+    if (tryAssign(pi, new Array<boolean>(slots.length).fill(false))) matched++;
   return matched;
 }
 
@@ -57,14 +61,21 @@ export function positionReport(
 }
 
 /** Positional adjustment fraction of U for a player with the given eligibility. */
-export function positionFraction(positions: readonly Position[], report: PositionReport, config: StrategyConfig): {
+export function positionFraction(
+  positions: readonly Position[],
+  report: PositionReport,
+  config: StrategyConfig,
+): {
   urgency: number;
   fraction: number;
   multiPosFraction: number;
 } {
   const u = positions.length ? Math.max(...positions.map((p) => report.urgency[p])) : 0;
   const fraction = config.positionalWeight * u + config.positionalDangerWeight * Math.max(0, (u - 0.5) / 0.5);
-  const multiPosFraction = Math.min(config.multiPositionBonusCap, config.multiPositionBonus * Math.max(0, positions.length - 1));
+  const multiPosFraction = Math.min(
+    config.multiPositionBonusCap,
+    config.multiPositionBonus * Math.max(0, positions.length - 1),
+  );
   return { urgency: u, fraction, multiPosFraction };
 }
 
@@ -77,7 +88,8 @@ export function assignSlots(
   roster: RosterSettings,
 ): { slot: string; playerId: string | null }[] {
   const slots: { label: string; elig: readonly Position[] }[] = [];
-  for (const s of ACTIVE_SLOTS) for (let i = 0; i < roster.active[s]; i++) slots.push({ label: s, elig: SLOT_ELIGIBILITY[s] });
+  for (const s of ACTIVE_SLOTS)
+    for (let i = 0; i < roster.active[s]; i++) slots.push({ label: s, elig: SLOT_ELIGIBILITY[s] });
   const owner = new Array<number>(slots.length).fill(-1);
   const can = (pi: number, si: number) => players[pi]!.positions.some((p) => slots[si]!.elig.includes(p));
   const tryAssign = (pi: number, seen: boolean[]): boolean => {
@@ -93,8 +105,12 @@ export function assignSlots(
   };
   for (let pi = 0; pi < players.length; pi++) tryAssign(pi, new Array<boolean>(slots.length).fill(false));
   const placed = new Set(owner.filter((o) => o >= 0));
-  const out = slots.map((s, i) => ({ slot: s.label, playerId: owner[i]! >= 0 ? players[owner[i]!]!.id : null }));
+  const out = slots.map((s, i) => ({
+    slot: s.label,
+    playerId: owner[i]! >= 0 ? players[owner[i]!]!.id : null,
+  }));
   const bench = players.filter((_, i) => !placed.has(i));
-  for (let b = 0; b < Math.max(roster.bench, bench.length); b++) out.push({ slot: 'BN', playerId: bench[b]?.id ?? null });
+  for (let b = 0; b < Math.max(roster.bench, bench.length); b++)
+    out.push({ slot: 'BN', playerId: bench[b]?.id ?? null });
   return out;
 }

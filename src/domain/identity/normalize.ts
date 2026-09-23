@@ -46,7 +46,10 @@ const TEAM_ALIASES: Record<string, string> = {
 
 export function normalizeTeam(raw: string | null | undefined): string | null {
   if (!raw) return null;
-  const t = raw.trim().toUpperCase().replace(/[^A-Z]/g, '');
+  const t = raw
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z]/g, '');
   if (t.length === 0 || t === 'FA' || t === 'NA') return null;
   return TEAM_ALIASES[t] ?? t;
 }

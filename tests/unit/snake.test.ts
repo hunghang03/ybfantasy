@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { overallPickFor, pickTiming, roundOfPick, slotOwningPick, userPicks, validateSnake } from '@/domain/draft/snake';
+import {
+  overallPickFor,
+  pickTiming,
+  roundOfPick,
+  slotOwningPick,
+  userPicks,
+  validateSnake,
+} from '@/domain/draft/snake';
 
 describe('snake draft', () => {
   it('14 teams, slot 11: matches the spec sequence', () => {

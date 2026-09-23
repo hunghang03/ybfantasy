@@ -65,7 +65,10 @@ export function importInto(
   return {
     identities: [...ds.identities.map((p) => updated.get(p.canonicalPlayerId) ?? p), ...plan.newIdentities],
     market: kind === 'YAHOO_MARKET' ? plan.records.market : ds.market,
-    projections: kind === 'PROJECTION' ? [...ds.projections.filter((p) => p.provider !== provider), ...plan.records.projections] : ds.projections,
+    projections:
+      kind === 'PROJECTION'
+        ? [...ds.projections.filter((p) => p.provider !== provider), ...plan.records.projections]
+        : ds.projections,
     availability: kind === 'AVAILABILITY' ? plan.records.availability : ds.availability,
     context: kind === 'CONTEXT' ? plan.records.context : ds.context,
     playoffSchedule: kind === 'PLAYOFF' ? plan.records.playoff : ds.playoffSchedule,
@@ -77,7 +80,14 @@ let sampleCache: Dataset | null = null;
 export function sampleDataset(): Dataset {
   if (sampleCache) return structuredClone(sampleCache);
   const f = generateSample();
-  let ds: Dataset = { identities: [], market: [], projections: [], availability: [], context: [], playoffSchedule: [] };
+  let ds: Dataset = {
+    identities: [],
+    market: [],
+    projections: [],
+    availability: [],
+    context: [],
+    playoffSchedule: [],
+  };
   ds = importInto(ds, 'PROJECTION', 'hashtag', f['projections-hashtag.sample.csv']);
   ds = importInto(ds, 'YAHOO_MARKET', 'yahoo', f['yahoo-market.sample.csv']);
   ds = importInto(ds, 'PROJECTION', 'bbm', f['projections-bbm.sample.csv']);
@@ -173,7 +183,12 @@ export function emptyDraft(): DraftInput {
   return { events: [], flags: {}, puntOverrides: {} };
 }
 
-export function run(ds: Dataset, lg: LeagueProfile, draft: DraftInput = emptyDraft(), config: StrategyConfig = defaultConfig()) {
+export function run(
+  ds: Dataset,
+  lg: LeagueProfile,
+  draft: DraftInput = emptyDraft(),
+  config: StrategyConfig = defaultConfig(),
+) {
   const ctx = buildContext(ds, lg, config);
   return { ctx, ev: evaluateDraft(ctx, draft) };
 }
@@ -189,7 +204,11 @@ export function idByName(ds: Dataset, name: string): string {
  * Fully synthetic pool (no import): n players around league-average with seeded noise,
  * ADP = rank by a simple quality index (so market order ≈ value order), positions rotating.
  */
-export function synthPool(n: number, seed = 7, opts: { withMarket?: boolean; idPrefix?: string } = {}): SynthSpec[] {
+export function synthPool(
+  n: number,
+  seed = 7,
+  opts: { withMarket?: boolean; idPrefix?: string } = {},
+): SynthSpec[] {
   let a = seed >>> 0;
   const rnd = () => {
     a = (a + 0x6d2b79f5) >>> 0;
@@ -227,11 +246,16 @@ export function synthPool(n: number, seed = 7, opts: { withMarket?: boolean; idP
 }
 
 export function synthDataset(specs: SynthSpec[]): Dataset {
-  return withSynth({ identities: [], market: [], projections: [], availability: [], context: [], playoffSchedule: [] }, specs);
+  return withSynth(
+    { identities: [], market: [], projections: [], availability: [], context: [], playoffSchedule: [] },
+    specs,
+  );
 }
 
 /** Build draft events: `others` picks by other teams (advancing), then my picks interleaved as given. */
-export function eventsFrom(seq: { id: string; by: 'ME' | 'OTHER'; advance?: boolean }[]): DraftInput['events'] {
+export function eventsFrom(
+  seq: { id: string; by: 'ME' | 'OTHER'; advance?: boolean }[],
+): DraftInput['events'] {
   return seq.map((s, i) => ({
     seq: i + 1,
     at: 't',

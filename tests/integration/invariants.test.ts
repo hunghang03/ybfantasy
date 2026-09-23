@@ -7,7 +7,9 @@ import { createMemoryRepository } from '@/persistence/memoryRepository';
 import { league, run, sampleDataset } from '../helpers/fixtures';
 
 function othersTake(ds: Dataset, n: number, start: DraftEvent[] = []): DraftEvent[] {
-  const order = [...ds.market].filter((m) => m.yahooAdp7d !== null).sort((a, b) => a.yahooAdp7d! - b.yahooAdp7d!);
+  const order = [...ds.market]
+    .filter((m) => m.yahooAdp7d !== null)
+    .sort((a, b) => a.yahooAdp7d! - b.yahooAdp7d!);
   let e = start;
   let i = 0;
   while (e.filter((x) => x.type === 'PICK').length < start.length + n) {
@@ -48,7 +50,11 @@ describe('engine invariants (§53 / §60)', () => {
     for (const p of a.players) {
       const q = b.byId.get(p.playerId);
       if (!q) continue;
-      expect([q.market.adp, q.market.xrank, q.market.rank]).toEqual([p.market.adp, p.market.xrank, p.market.rank]);
+      expect([q.market.adp, q.market.xrank, q.market.rank]).toEqual([
+        p.market.adp,
+        p.market.xrank,
+        p.market.rank,
+      ]);
       if (q.value.basePlayerValue !== p.value.basePlayerValue) statsDiffer++;
     }
     expect(statsDiffer).toBeGreaterThan(0);
@@ -103,14 +109,20 @@ describe('engine invariants (§53 / §60)', () => {
     const e = othersTake(ds, 10);
     const ev = run(ds, league(), { events: e, flags: {}, puntOverrides: {} }).ev;
     const recommended = ev.recommendedId!;
-    const deviation = ev.players.find((p) => p.playerId !== recommended && p.positions.includes('C'))!.playerId;
+    const deviation = ev.players.find(
+      (p) => p.playerId !== recommended && p.positions.includes('C'),
+    )!.playerId;
     const r = appendPick(e, { playerId: deviation, by: 'ME', at: 't' }, 14, 13);
     if (!r.ok) throw new Error();
     const next = run(ds, league(), { events: r.events, flags: {}, puntOverrides: {} }).ev;
     expect(next.roster.map((x) => x.playerId)).toEqual([deviation]);
     expect(next.byId.has(recommended)).toBe(true);
     // Independent reconstruction of the same state gives the same answer (no hidden plan state).
-    const rebuilt = run(ds, league(), { events: JSON.parse(JSON.stringify(r.events)), flags: {}, puntOverrides: {} }).ev;
+    const rebuilt = run(ds, league(), {
+      events: JSON.parse(JSON.stringify(r.events)),
+      flags: {},
+      puntOverrides: {},
+    }).ev;
     expect(strip(rebuilt)).toEqual(strip(next));
   });
 
@@ -121,7 +133,12 @@ describe('engine invariants (§53 / §60)', () => {
     await repo.saveLeague(A);
     await repo.saveLeague(B);
     const bBefore = strip(run(ds, B).ev);
-    const draftA: LeagueDraft = { leagueId: 'A', events: othersTake(ds, 15), flags: {}, puntOverrides: { TO: 'HARD' } };
+    const draftA: LeagueDraft = {
+      leagueId: 'A',
+      events: othersTake(ds, 15),
+      flags: {},
+      puntOverrides: { TO: 'HARD' },
+    };
     await repo.saveDraft(draftA);
     const draftB = (await repo.getDraft('B')) ?? { leagueId: 'B', events: [], flags: {}, puntOverrides: {} };
     expect(strip(run(ds, B, draftB).ev)).toEqual(bBefore);
@@ -132,7 +149,21 @@ describe('engine invariants (§53 / §60)', () => {
     const [a, b] = ev.players;
     const c = compareEvaluations(a!, b!);
     const ddpRow = c.rows.find((r) => r.term === '= DDP raw')!;
-    const parts = c.rows.filter((r) => ['BPV (base player value)', 'Need', 'Punt synergy', 'Pool scarcity', 'Position', 'Multi-position', 'Redundancy', 'Playoff', 'Upside', 'Risk', 'User preference'].includes(r.term));
+    const parts = c.rows.filter((r) =>
+      [
+        'BPV (base player value)',
+        'Need',
+        'Punt synergy',
+        'Pool scarcity',
+        'Position',
+        'Multi-position',
+        'Redundancy',
+        'Playoff',
+        'Upside',
+        'Risk',
+        'User preference',
+      ].includes(r.term),
+    );
     expect(parts.reduce((s, r) => s + r.diff, 0)).toBeCloseTo(ddpRow.diff, 10);
     expect(c.summary).toMatch(/Largest differences/);
   });
@@ -140,9 +171,17 @@ describe('engine invariants (§53 / §60)', () => {
   it('DDP decomposes exactly into its documented terms', () => {
     const ev = run(ds, league(), { events: othersTake(ds, 30), flags: {}, puntOverrides: {} }).ev;
     for (const p of ev.players.slice(0, 50)) {
-      const sum = p.value.basePlayerValue + p.fit.teamFit + p.adjustments.playoff + p.adjustments.upside + p.adjustments.risk + p.adjustments.userPref;
+      const sum =
+        p.value.basePlayerValue +
+        p.fit.teamFit +
+        p.adjustments.playoff +
+        p.adjustments.upside +
+        p.adjustments.risk +
+        p.adjustments.userPref;
       expect(sum).toBeCloseTo(p.ddpRaw, 10);
-      expect(p.fit.need + p.fit.punt + p.fit.poolScarcity + p.fit.position + p.fit.multiPos + p.fit.redundancy).toBeCloseTo(p.fit.teamFit, 10);
+      expect(
+        p.fit.need + p.fit.punt + p.fit.poolScarcity + p.fit.position + p.fit.multiPos + p.fit.redundancy,
+      ).toBeCloseTo(p.fit.teamFit, 10);
     }
   });
 });

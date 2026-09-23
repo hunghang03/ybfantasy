@@ -33,7 +33,10 @@ export function computeAvailability(
       const w = weights[i] ?? 0;
       let wMiss: number;
       if (s.absences.length > 0) {
-        const weighted = s.absences.reduce((acc, a) => acc + a.games * config.recurrenceWeights[a.recurrence], 0);
+        const weighted = s.absences.reduce(
+          (acc, a) => acc + a.games * config.recurrenceWeights[a.recurrence],
+          0,
+        );
         wMiss = safeDiv(weighted, s.teamGames, 0);
       } else {
         wMiss = clamp01(1 - safeDiv(s.gamesPlayed, s.teamGames, 1)) * config.recurrenceWeights.UNCLASSIFIED;
@@ -43,7 +46,9 @@ export function computeAvailability(
     });
     H = safeDiv(num, den, config.unknownHistoryRisk);
   }
-  const highSeasons = seasons.filter((s) => s.absences.some((a) => a.recurrence === 'HIGH' && a.games > 0)).length;
+  const highSeasons = seasons.filter((s) =>
+    s.absences.some((a) => a.recurrence === 'HIGH' && a.games > 0),
+  ).length;
   const chronic = highSeasons >= 2 ? config.chronicPatternPenalty : 0;
   const age = context?.age ?? null;
   const ageTerm = age === null ? 0 : Math.max(0, age - config.ageRiskStart) * config.ageRiskPerYear;
@@ -64,7 +69,15 @@ export function computeAvailability(
     rhoNow,
     rhoFull,
     rhoEff,
-    terms: { history: H, chronic, age: ageTerm, status: statusTerm, manual, seasonsUsed: seasons.length, historyKnown },
+    terms: {
+      history: H,
+      chronic,
+      age: ageTerm,
+      status: statusTerm,
+      manual,
+      seasonsUsed: seasons.length,
+      historyKnown,
+    },
     status,
   };
 }
@@ -77,7 +90,12 @@ export function riskLevel(score: number, config: StrategyConfig): RiskLevel {
 }
 
 /** RiskAdj_i = − riskWeight(round) · ρ_eff · U_i  (never positive). */
-export function riskAdjustment(rhoEff: number, scaleU: number, round: number, config: StrategyConfig): number {
+export function riskAdjustment(
+  rhoEff: number,
+  scaleU: number,
+  round: number,
+  config: StrategyConfig,
+): number {
   const w = weightForRound(config.riskWeightsByRound, round);
   const v = -w * clamp01(rhoEff) * scaleU;
   return v === 0 ? 0 : v;

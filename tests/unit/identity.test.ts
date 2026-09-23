@@ -1,9 +1,19 @@
 import { describe, expect, it } from 'vitest';
-import { buildIdentityIndex, matchPlayer, providerKeyFor, suggestCandidates } from '@/domain/identity/matcher';
+import {
+  buildIdentityIndex,
+  matchPlayer,
+  providerKeyFor,
+  suggestCandidates,
+} from '@/domain/identity/matcher';
 import { jaroWinkler, normalizeName, normalizeTeam } from '@/domain/identity/normalize';
 import type { ManualMapping, PlayerIdentity } from '@/domain/types/data';
 
-function ident(id: string, name: string, team: string | null, extra: Partial<PlayerIdentity> = {}): PlayerIdentity {
+function ident(
+  id: string,
+  name: string,
+  team: string | null,
+  extra: Partial<PlayerIdentity> = {},
+): PlayerIdentity {
   return {
     canonicalPlayerId: id,
     canonicalName: name,
@@ -52,35 +62,56 @@ describe('matching order', () => {
   const idx = buildIdentityIndex(ids, []);
 
   it('1. provider ID', () => {
-    expect(matchPlayer(idx, { provider: 'bbm', providerPlayerId: 'b-1', name: 'Totally Different', team: null })).toMatchObject({ kind: 'MATCHED', canonicalPlayerId: 'A', via: 'PROVIDER_ID' });
+    expect(
+      matchPlayer(idx, { provider: 'bbm', providerPlayerId: 'b-1', name: 'Totally Different', team: null }),
+    ).toMatchObject({ kind: 'MATCHED', canonicalPlayerId: 'A', via: 'PROVIDER_ID' });
   });
   it('2. name + team', () => {
-    expect(matchPlayer(idx, { provider: 'x', providerPlayerId: null, name: 'Chris Lane', team: 'CCC' })).toMatchObject({ canonicalPlayerId: 'C', via: 'NAME_TEAM' });
+    expect(
+      matchPlayer(idx, { provider: 'x', providerPlayerId: null, name: 'Chris Lane', team: 'CCC' }),
+    ).toMatchObject({ canonicalPlayerId: 'C', via: 'NAME_TEAM' });
   });
   it('3. alias', () => {
-    expect(matchPlayer(idx, { provider: 'x', providerPlayerId: null, name: 'Alexander Stone', team: null })).toMatchObject({ canonicalPlayerId: 'A', via: 'ALIAS' });
+    expect(
+      matchPlayer(idx, { provider: 'x', providerPlayerId: null, name: 'Alexander Stone', team: null }),
+    ).toMatchObject({ canonicalPlayerId: 'A', via: 'ALIAS' });
   });
   it('4. unique normalized name (team changed)', () => {
-    expect(matchPlayer(idx, { provider: 'x', providerPlayerId: null, name: 'Alex Stone', team: 'ZZZ' })).toMatchObject({ canonicalPlayerId: 'A', via: 'NAME' });
+    expect(
+      matchPlayer(idx, { provider: 'x', providerPlayerId: null, name: 'Alex Stone', team: 'ZZZ' }),
+    ).toMatchObject({ canonicalPlayerId: 'A', via: 'NAME' });
   });
   it('never silently merges ambiguous players', () => {
     const r = matchPlayer(idx, { provider: 'x', providerPlayerId: null, name: 'Chris Lane', team: 'QQQ' });
     expect(r).toEqual({ kind: 'AMBIGUOUS', candidateIds: ['B', 'C'], step: 'NAME' });
   });
   it('no match goes to review', () => {
-    expect(matchPlayer(idx, { provider: 'x', providerPlayerId: null, name: 'Nobody Here', team: null }).kind).toBe('NO_MATCH');
+    expect(
+      matchPlayer(idx, { provider: 'x', providerPlayerId: null, name: 'Nobody Here', team: null }).kind,
+    ).toBe('NO_MATCH');
   });
   it('manual mappings win and survive (ignore too)', () => {
     const input = { provider: 'x', providerPlayerId: null, name: 'Chris Lane', team: 'QQQ' };
-    const maps: ManualMapping[] = [{ provider: 'x', providerKey: providerKeyFor(input), target: { canonicalPlayerId: 'B' }, createdAt: '' }];
+    const maps: ManualMapping[] = [
+      {
+        provider: 'x',
+        providerKey: providerKeyFor(input),
+        target: { canonicalPlayerId: 'B' },
+        createdAt: '',
+      },
+    ];
     const idx2 = buildIdentityIndex(ids, maps);
     expect(matchPlayer(idx2, input)).toMatchObject({ canonicalPlayerId: 'B', via: 'MANUAL' });
-    const ign: ManualMapping[] = [{ provider: 'x', providerKey: providerKeyFor(input), target: { ignore: true }, createdAt: '' }];
+    const ign: ManualMapping[] = [
+      { provider: 'x', providerKey: providerKeyFor(input), target: { ignore: true }, createdAt: '' },
+    ];
     expect(matchPlayer(buildIdentityIndex(ids, ign), input).kind).toBe('IGNORED');
   });
   it('fuzzy suggestions are suggestions only', () => {
     const s = suggestCandidates(idx, 'Chris Laine');
     expect(s.map((x) => x.canonicalPlayerId)).toEqual(expect.arrayContaining(['B', 'C']));
-    expect(matchPlayer(idx, { provider: 'x', providerPlayerId: null, name: 'Chris Laine', team: 'BBB' }).kind).toBe('NO_MATCH');
+    expect(
+      matchPlayer(idx, { provider: 'x', providerPlayerId: null, name: 'Chris Laine', team: 'BBB' }).kind,
+    ).toBe('NO_MATCH');
   });
 });

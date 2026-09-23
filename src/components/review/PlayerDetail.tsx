@@ -24,13 +24,18 @@ export function PlayerDetail({ p, ctx }: { p: PlayerEvaluation; ctx: StaticConte
       <div className="flex flex-wrap items-center gap-2">
         <h3 className="text-base font-bold">{p.name}</h3>
         <span className="text-slate-500">
-          {p.team} · {p.positions.join('/')} · {sp?.player.positionsSource === 'YAHOO' ? 'Yahoo eligibility' : `positions: ${sp?.player.positionsSource}`}
+          {p.team} · {p.positions.join('/')} ·{' '}
+          {sp?.player.positionsSource === 'YAHOO'
+            ? 'Yahoo eligibility'
+            : `positions: ${sp?.player.positionsSource}`}
         </span>
         <Badge className={LABEL_CLASS[p.label]}>{LABEL_TEXT[p.label]}</Badge>
         <span className="text-slate-500" title="Rule that produced the label">
           {p.labelRule}
         </span>
-        <Badge className="bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-100">confidence {p.confidence}</Badge>
+        <Badge className="bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-100">
+          confidence {p.confidence}
+        </Badge>
       </div>
       {p.warnings.length > 0 && <p className="text-amber-700">⚠ {p.warnings.join(' · ')}</p>}
 
@@ -42,11 +47,24 @@ export function PlayerDetail({ p, ctx }: { p: PlayerEvaluation; ctx: StaticConte
               <tbody>
                 <Row k="Provider" v={proj.provider} />
                 <Row k="GP / MPG" v={`${fmt(proj.gp, 0)} / ${fmt(proj.mpg, 1)}`} />
-                <Row k="FGM / FGA (FG%)" v={`${fmt(proj.fgm, 1)} / ${fmt(proj.fga, 1)} (${proj.fga > 0 ? (proj.fgm / proj.fga).toFixed(3) : '—'})`} />
-                <Row k="FTM / FTA (FT%)" v={`${fmt(proj.ftm, 1)} / ${fmt(proj.fta, 1)} (${proj.fta > 0 ? (proj.ftm / proj.fta).toFixed(3) : '—'})`} />
+                <Row
+                  k="FGM / FGA (FG%)"
+                  v={`${fmt(proj.fgm, 1)} / ${fmt(proj.fga, 1)} (${proj.fga > 0 ? (proj.fgm / proj.fga).toFixed(3) : '—'})`}
+                />
+                <Row
+                  k="FTM / FTA (FT%)"
+                  v={`${fmt(proj.ftm, 1)} / ${fmt(proj.fta, 1)} (${proj.fta > 0 ? (proj.ftm / proj.fta).toFixed(3) : '—'})`}
+                />
                 <Row k="3PM PTS REB" v={`${fmt(proj.threes, 1)} ${fmt(proj.pts, 1)} ${fmt(proj.reb, 1)}`} />
-                <Row k="AST STL BLK TO" v={`${fmt(proj.ast, 1)} ${fmt(proj.stl, 1)} ${fmt(proj.blk, 1)} ${fmt(proj.to, 1)}`} />
-                <Row k="FG impact / FT impact" v={`${fmt(p.stats.fgImpact)} / ${fmt(p.stats.ftImpact)}`} title="makes − p·attempts" />
+                <Row
+                  k="AST STL BLK TO"
+                  v={`${fmt(proj.ast, 1)} ${fmt(proj.stl, 1)} ${fmt(proj.blk, 1)} ${fmt(proj.to, 1)}`}
+                />
+                <Row
+                  k="FG impact / FT impact"
+                  v={`${fmt(p.stats.fgImpact)} / ${fmt(p.stats.ftImpact)}`}
+                  title="makes − p·attempts"
+                />
               </tbody>
             </table>
           ) : (
@@ -57,7 +75,8 @@ export function PlayerDetail({ p, ctx }: { p: PlayerEvaluation; ctx: StaticConte
               <h4 className="mt-2 mb-1 font-semibold uppercase text-slate-500">Validation sources</h4>
               {p.disagreement.map((d) => (
                 <p key={d.provider} className={d.flagged ? 'font-semibold text-amber-700' : ''}>
-                  {d.provider}: Δ {fmt(d.delta)} SD, ΔGP {fmt(d.gpDelta, 0)} {d.flagged ? '— PROJECTION DISAGREEMENT' : ''}
+                  {d.provider}: Δ {fmt(d.delta)} SD, ΔGP {fmt(d.gpDelta, 0)}{' '}
+                  {d.flagged ? '— PROJECTION DISAGREEMENT' : ''}
                 </p>
               ))}
             </>
@@ -93,7 +112,8 @@ export function PlayerDetail({ p, ctx }: { p: PlayerEvaluation; ctx: StaticConte
             </tbody>
           </table>
           <p className="mt-1 text-slate-500">
-            Neutral 9-cat (raw z, TO 1.0): <b>{fmt(p.stats.neutral9Cat)}</b> · neutral rank #{p.stats.neutralRank}
+            Neutral 9-cat (raw z, TO 1.0): <b>{fmt(p.stats.neutral9Cat)}</b> · neutral rank #
+            {p.stats.neutralRank}
           </p>
         </div>
 
@@ -102,7 +122,10 @@ export function PlayerDetail({ p, ctx }: { p: PlayerEvaluation; ctx: StaticConte
           <table className="w-full" data-testid="ddp-breakdown">
             <tbody>
               <Row k="Per-game VAR (PGV)" v={fmt(p.value.perGameVAR)} />
-              <Row k={`Availability a = GP/${ctx?.config.seasonGames ?? 82}`} v={fmt(p.value.availabilityFraction, 3)} />
+              <Row
+                k={`Availability a = GP/${ctx?.config.seasonGames ?? 82}`}
+                v={fmt(p.value.availabilityFraction, 3)}
+              />
               <Row k="Loss per missed game" v={fmt(p.value.missedGameLoss)} />
               <Row k="Expected-season VAR (ESV)" v={fmt(p.value.expectedSeasonVAR)} />
               <Row k="Base player value (BPV)" v={fmt(p.value.basePlayerValue)} strong />
@@ -114,7 +137,11 @@ export function PlayerDetail({ p, ctx }: { p: PlayerEvaluation; ctx: StaticConte
               <Row k="− Redundancy" v={signed(p.fit.redundancy)} />
               <Row k="= Team fit" v={signed(p.fit.teamFit)} strong />
               <Row k="+ Playoff schedule" v={signed(p.adjustments.playoff)} />
-              <Row k="+ Upside" v={signed(p.adjustments.upside)} title={sp?.upsideSources.join(', ') || 'no upside evidence'} />
+              <Row
+                k="+ Upside"
+                v={signed(p.adjustments.upside)}
+                title={sp?.upsideSources.join(', ') || 'no upside evidence'}
+              />
               <Row k="− Availability risk (round-weighted)" v={signed(p.adjustments.risk)} />
               <Row k="± User preference" v={signed(p.adjustments.userPref)} />
               <Row k="= DDP raw" v={fmt(p.ddpRaw)} strong />
@@ -128,13 +155,32 @@ export function PlayerDetail({ p, ctx }: { p: PlayerEvaluation; ctx: StaticConte
           <table>
             <tbody>
               <Row k="Availability score" v={`${p.availability.score} (${p.availability.risk})`} />
-              <Row k="History H (weighted)" v={fmt(p.availability.terms.history, 3)} title={p.availability.terms.historyKnown ? `${p.availability.terms.seasonsUsed} seasons` : 'no history: default risk'} />
-              <Row k="Chronic / age" v={`${fmt(p.availability.terms.chronic, 3)} / ${fmt(p.availability.terms.age, 3)}`} />
-              <Row k="Status / manual" v={`${p.availability.status} ${fmt(p.availability.terms.status, 2)} / ${fmt(p.availability.terms.manual, 2)}`} />
-              <Row k="ρ_hist / ρ_now / ρ_eff" v={`${fmt(p.availability.rhoHist, 3)} / ${fmt(p.availability.rhoNow, 3)} / ${fmt(p.availability.rhoEff, 3)}`} />
+              <Row
+                k="History H (weighted)"
+                v={fmt(p.availability.terms.history, 3)}
+                title={
+                  p.availability.terms.historyKnown
+                    ? `${p.availability.terms.seasonsUsed} seasons`
+                    : 'no history: default risk'
+                }
+              />
+              <Row
+                k="Chronic / age"
+                v={`${fmt(p.availability.terms.chronic, 3)} / ${fmt(p.availability.terms.age, 3)}`}
+              />
+              <Row
+                k="Status / manual"
+                v={`${p.availability.status} ${fmt(p.availability.terms.status, 2)} / ${fmt(p.availability.terms.manual, 2)}`}
+              />
+              <Row
+                k="ρ_hist / ρ_now / ρ_eff"
+                v={`${fmt(p.availability.rhoHist, 3)} / ${fmt(p.availability.rhoNow, 3)} / ${fmt(p.availability.rhoEff, 3)}`}
+              />
             </tbody>
           </table>
-          <p className={RISK_CLASS[p.availability.risk]}>Risk is not an injury prediction; it is an explainable history/status index.</p>
+          <p className={RISK_CLASS[p.availability.risk]}>
+            Risk is not an injury prediction; it is an explainable history/status index.
+          </p>
         </div>
 
         <div>
@@ -144,9 +190,15 @@ export function PlayerDetail({ p, ctx }: { p: PlayerEvaluation; ctx: StaticConte
               <Row k="L7 ADP" v={fmt(p.market.adp, 1)} />
               <Row k="XRank / Rank" v={`${p.market.xrank ?? '—'} / ${p.market.rank ?? '—'}`} />
               <Row k="Market reference" v={`${fmt(p.market.marketRef, 1)} (${p.market.marketRefSource})`} />
-              <Row k="Survival band (to your following pick)" v={`${BAND_TEXT[p.market.band]}${p.market.bandBeforeXrank !== p.market.band ? ` (XRank downgrade from ${p.market.bandBeforeXrank})` : ''}`} />
+              <Row
+                k="Survival band (to your following pick)"
+                v={`${BAND_TEXT[p.market.band]}${p.market.bandBeforeXrank !== p.market.band ? ` (XRank downgrade from ${p.market.bandBeforeXrank})` : ''}`}
+              />
               <Row k="zS (ordinal band input)" v={fmt(p.market.zS)} />
-              <Row k="Value over market" v={p.market.valueOverMarket === null ? '—' : signed(p.market.valueOverMarket, 1)} />
+              <Row
+                k="Value over market"
+                v={p.market.valueOverMarket === null ? '—' : signed(p.market.valueOverMarket, 1)}
+              />
               <Row k="Next-pick scarcity adj." v={signed(p.market.nextPickScarcity)} />
             </tbody>
           </table>

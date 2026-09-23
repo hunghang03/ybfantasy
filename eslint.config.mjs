@@ -5,7 +5,16 @@ const config = [
   ...next,
   ...nextTs,
   {
-    ignores: ['node_modules/**', '.next/**', 'out/**', 'playwright-report/**', 'test-results/**', 'coverage/**', 'next-env.d.ts', 'public/sw.js'],
+    ignores: [
+      'node_modules/**',
+      '.next/**',
+      'out/**',
+      'playwright-report/**',
+      'test-results/**',
+      'coverage/**',
+      'next-env.d.ts',
+      'public/sw.js',
+    ],
   },
   {
     rules: {

@@ -16,8 +16,10 @@ describe('z-scores', () => {
   });
 
   it('TO is inverted: fewer turnovers → positive z', () => {
-    const low = computeRawZ({ ...synthLine({ id: 'a' }), to: stats.mu.TO - stats.sd.TO }, stats, 1e-9).rawZ.TO;
-    const high = computeRawZ({ ...synthLine({ id: 'b' }), to: stats.mu.TO + stats.sd.TO }, stats, 1e-9).rawZ.TO;
+    const low = computeRawZ({ ...synthLine({ id: 'a' }), to: stats.mu.TO - stats.sd.TO }, stats, 1e-9).rawZ
+      .TO;
+    const high = computeRawZ({ ...synthLine({ id: 'b' }), to: stats.mu.TO + stats.sd.TO }, stats, 1e-9).rawZ
+      .TO;
     expect(low).toBeCloseTo(1, 10);
     expect(high).toBeCloseTo(-1, 10);
   });

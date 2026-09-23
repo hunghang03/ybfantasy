@@ -2,7 +2,15 @@ import { describe, expect, it } from 'vitest';
 import { defaultConfig } from '@/domain/config/defaults';
 import type { AvailabilitySeason, Dataset } from '@/domain/types/data';
 import { appendResync } from '@/domain/draft/replay';
-import { emptyDraft, league, run, synthDataset, synthPool, withSynth, type SynthSpec } from '../helpers/fixtures';
+import {
+  emptyDraft,
+  league,
+  run,
+  synthDataset,
+  synthPool,
+  withSynth,
+  type SynthSpec,
+} from '../helpers/fixtures';
 
 /**
  * T-DUR-1..3 (rev 3): elite 62-GP injury-risk player vs good 72-GP player vs lower-value 78-GP durable
@@ -10,9 +18,54 @@ import { emptyDraft, league, run, synthDataset, synthPool, withSynth, type Synth
  * the elite per-game player twice for the same injury history.
  */
 const trio: SynthSpec[] = [
-  { id: 'ELITE_FRAGILE', positions: ['SF', 'PF'], gp: 62, pts: 27, reb: 8, ast: 5.5, stl: 1.5, blk: 1.0, threes: 2.8, to: 2.6, fgm: 9.6, fga: 18.5, ftm: 5.9, fta: 6.8 },
-  { id: 'GOOD_SOLID', positions: ['SF', 'PF'], gp: 72, pts: 21, reb: 6.5, ast: 4.3, stl: 1.2, blk: 0.8, threes: 2.3, to: 2.1, fgm: 7.6, fga: 15.8, ftm: 3.9, fta: 4.7 },
-  { id: 'DURABLE_LOWER', positions: ['SF', 'PF'], gp: 78, pts: 17, reb: 5.6, ast: 3.4, stl: 1.0, blk: 0.6, threes: 1.9, to: 1.7, fgm: 6.2, fga: 13.4, ftm: 2.9, fta: 3.6 },
+  {
+    id: 'ELITE_FRAGILE',
+    positions: ['SF', 'PF'],
+    gp: 62,
+    pts: 27,
+    reb: 8,
+    ast: 5.5,
+    stl: 1.5,
+    blk: 1.0,
+    threes: 2.8,
+    to: 2.6,
+    fgm: 9.6,
+    fga: 18.5,
+    ftm: 5.9,
+    fta: 6.8,
+  },
+  {
+    id: 'GOOD_SOLID',
+    positions: ['SF', 'PF'],
+    gp: 72,
+    pts: 21,
+    reb: 6.5,
+    ast: 4.3,
+    stl: 1.2,
+    blk: 0.8,
+    threes: 2.3,
+    to: 2.1,
+    fgm: 7.6,
+    fga: 15.8,
+    ftm: 3.9,
+    fta: 4.7,
+  },
+  {
+    id: 'DURABLE_LOWER',
+    positions: ['SF', 'PF'],
+    gp: 78,
+    pts: 17,
+    reb: 5.6,
+    ast: 3.4,
+    stl: 1.0,
+    blk: 0.6,
+    threes: 1.9,
+    to: 1.7,
+    fgm: 6.2,
+    fga: 13.4,
+    ftm: 2.9,
+    fta: 3.6,
+  },
 ];
 const hist = (id: string, seasons: [number, number, 'LOW' | 'MODERATE' | 'HIGH'][]): AvailabilitySeason[] =>
   seasons.map(([season, missed, rec]) => ({
@@ -27,9 +80,21 @@ const hist = (id: string, seasons: [number, number, 'LOW' | 'MODERATE' | 'HIGH']
 function dataset(): Dataset {
   const ds = withSynth(synthDataset(synthPool(260)), trio);
   ds.availability = [
-    ...hist('ELITE_FRAGILE', [[2025, 25, 'HIGH'], [2024, 24, 'HIGH'], [2023, 26, 'HIGH']]),
-    ...hist('GOOD_SOLID', [[2025, 10, 'MODERATE'], [2024, 12, 'MODERATE'], [2023, 6, 'LOW']]),
-    ...hist('DURABLE_LOWER', [[2025, 3, 'LOW'], [2024, 2, 'LOW'], [2023, 4, 'LOW']]),
+    ...hist('ELITE_FRAGILE', [
+      [2025, 25, 'HIGH'],
+      [2024, 24, 'HIGH'],
+      [2023, 26, 'HIGH'],
+    ]),
+    ...hist('GOOD_SOLID', [
+      [2025, 10, 'MODERATE'],
+      [2024, 12, 'MODERATE'],
+      [2023, 6, 'LOW'],
+    ]),
+    ...hist('DURABLE_LOWER', [
+      [2025, 3, 'LOW'],
+      [2024, 2, 'LOW'],
+      [2023, 4, 'LOW'],
+    ]),
   ];
   return ds;
 }
@@ -72,7 +137,17 @@ describe('durability calibration (T-DUR)', () => {
     const perGameGap = ef.value.perGameVAR - gs.value.perGameVAR;
     const ddpGap = ef.ddpRaw - gs.ddpRaw;
     expect(ddpGap).toBeLessThan(0.75 * perGameGap);
-    if (process.env.PRINT_CALIBRATION) console.log(JSON.stringify({ share, perGameGap, ddpGap, ef: [ef.value.perGameVAR, ef.value.basePlayerValue, ef.adjustments.risk, ef.ddpRaw], gs: [gs.value.perGameVAR, gs.value.basePlayerValue, gs.adjustments.risk, gs.ddpRaw], dl: [dl.value.perGameVAR, dl.value.basePlayerValue, dl.adjustments.risk, dl.ddpRaw] }));
+    if (process.env.PRINT_CALIBRATION)
+      console.log(
+        JSON.stringify({
+          share,
+          perGameGap,
+          ddpGap,
+          ef: [ef.value.perGameVAR, ef.value.basePlayerValue, ef.adjustments.risk, ef.ddpRaw],
+          gs: [gs.value.perGameVAR, gs.value.basePlayerValue, gs.adjustments.risk, gs.ddpRaw],
+          dl: [dl.value.perGameVAR, dl.value.basePlayerValue, dl.adjustments.risk, dl.ddpRaw],
+        }),
+      );
   });
 
   it('T-DUR-2: residual weight is honored; ESV never changes with it', () => {
@@ -89,15 +164,41 @@ describe('durability calibration (T-DUR)', () => {
   it('T-DUR-3: late rounds — risk shrinks ≥ 10× and order follows BPV', () => {
     const early = evalAtRound(1).ef;
     const late = evalAtRound(12);
-    expect(Math.abs(early.adjustments.risk)).toBeGreaterThanOrEqual(10 * Math.abs(late.ef.adjustments.risk) - 1e-9);
-    const byBpv = [late.ef, late.gs, late.dl].sort((a, b) => b.value.basePlayerValue - a.value.basePlayerValue).map((x) => x.playerId);
+    expect(Math.abs(early.adjustments.risk)).toBeGreaterThanOrEqual(
+      10 * Math.abs(late.ef.adjustments.risk) - 1e-9,
+    );
+    const byBpv = [late.ef, late.gs, late.dl]
+      .sort((a, b) => b.value.basePlayerValue - a.value.basePlayerValue)
+      .map((x) => x.playerId);
     const byDdp = [late.ef, late.gs, late.dl].sort((a, b) => b.ddpRaw - a.ddpRaw).map((x) => x.playerId);
     expect(byDdp).toEqual(byBpv);
   });
 
   it('a healthy replacement-level veteran does not rank highly just for durability', () => {
-    const ds = withSynth(dataset(), [{ id: 'VET', gp: 82, pts: 9, reb: 3.5, ast: 2, stl: 0.6, blk: 0.3, threes: 1, to: 1, fgm: 3.4, fga: 7.8, ftm: 1.2, fta: 1.5 }]);
-    ds.availability.push(...hist('VET', [[2025, 0, 'LOW'], [2024, 0, 'LOW'], [2023, 0, 'LOW']]));
+    const ds = withSynth(dataset(), [
+      {
+        id: 'VET',
+        gp: 82,
+        pts: 9,
+        reb: 3.5,
+        ast: 2,
+        stl: 0.6,
+        blk: 0.3,
+        threes: 1,
+        to: 1,
+        fgm: 3.4,
+        fga: 7.8,
+        ftm: 1.2,
+        fta: 1.5,
+      },
+    ]);
+    ds.availability.push(
+      ...hist('VET', [
+        [2025, 0, 'LOW'],
+        [2024, 0, 'LOW'],
+        [2023, 0, 'LOW'],
+      ]),
+    );
     const { ev } = run(ds, league());
     const vet = ev.byId.get('VET')!;
     expect(vet.adjustments.risk).toBe(0);

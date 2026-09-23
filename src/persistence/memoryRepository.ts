@@ -45,12 +45,14 @@ export function createMemoryBackend(): Backend {
     async transaction<T>(fn: () => Promise<T>): Promise<T> {
       if (depth > 0) return fn();
       const snapshot = new Map<string, Map<string, unknown>>();
-      for (const [name, table] of Object.entries(tables)) snapshot.set(name, new Map((table as MemoryTable<unknown>).data));
+      for (const [name, table] of Object.entries(tables))
+        snapshot.set(name, new Map((table as MemoryTable<unknown>).data));
       depth++;
       try {
         return await fn();
       } catch (e) {
-        for (const [name, table] of Object.entries(tables)) (table as MemoryTable<unknown>).data = snapshot.get(name)!;
+        for (const [name, table] of Object.entries(tables))
+          (table as MemoryTable<unknown>).data = snapshot.get(name)!;
         throw e;
       } finally {
         depth--;

@@ -50,7 +50,10 @@ export function computeReplacement(
   if (slice.length === 0) {
     // Guard: pool not larger than the population → conservative fallback (bottom of the population).
     usedFallback = true;
-    slice = ranked.slice(Math.max(0, Math.min(populationSize, ranked.length) - band), Math.min(populationSize, ranked.length));
+    slice = ranked.slice(
+      Math.max(0, Math.min(populationSize, ranked.length) - band),
+      Math.min(populationSize, ranked.length),
+    );
     perGame = slice.length ? Math.min(...slice.map((s) => s.pg)) : 0;
   } else {
     perGame = mean(slice.map((s) => s.pg));

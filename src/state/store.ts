@@ -6,7 +6,13 @@ import type { StrategyConfig } from '@/domain/config/strategyConfig';
 import { appendPick, appendResync, appendVoid, undoLast } from '@/domain/draft/replay';
 import type { ImportPlan } from '@/domain/import/plan';
 import type { Category } from '@/domain/types/core';
-import { EMPTY_DATASET, type Dataset, type ImportBatch, type ManualMapping, type UnmatchedRow } from '@/domain/types/data';
+import {
+  EMPTY_DATASET,
+  type Dataset,
+  type ImportBatch,
+  type ManualMapping,
+  type UnmatchedRow,
+} from '@/domain/types/data';
 import {
   DEFAULT_ROSTER,
   NO_FLAGS,
@@ -20,7 +26,13 @@ import {
 import { newId, nowIso } from '@/lib/ids';
 import { createDexieRepository } from '@/persistence/dexieRepository';
 import { createMemoryRepository } from '@/persistence/memoryRepository';
-import { DEFAULT_SETTINGS, type AppSettings, type BackupFile, type Repository, type UnmatchedResolution } from '@/persistence/repository';
+import {
+  DEFAULT_SETTINGS,
+  type AppSettings,
+  type BackupFile,
+  type Repository,
+  type UnmatchedResolution,
+} from '@/persistence/repository';
 
 /**
  * Application store. In-memory state updates synchronously (instant UI); every change is written
@@ -55,7 +67,11 @@ export interface AppState {
   deleteLeague(id: string): void;
   setActiveLeague(id: string | null): void;
 
-  draftPick(playerId: string, by: 'ME' | 'OTHER', opts?: { advance?: boolean; snapshot?: PickSnapshot }): string | null;
+  draftPick(
+    playerId: string,
+    by: 'ME' | 'OTHER',
+    opts?: { advance?: boolean; snapshot?: PickSnapshot },
+  ): string | null;
   undo(): void;
   resync(overall: number): string | null;
   voidPick(seq: number): string | null;
@@ -104,7 +120,10 @@ export const useApp = create<AppState>((set, get) => {
       })
       .catch((e: unknown) => {
         pendingWrites--;
-        set({ saveStatus: 'error', lastMessage: `Local save failed: ${e instanceof Error ? e.message : String(e)}` });
+        set({
+          saveStatus: 'error',
+          lastMessage: `Local save failed: ${e instanceof Error ? e.message : String(e)}`,
+        });
       });
   };
 
@@ -144,11 +163,24 @@ export const useApp = create<AppState>((set, get) => {
         } else {
           repo = createDexieRepository();
         }
-        const [leagues, settings, config] = await Promise.all([repo.listLeagues(), repo.getSettings(), repo.getConfig()]);
+        const [leagues, settings, config] = await Promise.all([
+          repo.listLeagues(),
+          repo.getSettings(),
+          repo.getConfig(),
+        ]);
         const drafts: Record<string, LeagueDraft> = {};
         for (const l of leagues) drafts[l.id] = (await repo.getDraft(l.id)) ?? emptyDraft(l.id);
-        const activeLeagueId = settings.activeLeagueId && leagues.some((l) => l.id === settings.activeLeagueId) ? settings.activeLeagueId : (leagues[0]?.id ?? null);
-        set({ leagues, drafts, settings: { ...settings, activeLeagueId }, config: config ?? defaultConfig(), storage });
+        const activeLeagueId =
+          settings.activeLeagueId && leagues.some((l) => l.id === settings.activeLeagueId)
+            ? settings.activeLeagueId
+            : (leagues[0]?.id ?? null);
+        set({
+          leagues,
+          drafts,
+          settings: { ...settings, activeLeagueId },
+          config: config ?? defaultConfig(),
+          storage,
+        });
         await get().reloadData();
         set({ status: 'ready' });
       } catch (e) {
@@ -158,7 +190,12 @@ export const useApp = create<AppState>((set, get) => {
 
     async reloadData() {
       const r = getRepository();
-      const [dataset, batches, unmatched, mappings] = await Promise.all([r.loadDataset(), r.listBatches(), r.listUnmatched(), r.listMappings()]);
+      const [dataset, batches, unmatched, mappings] = await Promise.all([
+        r.loadDataset(),
+        r.listBatches(),
+        r.listUnmatched(),
+        r.listMappings(),
+      ]);
       set({ dataset, batches, unmatched, mappings });
     },
 
@@ -217,7 +254,12 @@ export const useApp = create<AppState>((set, get) => {
       const league = activeLeague();
       const draft = activeDraft();
       if (!league || !draft) return 'No active league.';
-      const r = appendPick(draft.events, { playerId, by, advance: opts.advance, snapshot: opts.snapshot }, league.teamCount, rosterSize(league.roster));
+      const r = appendPick(
+        draft.events,
+        { playerId, by, advance: opts.advance, snapshot: opts.snapshot },
+        league.teamCount,
+        rosterSize(league.roster),
+      );
       if (!r.ok) return r.error;
       saveDraft({ ...draft, events: r.events });
       return null;

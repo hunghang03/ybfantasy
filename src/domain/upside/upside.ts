@@ -19,7 +19,8 @@ export function computeUpside(
   const mpg = proj?.mpg ?? null;
   const prev = context?.previousSeasonMpg ?? null;
   if (mpg !== null && prev !== null) {
-    const g = clamp01((mpg - prev) / config.minutesGrowthUpside.minutesForMax) * config.minutesGrowthUpside.maxScore;
+    const g =
+      clamp01((mpg - prev) / config.minutesGrowthUpside.minutesForMax) * config.minutesGrowthUpside.maxScore;
     if (g > 0) parts.push({ v: g, src: 'minutes growth' });
   }
   for (const t of context?.roleTags ?? []) parts.push({ v: config.roleTagUpside[t], src: `role:${t}` });

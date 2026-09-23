@@ -127,7 +127,9 @@ export class TableRepository implements Repository {
         if (b.status === 'ACTIVE' && b.kind === plan.batch.kind && b.provider === plan.batch.provider)
           await this.t.batches.put(b.id, { ...b, status: 'SUPERSEDED' });
       await this.t.batches.put(plan.batch.id, plan.batch);
-      await this.t.identities.bulkPut([...plan.newIdentities, ...plan.identityUpdates].map((p) => [p.canonicalPlayerId, p]));
+      await this.t.identities.bulkPut(
+        [...plan.newIdentities, ...plan.identityUpdates].map((p) => [p.canonicalPlayerId, p]),
+      );
       await this.writeRecords(plan.records);
       await this.t.unmatched.bulkPut(plan.unmatched.map((u) => [u.id, u]));
     });
@@ -159,7 +161,12 @@ export class TableRepository implements Repository {
     return this.t.unmatched.all();
   }
 
-  resolveUnmatched(rowId: string, resolution: UnmatchedResolution, newId: string, now: string): Promise<void> {
+  resolveUnmatched(
+    rowId: string,
+    resolution: UnmatchedResolution,
+    newId: string,
+    now: string,
+  ): Promise<void> {
     return this.db.transaction(async () => {
       const row = await this.t.unmatched.get(rowId);
       if (!row) throw new Error('Unmatched row not found.');
@@ -174,12 +181,25 @@ export class TableRepository implements Repository {
         if (!(await this.t.identities.get(resolution.canonicalPlayerId))) throw new Error('Unknown player.');
         target = { canonicalPlayerId: resolution.canonicalPlayerId };
       }
-      const mapping: ManualMapping = { provider: row.provider, providerKey: row.providerKey, target, createdAt: now };
+      const mapping: ManualMapping = {
+        provider: row.provider,
+        providerKey: row.providerKey,
+        target,
+        createdAt: now,
+      };
       await this.t.mappings.put(keys.mapping(mapping), mapping);
       if ('canonicalPlayerId' in target) {
         const batch = await this.t.batches.get(row.batchId);
         const recs = emptyRecords();
-        recordFor(row.kind, payload, target.canonicalPlayerId, row.batchId, row.provider, batch?.season ?? '', recs);
+        recordFor(
+          row.kind,
+          payload,
+          target.canonicalPlayerId,
+          row.batchId,
+          row.provider,
+          batch?.season ?? '',
+          recs,
+        );
         await this.writeRecords(recs);
       }
       await this.t.unmatched.delete(rowId);
@@ -200,7 +220,10 @@ export class TableRepository implements Repository {
     return this.t.kv.put('config', config);
   }
   async getSettings(): Promise<AppSettings> {
-    return { ...DEFAULT_SETTINGS, ...(((await this.t.kv.get('settings')) as Partial<AppSettings> | undefined) ?? {}) };
+    return {
+      ...DEFAULT_SETTINGS,
+      ...(((await this.t.kv.get('settings')) as Partial<AppSettings> | undefined) ?? {}),
+    };
   }
   saveSettings(settings: AppSettings) {
     return this.t.kv.put('settings', settings);

@@ -10,20 +10,34 @@ export function StrategyAdvisor({ ev, onSelect }: { ev: DraftEvaluation; onSelec
   const rec = ev.recommendedId ? ev.byId.get(ev.recommendedId) : null;
   const critical = ev.warnings.filter((w) => w.severity === 'critical');
   return (
-    <section className="rounded-md border border-slate-300 bg-white p-2 dark:border-slate-700 dark:bg-slate-900" data-testid="strategy-advisor" aria-live="polite">
+    <section
+      className="rounded-md border border-slate-300 bg-white p-2 dark:border-slate-700 dark:bg-slate-900"
+      data-testid="strategy-advisor"
+      aria-live="polite"
+    >
       <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
         <h2 className="text-sm font-bold" data-testid="advisor-header">
           {a.header}
         </h2>
-        <span className="text-xs font-medium text-violet-700 dark:text-violet-300" data-testid="advisor-build">
+        <span
+          className="text-xs font-medium text-violet-700 dark:text-violet-300"
+          data-testid="advisor-build"
+        >
           {a.build}
         </span>
         <span className="text-xs font-semibold" data-testid="advisor-priority">
-          {a.priority.length ? `Priority: ${a.priority.map((c) => CATEGORY_LABEL[c]).join(' > ')}` : a.priorityLine}
+          {a.priority.length
+            ? `Priority: ${a.priority.map((c) => CATEGORY_LABEL[c]).join(' > ')}`
+            : a.priorityLine}
         </span>
       </div>
       {critical.map((w) => (
-        <p key={w.code} className="mt-1 rounded bg-red-600 px-2 py-0.5 text-xs font-bold text-white" role="alert" data-testid={`warning-${w.code}`}>
+        <p
+          key={w.code}
+          className="mt-1 rounded bg-red-600 px-2 py-0.5 text-xs font-bold text-white"
+          role="alert"
+          data-testid={`warning-${w.code}`}
+        >
           {w.message}
         </p>
       ))}
@@ -33,7 +47,11 @@ export function StrategyAdvisor({ ev, onSelect }: { ev: DraftEvaluation; onSelec
       {rec && (
         <div className="mt-1 flex flex-wrap items-center gap-2 text-xs">
           <span className="font-bold uppercase text-slate-500">Recommended:</span>
-          <button className="font-bold text-blue-700 underline dark:text-blue-300" onClick={() => onSelect(rec.playerId)} data-testid="advisor-recommended">
+          <button
+            className="font-bold text-blue-700 underline dark:text-blue-300"
+            onClick={() => onSelect(rec.playerId)}
+            data-testid="advisor-recommended"
+          >
             {rec.name}
           </button>
           <Badge className={LABEL_CLASS[rec.label]}>{LABEL_TEXT[rec.label]}</Badge>

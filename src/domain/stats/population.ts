@@ -39,7 +39,10 @@ export function buildPopulation(
     let prevKey = '';
     for (iterations = 1; iterations <= config.populationMaxIterations; iterations++) {
       const ranked = eligible
-        .map((p) => ({ p, v: weightedSum(computeRawZ(p.proj!, stats, eps).rawZ, config.neutralTurnoverWeight) }))
+        .map((p) => ({
+          p,
+          v: weightedSum(computeRawZ(p.proj!, stats, eps).rawZ, config.neutralTurnoverWeight),
+        }))
         .sort((a, b) => b.v - a.v || cmpId(a.p.id, b.p.id));
       members = ranked.slice(0, targetSize).map((r) => r.p);
       const key = members

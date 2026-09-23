@@ -40,10 +40,64 @@ export function buildPlan(
 
 /** Bundled fictional sample files, in dependency order (primary projections create identities). */
 export const SAMPLE_IMPORTS: { file: string; spec: ImportSpec }[] = [
-  { file: 'projections-hashtag.sample.csv', spec: { kind: 'PROJECTION', provider: 'hashtag', season: '2026-27', description: 'Sample Hashtag-style projections (fictional)', createPolicy: 'AUTO' } },
-  { file: 'yahoo-market.sample.csv', spec: { kind: 'YAHOO_MARKET', provider: 'yahoo', season: '2026-27', description: 'Sample Yahoo market (fictional)', createPolicy: 'AUTO' } },
-  { file: 'projections-bbm.sample.csv', spec: { kind: 'PROJECTION', provider: 'bbm', season: '2026-27', description: 'Sample BBM-style validation projections (fictional)', createPolicy: 'NEVER' } },
-  { file: 'availability.sample.csv', spec: { kind: 'AVAILABILITY', provider: 'manual', season: '2026-27', description: 'Sample availability history (fictional)', createPolicy: 'NEVER' } },
-  { file: 'context.sample.csv', spec: { kind: 'CONTEXT', provider: 'manual', season: '2026-27', description: 'Sample player context (fictional)', createPolicy: 'NEVER' } },
-  { file: 'playoff-schedule.sample.csv', spec: { kind: 'PLAYOFF', provider: 'manual', season: '2026-27', description: 'Sample playoff schedule (fictional)', createPolicy: 'NEVER' } },
+  {
+    file: 'projections-hashtag.sample.csv',
+    spec: {
+      kind: 'PROJECTION',
+      provider: 'hashtag',
+      season: '2026-27',
+      description: 'Sample Hashtag-style projections (fictional)',
+      createPolicy: 'AUTO',
+    },
+  },
+  {
+    file: 'yahoo-market.sample.csv',
+    spec: {
+      kind: 'YAHOO_MARKET',
+      provider: 'yahoo',
+      season: '2026-27',
+      description: 'Sample Yahoo market (fictional)',
+      createPolicy: 'AUTO',
+    },
+  },
+  {
+    file: 'projections-bbm.sample.csv',
+    spec: {
+      kind: 'PROJECTION',
+      provider: 'bbm',
+      season: '2026-27',
+      description: 'Sample BBM-style validation projections (fictional)',
+      createPolicy: 'NEVER',
+    },
+  },
+  {
+    file: 'availability.sample.csv',
+    spec: {
+      kind: 'AVAILABILITY',
+      provider: 'manual',
+      season: '2026-27',
+      description: 'Sample availability history (fictional)',
+      createPolicy: 'NEVER',
+    },
+  },
+  {
+    file: 'context.sample.csv',
+    spec: {
+      kind: 'CONTEXT',
+      provider: 'manual',
+      season: '2026-27',
+      description: 'Sample player context (fictional)',
+      createPolicy: 'NEVER',
+    },
+  },
+  {
+    file: 'playoff-schedule.sample.csv',
+    spec: {
+      kind: 'PLAYOFF',
+      provider: 'manual',
+      season: '2026-27',
+      description: 'Sample playoff schedule (fictional)',
+      createPolicy: 'NEVER',
+    },
+  },
 ];

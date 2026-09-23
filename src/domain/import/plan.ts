@@ -1,5 +1,11 @@
 import type { StrategyConfig } from '../config/strategyConfig';
-import { addToIndex, buildIdentityIndex, matchPlayer, providerKeyFor, type MatchResult } from '../identity/matcher';
+import {
+  addToIndex,
+  buildIdentityIndex,
+  matchPlayer,
+  providerKeyFor,
+  type MatchResult,
+} from '../identity/matcher';
 import { normalizeName, normalizeTeam } from '../identity/normalize';
 import type {
   AvailabilitySeason,
@@ -165,11 +171,18 @@ export function applyIdentityFacts(
   identity: PlayerIdentity,
   row: IdentityFields,
 ): PlayerIdentity | null {
-  const next: PlayerIdentity = { ...identity, providerIds: { ...identity.providerIds }, aliases: [...identity.aliases] };
+  const next: PlayerIdentity = {
+    ...identity,
+    providerIds: { ...identity.providerIds },
+    aliases: [...identity.aliases],
+  };
   let changed = false;
   const team = normalizeTeam(row.team);
   if (kind === 'YAHOO_MARKET') {
-    if (row.positions.length && (next.positionsSource !== 'YAHOO' || next.positions.join() !== row.positions.join())) {
+    if (
+      row.positions.length &&
+      (next.positionsSource !== 'YAHOO' || next.positions.join() !== row.positions.join())
+    ) {
       if (next.positionsSource !== 'MANUAL') {
         next.positions = row.positions;
         next.positionsSource = 'YAHOO';
@@ -248,7 +261,9 @@ export function planImport(req: ImportRequest): ImportPlan {
   const idx = buildIdentityIndex(req.identities, req.mappings);
   const allowCreate =
     req.createPolicy === 'CREATE_UNMATCHED' ||
-    (req.createPolicy === 'AUTO' && req.identities.length === 0 && (kind === 'PROJECTION' || kind === 'YAHOO_MARKET'));
+    (req.createPolicy === 'AUTO' &&
+      req.identities.length === 0 &&
+      (kind === 'PROJECTION' || kind === 'YAHOO_MARKET'));
   const seen = new Map<string, number>();
   const createdIds = new Set<string>();
   const claimedIds = new Set<string>();
@@ -273,7 +288,12 @@ export function planImport(req: ImportRequest): ImportPlan {
           return;
         }
         seenTeams.add(team);
-        records.playoff.push({ nbaTeam: team, season, importBatchId: req.batchId, gamesByWeek: v.gamesByWeek });
+        records.playoff.push({
+          nbaTeam: team,
+          season,
+          importBatchId: req.batchId,
+          gamesByWeek: v.gamesByWeek,
+        });
         return;
       }
 
@@ -284,7 +304,11 @@ export function planImport(req: ImportRequest): ImportPlan {
       // means two different rows want one player — never merge them silently.
       if (kind !== 'AVAILABILITY' && m.kind === 'MATCHED' && (m.via === 'NAME' || m.via === 'ALIAS')) {
         const claimed = createdIds.has(m.canonicalPlayerId) || claimedIds.has(m.canonicalPlayerId);
-        if (claimed) m = createdIds.has(m.canonicalPlayerId) && allowCreate ? { kind: 'NO_MATCH' } : { kind: 'AMBIGUOUS', candidateIds: [m.canonicalPlayerId], step: m.via };
+        if (claimed)
+          m =
+            createdIds.has(m.canonicalPlayerId) && allowCreate
+              ? { kind: 'NO_MATCH' }
+              : { kind: 'AMBIGUOUS', candidateIds: [m.canonicalPlayerId], step: m.via };
       }
       let canonicalId: string | null = null;
       if (m.kind === 'IGNORED') return;

@@ -16,10 +16,17 @@ export function useEngine(): { ctx: StaticContext | null; evaluation: DraftEvalu
   const draft = useActiveDraft();
   const dataset = useApp((s) => s.dataset);
   const config = useApp((s) => s.config);
-  const ctx = useMemo(() => (league ? buildContext(dataset, league, config) : null), [dataset, league, config]);
+  const ctx = useMemo(
+    () => (league ? buildContext(dataset, league, config) : null),
+    [dataset, league, config],
+  );
   return useMemo(() => {
     if (!ctx || !draft) return { ctx, evaluation: null, ms: 0 };
-    const { evaluation, ms } = timedEvaluate(ctx, { events: draft.events, flags: draft.flags, puntOverrides: draft.puntOverrides });
+    const { evaluation, ms } = timedEvaluate(ctx, {
+      events: draft.events,
+      flags: draft.flags,
+      puntOverrides: draft.puntOverrides,
+    });
     return { ctx, evaluation, ms };
   }, [ctx, draft]);
 }

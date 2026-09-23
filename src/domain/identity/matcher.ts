@@ -15,7 +15,11 @@ export interface MatchInput {
 }
 
 export type MatchResult =
-  | { kind: 'MATCHED'; canonicalPlayerId: string; via: 'MANUAL' | 'PROVIDER_ID' | 'NAME_TEAM' | 'ALIAS' | 'NAME' }
+  | {
+      kind: 'MATCHED';
+      canonicalPlayerId: string;
+      via: 'MANUAL' | 'PROVIDER_ID' | 'NAME_TEAM' | 'ALIAS' | 'NAME';
+    }
   | { kind: 'IGNORED' }
   | { kind: 'AMBIGUOUS'; candidateIds: string[]; step: 'PROVIDER_ID' | 'NAME_TEAM' | 'ALIAS' | 'NAME' }
   | { kind: 'NO_MATCH' };
@@ -60,7 +64,8 @@ export function buildIdentityIndex(
 
 export function addToIndex(idx: IdentityIndex, p: PlayerIdentity): void {
   idx.byId.set(p.canonicalPlayerId, p);
-  for (const [prov, pid] of Object.entries(p.providerIds)) push(idx.byProviderId, `${prov}:${pid}`, p.canonicalPlayerId);
+  for (const [prov, pid] of Object.entries(p.providerIds))
+    push(idx.byProviderId, `${prov}:${pid}`, p.canonicalPlayerId);
   if (p.yahooPlayerId) push(idx.byProviderId, `yahoo:${p.yahooPlayerId}`, p.canonicalPlayerId);
   push(idx.byNameTeam, `${p.normalizedName}|${p.nbaTeam ?? ''}`, p.canonicalPlayerId);
   push(idx.byName, p.normalizedName, p.canonicalPlayerId);
@@ -104,8 +109,17 @@ export function suggestCandidates(
   const n = normalizeName(name);
   const scored: { canonicalPlayerId: string; name: string; team: string | null; score: number }[] = [];
   for (const p of idx.byId.values()) {
-    const s = Math.max(jaroWinkler(n, p.normalizedName), ...p.aliases.map((a) => jaroWinkler(n, normalizeName(a))));
-    if (s >= 0.8) scored.push({ canonicalPlayerId: p.canonicalPlayerId, name: p.canonicalName, team: p.nbaTeam, score: s });
+    const s = Math.max(
+      jaroWinkler(n, p.normalizedName),
+      ...p.aliases.map((a) => jaroWinkler(n, normalizeName(a))),
+    );
+    if (s >= 0.8)
+      scored.push({
+        canonicalPlayerId: p.canonicalPlayerId,
+        name: p.canonicalName,
+        team: p.nbaTeam,
+        score: s,
+      });
   }
   scored.sort((a, b) => b.score - a.score || (a.canonicalPlayerId < b.canonicalPlayerId ? -1 : 1));
   return scored.slice(0, limit);

@@ -35,7 +35,8 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const apply = () => {
-      const dark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      const dark =
+        theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
       document.documentElement.classList.toggle('dark', dark);
     };
     apply();
@@ -67,7 +68,9 @@ export function AppShell({ children }: { children: ReactNode }) {
               href={n.href}
               className={cx(
                 'rounded px-2 py-1 text-xs font-medium',
-                (n.href === '/' ? path === '/' : path?.startsWith(n.href.replace(/\/$/, ''))) ? 'bg-slate-700 text-white' : 'text-slate-300 hover:bg-slate-800',
+                (n.href === '/' ? path === '/' : path?.startsWith(n.href.replace(/\/$/, '')))
+                  ? 'bg-slate-700 text-white'
+                  : 'text-slate-300 hover:bg-slate-800',
               )}
             >
               {n.label}
@@ -95,7 +98,11 @@ export function AppShell({ children }: { children: ReactNode }) {
           )}
           <span
             data-testid="save-status"
-            title={storage === 'memory' ? 'IndexedDB unavailable — data is NOT persisted' : 'Stored locally in this browser (IndexedDB)'}
+            title={
+              storage === 'memory'
+                ? 'IndexedDB unavailable — data is NOT persisted'
+                : 'Stored locally in this browser (IndexedDB)'
+            }
             className={cx(
               'rounded px-1.5 py-0.5 font-semibold',
               saveStatus === 'saved' && 'bg-emerald-700 text-white',
@@ -103,12 +110,21 @@ export function AppShell({ children }: { children: ReactNode }) {
               saveStatus === 'error' && 'bg-red-600 text-white',
             )}
           >
-            {saveStatus === 'saved' ? (storage === 'memory' ? 'Memory only' : 'Saved locally') : saveStatus === 'saving' ? 'Saving…' : 'Save error'}
+            {saveStatus === 'saved'
+              ? storage === 'memory'
+                ? 'Memory only'
+                : 'Saved locally'
+              : saveStatus === 'saving'
+                ? 'Saving…'
+                : 'Save error'}
           </span>
         </div>
       </header>
       {message && (
-        <div role="status" className="border-b border-amber-300 bg-amber-50 px-3 py-1 text-xs text-amber-900 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-100">
+        <div
+          role="status"
+          className="border-b border-amber-300 bg-amber-50 px-3 py-1 text-xs text-amber-900 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-100"
+        >
           {message}
         </div>
       )}

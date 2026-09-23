@@ -37,7 +37,10 @@ export interface PopulationStats {
   degenerate: Category[];
 }
 
-export function computePopulationStats(lines: readonly ProjectionLine[], config: StrategyConfig): PopulationStats {
+export function computePopulationStats(
+  lines: readonly ProjectionLine[],
+  config: StrategyConfig,
+): PopulationStats {
   const eps = config.numeric.eps;
   const min = config.numeric.minSdSamples;
   const mu = {} as Record<CountingCat, number>;

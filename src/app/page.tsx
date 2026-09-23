@@ -30,7 +30,8 @@ export default function LeaguesPage() {
       notify(`Backup rejected: ${parsed.errors.join('; ')}`);
       return;
     }
-    if (!window.confirm('Replace ALL local data (leagues, drafts, datasets, config) with this backup?')) return;
+    if (!window.confirm('Replace ALL local data (leagues, drafts, datasets, config) with this backup?'))
+      return;
     setBusy(true);
     await restoreBackup(parsed.backup);
     setBusy(false);
@@ -65,9 +66,17 @@ export default function LeaguesPage() {
             <tbody>
               {leagues.map((l) => {
                 const st = replay(drafts[l.id]?.events ?? []);
-                const picks = userPicks({ teams: l.teamCount, slot: l.draftPosition, rounds: rosterSize(l.roster) });
+                const picks = userPicks({
+                  teams: l.teamCount,
+                  slot: l.draftPosition,
+                  rounds: rosterSize(l.roster),
+                });
                 return (
-                  <tr key={l.id} className={l.id === activeId ? 'bg-blue-50 dark:bg-blue-950/40' : ''} data-testid={`league-row-${l.name}`}>
+                  <tr
+                    key={l.id}
+                    className={l.id === activeId ? 'bg-blue-50 dark:bg-blue-950/40' : ''}
+                    data-testid={`league-row-${l.name}`}
+                  >
                     <td className="py-1 font-medium">{l.name}</td>
                     <td>{l.season}</td>
                     <td className="num">{l.teamCount}</td>
@@ -82,10 +91,18 @@ export default function LeaguesPage() {
                           Select
                         </Button>
                       )}
-                      <Link href="/setup/" onClick={() => setActive(l.id)} className="text-xs text-blue-600 underline">
+                      <Link
+                        href="/setup/"
+                        onClick={() => setActive(l.id)}
+                        className="text-xs text-blue-600 underline"
+                      >
                         Setup
                       </Link>{' '}
-                      <Link href="/draft/" onClick={() => setActive(l.id)} className="text-xs text-blue-600 underline">
+                      <Link
+                        href="/draft/"
+                        onClick={() => setActive(l.id)}
+                        className="text-xs text-blue-600 underline"
+                      >
                         Draft
                       </Link>{' '}
                       <Button
@@ -109,14 +126,21 @@ export default function LeaguesPage() {
       <Panel title="Status">
         <ul className="text-sm text-slate-700 dark:text-slate-300">
           <li>
-            Players: <b className="num">{dataset.identities.length}</b> · projection rows: <b className="num">{dataset.projections.length}</b> · Yahoo market rows:{' '}
+            Players: <b className="num">{dataset.identities.length}</b> · projection rows:{' '}
+            <b className="num">{dataset.projections.length}</b> · Yahoo market rows:{' '}
             <b className="num">{dataset.market.length}</b>
           </li>
-          <li className="text-xs text-slate-500">All data lives in this browser (IndexedDB). No backend is required during a draft.</li>
+          <li className="text-xs text-slate-500">
+            All data lives in this browser (IndexedDB). No backend is required during a draft.
+          </li>
         </ul>
         {dataset.projections.length === 0 && (
           <p className="mt-2 text-sm">
-            Next step: <Link className="text-blue-600 underline" href="/data/">import projections and Yahoo market data</Link>.
+            Next step:{' '}
+            <Link className="text-blue-600 underline" href="/data/">
+              import projections and Yahoo market data
+            </Link>
+            .
           </p>
         )}
       </Panel>
@@ -125,7 +149,12 @@ export default function LeaguesPage() {
         <div className="flex flex-wrap gap-2">
           <Button
             data-testid="export-backup"
-            onClick={async () => downloadText(`draft-engine-backup-${new Date().toISOString().slice(0, 19)}.json`, JSON.stringify(await exportBackup(), null, 1))}
+            onClick={async () =>
+              downloadText(
+                `draft-engine-backup-${new Date().toISOString().slice(0, 19)}.json`,
+                JSON.stringify(await exportBackup(), null, 1),
+              )
+            }
           >
             Export full backup (JSON)
           </Button>

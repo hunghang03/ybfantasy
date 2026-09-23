@@ -61,7 +61,12 @@ const eventSchema = z.discriminatedUnion('type', [
   }),
   z.object({ seq: z.number().int(), at: z.string(), type: z.literal('VOID'), targetSeq: z.number().int() }),
 ]);
-const flagsSchema = z.object({ favorite: z.boolean(), avoid: z.boolean(), doNotDraft: z.boolean(), lockTarget: z.boolean() });
+const flagsSchema = z.object({
+  favorite: z.boolean(),
+  avoid: z.boolean(),
+  doNotDraft: z.boolean(),
+  lockTarget: z.boolean(),
+});
 export const LeagueDraftSchema = z.object({
   leagueId: z.string(),
   events: z.array(eventSchema),
@@ -94,7 +99,9 @@ export const BackupSchema = z.object({
   }),
 });
 
-export function parseBackup(text: string): { ok: true; backup: BackupFile } | { ok: false; errors: string[] } {
+export function parseBackup(
+  text: string,
+): { ok: true; backup: BackupFile } | { ok: false; errors: string[] } {
   let json: unknown;
   try {
     json = JSON.parse(text);
@@ -102,7 +109,8 @@ export function parseBackup(text: string): { ok: true; backup: BackupFile } | { 
     return { ok: false, errors: ['Not valid JSON.'] };
   }
   const r = BackupSchema.safeParse(json);
-  if (!r.success) return { ok: false, errors: r.error.issues.slice(0, 10).map((i) => `${i.path.join('.')}: ${i.message}`) };
+  if (!r.success)
+    return { ok: false, errors: r.error.issues.slice(0, 10).map((i) => `${i.path.join('.')}: ${i.message}`) };
   return { ok: true, backup: r.data as unknown as BackupFile };
 }
 

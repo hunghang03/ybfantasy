@@ -54,7 +54,12 @@ export const RISK_CLASS: Record<RiskLevel, string> = {
   VERY_HIGH: 'text-red-700 dark:text-red-400',
 };
 
-export const RISK_TEXT: Record<RiskLevel, string> = { LOW: 'LOW', MODERATE: 'MOD', HIGH: 'HIGH', VERY_HIGH: 'V.HIGH' };
+export const RISK_TEXT: Record<RiskLevel, string> = {
+  LOW: 'LOW',
+  MODERATE: 'MOD',
+  HIGH: 'HIGH',
+  VERY_HIGH: 'V.HIGH',
+};
 
 export const BAND_TEXT: Record<SurvivalBand, string> = {
   GONE: 'Overdue',

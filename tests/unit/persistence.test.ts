@@ -14,9 +14,17 @@ import { league, seqId } from '../helpers/fixtures';
 
 const cfg = defaultConfig();
 const HEADER = 'PLAYER,TEAM,POS,GP,FG%,FT%,3PM,PTS,REB,AST,STL,BLK,TO';
-const rowFor = (name: string, team: string, pts = 20) => `${name},${team},PG,70,0.5 (5/10),0.9 (9/10),2,${pts},5,8,1.5,0.3,3`;
+const rowFor = (name: string, team: string, pts = 20) =>
+  `${name},${team},PG,70,0.5 (5/10),0.9 (9/10),2,${pts},5,8,1.5,0.3,3`;
 
-async function doImport(repo: Repository, kind: ImportKind, provider: string, csv: string, batchId: string, now = '2026-01-01') {
+async function doImport(
+  repo: Repository,
+  kind: ImportKind,
+  provider: string,
+  csv: string,
+  batchId: string,
+  now = '2026-01-01',
+) {
   const table = parseTable(csv);
   const ds = await repo.loadDataset();
   const plan = planImport({
@@ -47,8 +55,22 @@ for (const [name, make] of backends) {
   describe(`repository (${name})`, () => {
     it('import → supersede → revert keeps sources versioned', async () => {
       const repo = make();
-      await doImport(repo, 'PROJECTION', 'hashtag', `${HEADER}\n${rowFor('A One', 'AAA', 20)}\n`, 'b1', '2026-01-01');
-      await doImport(repo, 'PROJECTION', 'hashtag', `${HEADER}\n${rowFor('A One', 'AAA', 25)}\n`, 'b2', '2026-01-02');
+      await doImport(
+        repo,
+        'PROJECTION',
+        'hashtag',
+        `${HEADER}\n${rowFor('A One', 'AAA', 20)}\n`,
+        'b1',
+        '2026-01-01',
+      );
+      await doImport(
+        repo,
+        'PROJECTION',
+        'hashtag',
+        `${HEADER}\n${rowFor('A One', 'AAA', 25)}\n`,
+        'b2',
+        '2026-01-02',
+      );
       let ds = await repo.loadDataset();
       expect(ds.projections).toHaveLength(1);
       expect(ds.projections[0]!.pts).toBe(25);
@@ -69,12 +91,26 @@ for (const [name, make] of backends) {
       const table = parseTable(`${HEADER}\n${rowFor('B Two', 'BBB')}\n`);
       const ds = await repo.loadDataset();
       const plan = planImport({
-        kind: 'PROJECTION', provider: 'hashtag', season: 's', description: 'bad', table,
-        columnMap: autoMapColumns('PROJECTION', table.headers), identities: ds.identities, mappings: [],
-        config: cfg, createPolicy: 'CREATE_UNMATCHED', batchId: 'bad', now: 'n', newId: seqId('bad'),
+        kind: 'PROJECTION',
+        provider: 'hashtag',
+        season: 's',
+        description: 'bad',
+        table,
+        columnMap: autoMapColumns('PROJECTION', table.headers),
+        identities: ds.identities,
+        mappings: [],
+        config: cfg,
+        createPolicy: 'CREATE_UNMATCHED',
+        batchId: 'bad',
+        now: 'n',
+        newId: seqId('bad'),
       });
       // Corrupt the plan so a write throws mid-transaction.
-      (plan.records.projections as unknown[]).push({ get canonicalPlayerId(): string { throw new Error('boom'); } });
+      (plan.records.projections as unknown[]).push({
+        get canonicalPlayerId(): string {
+          throw new Error('boom');
+        },
+      });
       await expect(repo.commitImport(plan)).rejects.toThrow();
       const after = await repo.exportAll();
       expect({ ...after, exportedAt: '' }).toEqual({ ...before, exportedAt: '' });
@@ -83,15 +119,30 @@ for (const [name, make] of backends) {
     it('manual unmatched resolution persists and applies to future imports', async () => {
       const repo = make();
       await doImport(repo, 'PROJECTION', 'hashtag', `${HEADER}\n${rowFor('Alex Stone', 'AAA')}\n`, 'b1');
-      const plan = await doImport(repo, 'YAHOO_MARKET', 'yahoo', 'Player,Team,ADP\nAlexander Stoner,ZZZ,12\n', 'm1');
+      const plan = await doImport(
+        repo,
+        'YAHOO_MARKET',
+        'yahoo',
+        'Player,Team,ADP\nAlexander Stoner,ZZZ,12\n',
+        'm1',
+      );
       expect(plan.unmatched).toHaveLength(1);
       const ds = await repo.loadDataset();
       const target = ds.identities[0]!.canonicalPlayerId;
       await repo.resolveUnmatched(plan.unmatched[0]!.id, { canonicalPlayerId: target }, 'x', 'now');
       expect(await repo.listUnmatched()).toHaveLength(0);
-      expect((await repo.loadDataset()).market[0]).toMatchObject({ canonicalPlayerId: target, yahooAdp7d: 12 });
+      expect((await repo.loadDataset()).market[0]).toMatchObject({
+        canonicalPlayerId: target,
+        yahooAdp7d: 12,
+      });
       // A future market import with the same provider row now auto-matches via MANUAL.
-      const again = await doImport(repo, 'YAHOO_MARKET', 'yahoo', 'Player,Team,ADP\nAlexander Stoner,ZZZ,15\n', 'm2');
+      const again = await doImport(
+        repo,
+        'YAHOO_MARKET',
+        'yahoo',
+        'Player,Team,ADP\nAlexander Stoner,ZZZ,15\n',
+        'm2',
+      );
       expect(again.unmatched).toHaveLength(0);
       expect(again.matchedVia.MANUAL).toBe(1);
     });
@@ -102,7 +153,12 @@ for (const [name, make] of backends) {
       const b = league({ id: 'B', draftPosition: 4, createdAt: '2' });
       await repo.saveLeague(a);
       await repo.saveLeague(b);
-      const draftA: LeagueDraft = { leagueId: 'A', events: [{ seq: 1, at: 't', type: 'PICK', playerId: 'p1', by: 'ME', advance: true, overallPick: 1 }], flags: {}, puntOverrides: {} };
+      const draftA: LeagueDraft = {
+        leagueId: 'A',
+        events: [{ seq: 1, at: 't', type: 'PICK', playerId: 'p1', by: 'ME', advance: true, overallPick: 1 }],
+        flags: {},
+        puntOverrides: {},
+      };
       await repo.saveDraft(draftA);
       await repo.saveDraft({ leagueId: 'B', events: [], flags: {}, puntOverrides: { TO: 'HARD' } });
       expect((await repo.getDraft('A'))!.events).toHaveLength(1);

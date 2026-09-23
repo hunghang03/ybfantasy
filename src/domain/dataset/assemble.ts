@@ -8,7 +8,11 @@ import type { LeagueProfile } from '../types/league';
  * Sources stay separate: the primary projection is chosen by provider, validation lines are kept
  * alongside, market data is never merged into projections.
  */
-export function assemblePlayers(dataset: Dataset, league: LeagueProfile, config: StrategyConfig): EnginePlayer[] {
+export function assemblePlayers(
+  dataset: Dataset,
+  league: LeagueProfile,
+  config: StrategyConfig,
+): EnginePlayer[] {
   const proj = new Map<string, EnginePlayer['proj']>();
   const validation = new Map<string, EnginePlayer['validation']>();
   const validationSet = new Set(league.validationProviders);
@@ -49,7 +53,9 @@ export function assemblePlayers(dataset: Dataset, league: LeagueProfile, config:
       positions: id.positions,
       positionsSource: id.positionsSource,
       proj: proj.get(id.canonicalPlayerId) ?? null,
-      validation: (validation.get(id.canonicalPlayerId) ?? []).sort((a, b) => (a.provider < b.provider ? -1 : 1)),
+      validation: (validation.get(id.canonicalPlayerId) ?? []).sort((a, b) =>
+        a.provider < b.provider ? -1 : 1,
+      ),
       market: market.get(id.canonicalPlayerId) ?? null,
       history: (history.get(id.canonicalPlayerId) ?? []).sort((a, b) => (a.season < b.season ? 1 : -1)),
       context: context.get(id.canonicalPlayerId) ?? null,

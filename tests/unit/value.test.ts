@@ -57,10 +57,29 @@ describe('availability-adjusted value (R2-2)', () => {
 
   it('T-MISS-1(c): an all-zero player gains nothing from zero turnovers once games are missed', () => {
     const ds = withSynth(synthDataset(synthPool(260)), [
-      { id: 'ZERO', pts: 0, reb: 0, ast: 0, stl: 0, blk: 0, threes: 0, to: 0, fgm: 0, fga: 0, ftm: 0, fta: 0, gp: 40 },
+      {
+        id: 'ZERO',
+        pts: 0,
+        reb: 0,
+        ast: 0,
+        stl: 0,
+        blk: 0,
+        threes: 0,
+        to: 0,
+        fgm: 0,
+        fga: 0,
+        ftm: 0,
+        fta: 0,
+        gp: 40,
+      },
     ]);
     const z = run(ds, league()).ctx.byId.get('ZERO')!;
-    const full = computeValue(z.value.perGameRaw, 82, run(ds, league()).ctx.replacement, cfg).expectedSeasonVAR;
+    const full = computeValue(
+      z.value.perGameRaw,
+      82,
+      run(ds, league()).ctx.replacement,
+      cfg,
+    ).expectedSeasonVAR;
     expect(z.value.expectedSeasonVAR).toBeLessThanOrEqual(full);
   });
 
@@ -70,7 +89,8 @@ describe('availability-adjusted value (R2-2)', () => {
     // Recompute from the band: TO / FGA / FTA are not part of it.
     const band = ctx.replacement.bandIds.map((id) => ctx.byId.get(id)!.player.proj!);
     const s = ctx.population.stats;
-    const mean = (f: (x: (typeof band)[number]) => number) => band.reduce((a, x) => a + f(x), 0) / band.length;
+    const mean = (f: (x: (typeof band)[number]) => number) =>
+      band.reduce((a, x) => a + f(x), 0) / band.length;
     const expected =
       mean((x) => x.threes) / s.sd.THREES +
       mean((x) => x.pts) / s.sd.PTS +

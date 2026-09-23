@@ -13,11 +13,18 @@ export default function ReviewPage() {
   const [aId, setA] = useState<string>('');
   const [bId, setB] = useState<string>('');
   const [q, setQ] = useState('');
-  const options = useMemo(() => (ev ? [...ev.players].sort((x, y) => x.priorityRank - y.priorityRank) : []), [ev]);
+  const options = useMemo(
+    () => (ev ? [...ev.players].sort((x, y) => x.priorityRank - y.priorityRank) : []),
+    [ev],
+  );
   if (!ev || !ctx)
     return (
       <div className="p-6 text-sm">
-        No evaluation yet. <Link className="text-blue-600 underline" href="/data/">Import data</Link> and select a league.
+        No evaluation yet.{' '}
+        <Link className="text-blue-600 underline" href="/data/">
+          Import data
+        </Link>{' '}
+        and select a league.
       </div>
     );
   const a = ev.byId.get(aId || options[0]?.playerId || '');
@@ -29,7 +36,12 @@ export default function ReviewPage() {
     <div className="space-y-3 p-3">
       <Panel title="Why is A ranked above B?">
         <div className="mb-2 flex flex-wrap items-end gap-2 text-xs">
-          <Input placeholder="Filter players…" value={q} onChange={(e) => setQ(e.target.value)} className="w-48" />
+          <Input
+            placeholder="Filter players…"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            className="w-48"
+          />
           <label className="flex flex-col">
             A
             <Select data-testid="compare-a" value={a?.playerId ?? ''} onChange={(e) => setA(e.target.value)}>
@@ -71,7 +83,11 @@ export default function ReviewPage() {
                     <td className="whitespace-pre pr-4">{r.term}</td>
                     <td className="num pr-4 text-right">{fmt(r.a)}</td>
                     <td className="num pr-4 text-right">{fmt(r.b)}</td>
-                    <td className={`num text-right ${r.diff > 0 ? 'text-emerald-700' : r.diff < 0 ? 'text-red-700' : ''}`}>{signed(r.diff)}</td>
+                    <td
+                      className={`num text-right ${r.diff > 0 ? 'text-emerald-700' : r.diff < 0 ? 'text-red-700' : ''}`}
+                    >
+                      {signed(r.diff)}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -96,7 +112,31 @@ export default function ReviewPage() {
           <table className="text-xs" data-testid="profile-debug">
             <thead className="text-left text-[10px] uppercase text-slate-500">
               <tr>
-                {['Cat', 's', 'B(k)', 'σT', 'd', 'state', 'need', 'surplus', 'qP', 'qN', 'D', 'Coh', 'Rec', 'req', 'gain', 'score', 'π auto', 'gate', 'damp', 'π', 'override', 'm', 'weight'].map((h) => (
+                {[
+                  'Cat',
+                  's',
+                  'B(k)',
+                  'σT',
+                  'd',
+                  'state',
+                  'need',
+                  'surplus',
+                  'qP',
+                  'qN',
+                  'D',
+                  'Coh',
+                  'Rec',
+                  'req',
+                  'gain',
+                  'score',
+                  'π auto',
+                  'gate',
+                  'damp',
+                  'π',
+                  'override',
+                  'm',
+                  'weight',
+                ].map((h) => (
                   <th key={h} className="pr-3">
                     {h}
                   </th>
@@ -135,35 +175,56 @@ export default function ReviewPage() {
           </table>
         </div>
         <p className="mt-2 text-xs text-slate-600 dark:text-slate-400">
-          k = {ev.k} · round {ev.round} · rel scale: top {fmt(ev.relScale.top)}, ref {fmt(ev.relScale.ref)}, S {fmt(ev.relScale.spread)} · gap before next {ev.gap.beforeNext}, fallback gap{' '}
-          {ev.gap.fallback}, gap factor {fmt(ev.gap.factor)} · positions required {JSON.stringify(ev.positions.required)} feasible {String(ev.positions.feasible)}
+          k = {ev.k} · round {ev.round} · rel scale: top {fmt(ev.relScale.top)}, ref {fmt(ev.relScale.ref)}, S{' '}
+          {fmt(ev.relScale.spread)} · gap before next {ev.gap.beforeNext}, fallback gap {ev.gap.fallback}, gap
+          factor {fmt(ev.gap.factor)} · positions required {JSON.stringify(ev.positions.required)} feasible{' '}
+          {String(ev.positions.feasible)}
         </p>
       </Panel>
 
       <Panel title="Static context">
         <p className="text-xs">
-          Population {ctx.population.size} / target {ctx.population.targetSize} (eligible {ctx.population.eligibleCount}, iterations {ctx.population.iterations}, converged{' '}
-          {String(ctx.population.converged)}) · p_FG {ctx.population.stats.pFG.toFixed(4)} · p_FT {ctx.population.stats.pFT.toFixed(4)} · replacement PG {fmt(ctx.replacement.perGame)} · missed-game L{' '}
-          {fmt(ctx.replacement.missedGameLoss)}
-          {ctx.replacement.usedFallback ? ' (fallback)' : ''} · ranked {ctx.ranked.length} · unranked (no projection) {ctx.unranked.length}
+          Population {ctx.population.size} / target {ctx.population.targetSize} (eligible{' '}
+          {ctx.population.eligibleCount}, iterations {ctx.population.iterations}, converged{' '}
+          {String(ctx.population.converged)}) · p_FG {ctx.population.stats.pFG.toFixed(4)} · p_FT{' '}
+          {ctx.population.stats.pFT.toFixed(4)} · replacement PG {fmt(ctx.replacement.perGame)} · missed-game
+          L {fmt(ctx.replacement.missedGameLoss)}
+          {ctx.replacement.usedFallback ? ' (fallback)' : ''} · ranked {ctx.ranked.length} · unranked (no
+          projection) {ctx.unranked.length}
         </p>
         <h4 className="mt-2 text-xs font-semibold uppercase text-slate-500">Warnings</h4>
         <ul className="text-xs">
           {ev.warnings.map((w, i) => (
-            <li key={i} className={w.severity === 'critical' ? 'text-red-700' : w.severity === 'warn' ? 'text-amber-700' : 'text-slate-600'}>
+            <li
+              key={i}
+              className={
+                w.severity === 'critical'
+                  ? 'text-red-700'
+                  : w.severity === 'warn'
+                    ? 'text-amber-700'
+                    : 'text-slate-600'
+              }
+            >
               [{w.code}] {w.message}
             </li>
           ))}
-          {ev.finiteRepairs.length > 0 && <li className="text-red-700">Finite repairs: {ev.finiteRepairs.slice(0, 20).join(', ')}</li>}
+          {ev.finiteRepairs.length > 0 && (
+            <li className="text-red-700">Finite repairs: {ev.finiteRepairs.slice(0, 20).join(', ')}</li>
+          )}
         </ul>
-        <h4 className="mt-2 text-xs font-semibold uppercase text-slate-500">Neutral rankings (top 40, not market-influenced)</h4>
+        <h4 className="mt-2 text-xs font-semibold uppercase text-slate-500">
+          Neutral rankings (top 40, not market-influenced)
+        </h4>
         <ol className="columns-2 text-xs md:columns-4">
           {[...ctx.ranked]
             .sort((x, y) => x.stats.neutralRank - y.stats.neutralRank)
             .slice(0, 40)
             .map((p) => (
               <li key={p.player.id}>
-                {p.stats.neutralRank}. {p.player.name} <span className="num text-slate-500">{fmt(p.stats.neutral9Cat, 1)} · BPV {fmt(p.value.basePlayerValue, 1)}</span>
+                {p.stats.neutralRank}. {p.player.name}{' '}
+                <span className="num text-slate-500">
+                  {fmt(p.stats.neutral9Cat, 1)} · BPV {fmt(p.value.basePlayerValue, 1)}
+                </span>
               </li>
             ))}
         </ol>

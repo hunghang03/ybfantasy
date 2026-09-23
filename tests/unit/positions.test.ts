@@ -20,7 +20,19 @@ describe('roster slot feasibility', () => {
   });
 
   it('late draft with no centers → significant C urgency', () => {
-    const roster: Position[][] = [['PG'], ['SG'], ['PG', 'SG'], ['SF'], ['PF'], ['SF', 'PF'], ['PG'], ['SG'], ['SF'], ['PF'], ['SG']];
+    const roster: Position[][] = [
+      ['PG'],
+      ['SG'],
+      ['PG', 'SG'],
+      ['SF'],
+      ['PF'],
+      ['SF', 'PF'],
+      ['PG'],
+      ['SG'],
+      ['SF'],
+      ['PF'],
+      ['SG'],
+    ];
     const rep = positionReport(roster, DEFAULT_ROSTER, 13);
     expect(rep.remainingPicks).toBe(2);
     expect(rep.required.C).toBe(2);
@@ -48,6 +60,7 @@ describe('roster slot feasibility', () => {
 
   it('normal positional adjustment stays within 0–5%', () => {
     const rep = positionReport([['C'], ['C']], DEFAULT_ROSTER, 13);
-    for (const p of ['PG', 'SG', 'SF', 'PF', 'C'] as Position[]) expect(positionFraction([p], rep, cfg).fraction).toBeLessThanOrEqual(0.05);
+    for (const p of ['PG', 'SG', 'SF', 'PF', 'C'] as Position[])
+      expect(positionFraction([p], rep, cfg).fraction).toBeLessThanOrEqual(0.05);
   });
 });

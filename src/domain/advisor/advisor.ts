@@ -1,6 +1,11 @@
 import type { PickTiming } from '../draft/snake';
 import { CATEGORIES, CATEGORY_LABEL, type Category } from '../types/core';
-import type { AdvisorOutput, CategoryProfileEntry, EngineWarning, PlayerEvaluation } from '../types/evaluation';
+import type {
+  AdvisorOutput,
+  CategoryProfileEntry,
+  EngineWarning,
+  PlayerEvaluation,
+} from '../types/evaluation';
 import type { RosterContext } from '../recommendations/ddp';
 import type { StaticContext } from '../recommendations/staticContext';
 
@@ -40,7 +45,9 @@ export function buildAdvisor(args: {
   round: number;
 }): AdvisorOutput {
   const { sc, timing, rc, profile, evals, recommendedId } = args;
-  const warnings = args.warnings.filter((w) => w.severity !== 'info' || w.code === 'UNRECORDED_PICKS' || w.code === 'FINAL_PICK').map((w) => w.message);
+  const warnings = args.warnings
+    .filter((w) => w.severity !== 'info' || w.code === 'UNRECORDED_PICKS' || w.code === 'FINAL_PICK')
+    .map((w) => w.message);
 
   if (sc.status === 'INSUFFICIENT_DATA')
     return {
@@ -60,7 +67,10 @@ export function buildAdvisor(args: {
   if (timing.draftComplete || timing.p0 === null) header = 'DRAFT COMPLETE';
   else {
     const onClock = timing.onTheClock ? 'ON THE CLOCK — ' : `YOUR NEXT PICK ${timing.p0} — `;
-    const next = timing.p1 !== null ? ` · FOLLOWING PICK ${timing.p1} (${timing.gapType?.toLowerCase()} gap)` : ' · FINAL PICK';
+    const next =
+      timing.p1 !== null
+        ? ` · FOLLOWING PICK ${timing.p1} (${timing.gapType?.toLowerCase()} gap)`
+        : ' · FINAL PICK';
     header = `${onClock}PICK ${timing.currentOverall} · ROUND ${timing.currentRound}${next}`;
   }
 
@@ -68,26 +78,47 @@ export function buildAdvisor(args: {
   let build = 'Build: balanced — no punt yet.';
   const strongest = punts[0];
   if (strongest) {
-    const lvl = strongest.punt.level === 'HARD' ? 'Punt' : strongest.punt.level === 'SOFT' ? 'Soft punt' : 'Leaning away from';
-    const recov = strongest.punt.recoverability >= 0.65 ? ' (still recoverable)' : strongest.punt.recoverability <= 0.35 ? ' (hard to recover)' : '';
+    const lvl =
+      strongest.punt.level === 'HARD'
+        ? 'Punt'
+        : strongest.punt.level === 'SOFT'
+          ? 'Soft punt'
+          : 'Leaning away from';
+    const recov =
+      strongest.punt.recoverability >= 0.65
+        ? ' (still recoverable)'
+        : strongest.punt.recoverability <= 0.35
+          ? ' (hard to recover)'
+          : '';
     const manual = strongest.punt.override !== 'AUTO' ? ' [manual]' : '';
     build = `Build: ${lvl} ${L(strongest.category)} — ${Math.round(strongest.punt.pi * 100)}% confidence${recov}${manual}.`;
   }
 
   const priority = [...profile]
     .filter((p) => p.weightMultiplier > 0 && p.need > 0)
-    .sort((a, b) => b.need * (1 + b.poolScarcity + b.nextPickScarcity) - a.need * (1 + a.poolScarcity + a.nextPickScarcity) || CATEGORIES.indexOf(a.category) - CATEGORIES.indexOf(b.category))
+    .sort(
+      (a, b) =>
+        b.need * (1 + b.poolScarcity + b.nextPickScarcity) -
+          a.need * (1 + a.poolScarcity + a.nextPickScarcity) ||
+        CATEGORIES.indexOf(a.category) - CATEGORIES.indexOf(b.category),
+    )
     .slice(0, 3)
     .map((p) => p.category);
-  const priorityLine = priority.length ? `Priority: ${priority.map(L).join(' > ')}` : 'Priority: best player available';
+  const priorityLine = priority.length
+    ? `Priority: ${priority.map(L).join(' > ')}`
+    : 'Priority: best player available';
 
   let reason: string;
-  if (rc.k === 0) reason = 'First pick: take the best player value; category needs start shaping the build after your first selections.';
+  if (rc.k === 0)
+    reason =
+      'First pick: take the best player value; category needs start shaping the build after your first selections.';
   else {
     const weakest = [...profile]
       .filter((p) => p.punt.level === 'NONE' || p.punt.level === 'TENDENCY')
       .sort((a, b) => a.d - b.d)[0];
-    const strong = profile.filter((p) => p.baseState === 'ELITE' || p.baseState === 'STRONG').map((p) => L(p.category));
+    const strong = profile
+      .filter((p) => p.baseState === 'ELITE' || p.baseState === 'STRONG')
+      .map((p) => L(p.category));
     const parts: string[] = [];
     if (weakest && weakest.d < 0.75) {
       const trend =
@@ -112,7 +143,11 @@ export function buildAdvisor(args: {
       ['playoff', rec.adjustments.playoff],
       ['upside', rec.adjustments.upside],
     ];
-    const top = terms.filter(([, v]) => v > 0.05).sort((a, b) => b[1] - a[1]).slice(0, 2).map(([k]) => TERM_PHRASE[k]);
+    const top = terms
+      .filter(([, v]) => v > 0.05)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 2)
+      .map(([k]) => TERM_PHRASE[k]);
     const cats = rec.fitTags.map(L);
     const catPart = cats.length ? `Adds ${cats.join(', ')}` : 'Best overall value';
     const hurts = CATEGORIES.filter((c) => rec.stats.cappedZ[c] <= -1 && rc.m[c] > 0.5).map(L);
@@ -122,9 +157,10 @@ export function buildAdvisor(args: {
   }
 
   const surplusCats = profile.filter((p) => p.surplus > 0).map((p) => p.category);
-  const avoidLine = surplusCats.length && priority.length
-    ? `Avoid this round: specialists who mainly add ${surplusCats.map(L).join('/')} unless exceptional value falls.`
-    : '';
+  const avoidLine =
+    surplusCats.length && priority.length
+      ? `Avoid this round: specialists who mainly add ${surplusCats.map(L).join('/')} unless exceptional value falls.`
+      : '';
 
   return {
     header,

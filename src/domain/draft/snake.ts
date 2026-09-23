@@ -10,9 +10,12 @@ export interface SnakeParams {
 
 export function validateSnake({ teams, slot, rounds }: SnakeParams): string[] {
   const errors: string[] = [];
-  if (!Number.isInteger(teams) || teams < 2 || teams > 30) errors.push('teams must be an integer between 2 and 30');
-  if (!Number.isInteger(slot) || slot < 1 || slot > teams) errors.push('draft position must be between 1 and teams');
-  if (!Number.isInteger(rounds) || rounds < 1 || rounds > 40) errors.push('rounds must be an integer between 1 and 40');
+  if (!Number.isInteger(teams) || teams < 2 || teams > 30)
+    errors.push('teams must be an integer between 2 and 30');
+  if (!Number.isInteger(slot) || slot < 1 || slot > teams)
+    errors.push('draft position must be between 1 and teams');
+  if (!Number.isInteger(rounds) || rounds < 1 || rounds > 40)
+    errors.push('rounds must be an integer between 1 and 40');
   return errors;
 }
 

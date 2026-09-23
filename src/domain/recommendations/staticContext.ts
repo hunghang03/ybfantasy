@@ -9,7 +9,13 @@ import { mapCategories, type Category, type CategoryRecord } from '../types/core
 import type { EngineWarning, EnginePlayer, StaticPlayer } from '../types/evaluation';
 import { rosterSize, type LeagueProfile } from '../types/league';
 import { computeUpside } from '../upside/upside';
-import { baseWeights, computeReplacement, computeValue, perGameRaw, type ReplacementLevel } from '../value/value';
+import {
+  baseWeights,
+  computeReplacement,
+  computeValue,
+  perGameRaw,
+  type ReplacementLevel,
+} from '../value/value';
 import { supply } from '../scarcity/scarcity';
 
 /**
@@ -56,9 +62,17 @@ export function buildStaticContext(
   const population = buildPopulation(players, target, config);
   const stats = population.stats;
   if (!population.converged)
-    warnings.push({ code: 'POP_NOT_CONVERGED', message: 'Population selection did not reach a fixed point; last iteration used.', severity: 'info' });
+    warnings.push({
+      code: 'POP_NOT_CONVERGED',
+      message: 'Population selection did not reach a fixed point; last iteration used.',
+      severity: 'info',
+    });
   for (const c of stats.degenerate)
-    warnings.push({ code: 'DEGENERATE_CATEGORY', message: `Category ${c} has no spread in the population; its z-scores are 0.`, severity: 'warn' });
+    warnings.push({
+      code: 'DEGENERATE_CATEGORY',
+      message: `Category ${c} has no spread in the population; its z-scores are 0.`,
+      severity: 'warn',
+    });
 
   const b = baseWeights(config);
   const withProj = players.filter((p) => p.proj !== null);
@@ -69,7 +83,15 @@ export function buildStaticContext(
   const pre = withProj.map((p) => {
     const { rawZ, fgImpact, ftImpact } = computeRawZ(p.proj!, stats, eps);
     const cappedZ = capZ(rawZ, config.categoryZCap);
-    return { p, rawZ, cappedZ, fgImpact, ftImpact, pg: perGameRaw(cappedZ, b), n9: weightedSum(rawZ, config.neutralTurnoverWeight) };
+    return {
+      p,
+      rawZ,
+      cappedZ,
+      fgImpact,
+      ftImpact,
+      pg: perGameRaw(cappedZ, b),
+      n9: weightedSum(rawZ, config.neutralTurnoverWeight),
+    };
   });
 
   // Replacement band: eligible players ranked by PG, positions P+1 … P+band.
@@ -79,9 +101,16 @@ export function buildStaticContext(
     .map((x) => ({ id: x.p.id, pg: x.pg, cappedZ: x.cappedZ, proj: x.p.proj! }));
   const replacement = computeReplacement(eligibleRanked, population.size, stats, config);
   if (replacement.usedFallback)
-    warnings.push({ code: 'REPLACEMENT_FALLBACK', message: 'Player pool is not larger than the fantasy population; conservative replacement level used.', severity: 'warn' });
+    warnings.push({
+      code: 'REPLACEMENT_FALLBACK',
+      message: 'Player pool is not larger than the fantasy population; conservative replacement level used.',
+      severity: 'warn',
+    });
 
-  const neutralSd = safeSd(pre.filter((x) => memberSet.has(x.p.id)).map((x) => x.n9), config.numeric.minSdSamples);
+  const neutralSd = safeSd(
+    pre.filter((x) => memberSet.has(x.p.id)).map((x) => x.n9),
+    config.numeric.minSdSamples,
+  );
   const neutralOrder = [...pre].sort((x, y) => y.n9 - x.n9 || cmpId(x.p.id, y.p.id));
   const neutralRank = new Map(neutralOrder.map((x, i) => [x.p.id, i + 1]));
 
@@ -89,7 +118,11 @@ export function buildStaticContext(
   for (const p of players) if (p.team && p.playoffGames !== null) teamPlayoff.set(p.team, p.playoffGames);
   const playoff = playoffFractions(teamPlayoff, config);
   if (teamPlayoff.size === 0)
-    warnings.push({ code: 'NO_PLAYOFF_SCHEDULE', message: 'No playoff schedule imported; playoff adjustment is 0.', severity: 'info' });
+    warnings.push({
+      code: 'NO_PLAYOFF_SCHEDULE',
+      message: 'No playoff schedule imported; playoff adjustment is 0.',
+      severity: 'info',
+    });
 
   const ranked: StaticPlayer[] = pre.map((x) => {
     const value = computeValue(x.pg, x.p.proj!.gp, replacement, config);
@@ -137,10 +170,17 @@ export function buildStaticContext(
     cumulativeExpected.push(mapCategories((c) => prev[c] + cm[c]));
   }
   const top = popByBpv.slice(0, teams * rounds);
-  const teamSdBase = mapCategories((c) => safeSd(top.map((s) => s.stats.cappedZ[c]), config.numeric.minSdSamples));
+  const teamSdBase = mapCategories((c) =>
+    safeSd(
+      top.map((s) => s.stats.cappedZ[c]),
+      config.numeric.minSdSamples,
+    ),
+  );
 
   const popZ = mapCategories((c) => popByBpv.map((s) => s.stats.cappedZ[c]));
-  const correlations = mapCategories((c) => mapCategories((c2: Category) => (c === c2 ? 1 : pearson(popZ[c], popZ[c2], eps))));
+  const correlations = mapCategories((c) =>
+    mapCategories((c2: Category) => (c === c2 ? 1 : pearson(popZ[c], popZ[c2], eps))),
+  );
 
   const poolWindow = Math.max(1, Math.round(config.poolScarcity.windowRounds * teams));
   const poolStartSupply = supply(ranked.slice(0, poolWindow), replacement.zRepl);

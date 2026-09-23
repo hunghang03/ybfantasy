@@ -52,13 +52,24 @@ export function CategoryDashboard({
             `punt π ${fmt(p.punt.pi)} (deficit ${fmt(p.punt.deficit)}, coherence ${fmt(p.punt.coherence)}, recoverability ${fmt(p.punt.recoverability)}) · weight ×${fmt(p.weightMultiplier)}`,
           ].join('\n');
           return (
-            <li key={p.category} className="grid grid-cols-[3rem_1fr_5.5rem_3.5rem_4.5rem] items-center gap-1.5 text-xs" title={title} data-testid={`cat-${p.category}`}>
+            <li
+              key={p.category}
+              className="grid grid-cols-[3rem_1fr_5.5rem_3.5rem_4.5rem] items-center gap-1.5 text-xs"
+              title={title}
+              data-testid={`cat-${p.category}`}
+            >
               <span className="font-semibold">{CATEGORY_LABEL[p.category]}</span>
               <span className="relative h-2.5 rounded bg-slate-100 dark:bg-slate-800">
                 <span className="absolute top-0 h-full w-px bg-slate-400" style={{ left: '50%' }} />
-                <span className={cx('absolute top-0 h-full rounded', STATE_BAR[p.state])} style={{ left: `${left}%`, width: `${Math.max(width, 1)}%` }} />
+                <span
+                  className={cx('absolute top-0 h-full rounded', STATE_BAR[p.state])}
+                  style={{ left: `${left}%`, width: `${Math.max(width, 1)}%` }}
+                />
               </span>
-              <span className={cx('rounded px-1 py-0.5 text-center text-[10px] font-bold', STATE_CLASS[p.state])} data-testid={`cat-state-${p.category}`}>
+              <span
+                className={cx('rounded px-1 py-0.5 text-center text-[10px] font-bold', STATE_CLASS[p.state])}
+                data-testid={`cat-state-${p.category}`}
+              >
                 {STATE_TEXT[p.state]}
               </span>
               <span className="num text-right text-slate-600 dark:text-slate-400">{total(p.category)}</span>
@@ -77,7 +88,10 @@ export function CategoryDashboard({
           );
         })}
       </ul>
-      <p className="mt-2 text-[10px] text-slate-500">Bars: team-level SD vs the expected average {ev.k}-player roster. Totals are per game; FG%/FT% = ΣM/ΣA. Hover for numbers.</p>
+      <p className="mt-2 text-[10px] text-slate-500">
+        Bars: team-level SD vs the expected average {ev.k}-player roster. Totals are per game; FG%/FT% =
+        ΣM/ΣA. Hover for numbers.
+      </p>
     </Panel>
   );
 }

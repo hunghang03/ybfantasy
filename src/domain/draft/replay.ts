@@ -42,7 +42,8 @@ export function replay(events: readonly DraftEvent[], userPickSet?: ReadonlySet<
       if (e.advance) current += 1;
       if (e.by === 'ME') {
         myPicks.push({ playerId: e.playerId, overallPick: e.overallPick, seq: e.seq, snapshot: e.snapshot });
-        if (userPickSet && e.overallPick !== null && !userPickSet.has(e.overallPick)) offSchedule.push(e.overallPick);
+        if (userPickSet && e.overallPick !== null && !userPickSet.has(e.overallPick))
+          offSchedule.push(e.overallPick);
       }
     } else {
       current = e.setCurrentOverall;

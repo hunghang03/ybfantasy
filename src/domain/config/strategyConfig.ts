@@ -66,7 +66,10 @@ export const StrategyConfigSchema = z.object({
   puntPriorAffinity: z.record(z.string(), nonNeg),
   puntWeightCurve: z.array(z.tuple([unit, unit])).min(1),
   multiPuntDamping: z.array(unit).min(1),
-  hardPuntLimitWarnings: z.object({ hardPuntsWarn: z.number().int().min(1), multiPuntRisk: z.number().int().min(1) }),
+  hardPuntLimitWarnings: z.object({
+    hardPuntsWarn: z.number().int().min(1),
+    multiPuntRisk: z.number().int().min(1),
+  }),
 
   priorCategoryPreference: z.record(z.string(), nonNeg),
   priorDecayRosterSize: num.positive(),

@@ -61,8 +61,17 @@ export function createDexieBackend(name = 'ybfantasy-draft-engine'): Backend {
   return {
     tables,
     transaction: <T>(fn: () => Promise<T>): Promise<T> => {
-      const run = db.transaction as unknown as (mode: string, tables: unknown[], f: () => Promise<T>) => Promise<T>;
-      return run.call(db, 'rw', TABLE_NAMES.map((n) => db.table(n)), fn);
+      const run = db.transaction as unknown as (
+        mode: string,
+        tables: unknown[],
+        f: () => Promise<T>,
+      ) => Promise<T>;
+      return run.call(
+        db,
+        'rw',
+        TABLE_NAMES.map((n) => db.table(n)),
+        fn,
+      );
     },
   };
 }

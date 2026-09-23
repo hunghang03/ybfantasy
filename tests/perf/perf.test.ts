@@ -12,7 +12,12 @@ describe('performance (§46)', () => {
     const ctx = buildContext(ds, league(), defaultConfig());
     let e: DraftEvent[] = [];
     for (let i = 0; i < 40; i++) {
-      const r = appendPick(e, { playerId: `S${String(i * 3).padStart(4, '0')}`, by: i % 14 === 10 ? 'ME' : 'OTHER', at: 't' }, 14, 13);
+      const r = appendPick(
+        e,
+        { playerId: `S${String(i * 3).padStart(4, '0')}`, by: i % 14 === 10 ? 'ME' : 'OTHER', at: 't' },
+        14,
+        13,
+      );
       if (r.ok) e = r.events;
     }
     const input = { events: e, flags: {}, puntOverrides: {} };

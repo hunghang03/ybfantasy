@@ -12,12 +12,20 @@ import { league, run, sampleDataset, synthDataset, synthPool, withSynth } from '
 
 const cfg = defaultConfig();
 const mk = (adp: number | null, xrank: number | null = null): YahooMarket => ({
-  canonicalPlayerId: 'x', season: 's', importBatchId: 'b', yahooAdp7d: adp, yahooXRank: xrank, yahooRank: null, status: null,
+  canonicalPlayerId: 'x',
+  season: 's',
+  importBatchId: 'b',
+  yahooAdp7d: adp,
+  yahooXRank: xrank,
+  yahooRank: null,
+  status: null,
 });
 
 function draftToPick(ds: Dataset, n: number): DraftEvent[] {
   // Others take the first n−1 players by ADP.
-  const order = [...ds.market].filter((m) => m.yahooAdp7d !== null).sort((a, b) => a.yahooAdp7d! - b.yahooAdp7d!);
+  const order = [...ds.market]
+    .filter((m) => m.yahooAdp7d !== null)
+    .sort((a, b) => a.yahooAdp7d! - b.yahooAdp7d!);
   let e: DraftEvent[] = [];
   for (let i = 0; i < n - 1; i++) {
     const r = appendPick(e, { playerId: order[i]!.canonicalPlayerId, by: 'OTHER', at: 't' }, 14, 13);
@@ -36,7 +44,12 @@ function shuffledMarket(ds: Dataset, seed: number): Dataset {
   }
   return {
     ...ds,
-    market: ds.market.map((m, i) => ({ ...m, yahooAdp7d: vals[i] ?? null, yahooXRank: Math.ceil(rnd() * 300), yahooRank: Math.ceil(rnd() * 300) })),
+    market: ds.market.map((m, i) => ({
+      ...m,
+      yahooAdp7d: vals[i] ?? null,
+      yahooXRank: Math.ceil(rnd() * 300),
+      yahooRank: Math.ceil(rnd() * 300),
+    })),
   };
 }
 
@@ -63,8 +76,32 @@ describe('T-ADP-1: ADP never changes pool scarcity, BPV, TeamFit or DDP', () => 
 describe('T-ADP-2: ADP may change next-pick scarcity and urgency', () => {
   it('AST players inside the gap → AST next-pick scarcity; moved past the window → none; band and label move', () => {
     const pool = synthPool(250);
-    const astar = { id: 'ASTAR', positions: ['PG' as const], pts: 26, reb: 5, ast: 11, stl: 1.8, blk: 0.4, threes: 3.2, to: 2.6, fgm: 9.8, fga: 19, ftm: 5.7, fta: 6.2 };
-    const specialists = [0, 1, 2, 3, 4].map((i) => ({ id: `AS${i}`, positions: ['PG' as const], pts: 13, reb: 3, ast: 8.5, stl: 1.2, blk: 0.2, threes: 1.8, to: 2.2 }));
+    const astar = {
+      id: 'ASTAR',
+      positions: ['PG' as const],
+      pts: 26,
+      reb: 5,
+      ast: 11,
+      stl: 1.8,
+      blk: 0.4,
+      threes: 3.2,
+      to: 2.6,
+      fgm: 9.8,
+      fga: 19,
+      ftm: 5.7,
+      fta: 6.2,
+    };
+    const specialists = [0, 1, 2, 3, 4].map((i) => ({
+      id: `AS${i}`,
+      positions: ['PG' as const],
+      pts: 13,
+      reb: 3,
+      ast: 8.5,
+      stl: 1.2,
+      blk: 0.2,
+      threes: 1.8,
+      to: 2.2,
+    }));
     const build = (adpIn: boolean) =>
       withSynth(synthDataset(pool), [
         { ...astar, adp: adpIn ? 69 : 240 },
@@ -76,7 +113,12 @@ describe('T-ADP-2: ADP may change next-pick scarcity and urgency', () => {
       if (!r.ok) throw new Error(r.error);
       let e = r.events;
       for (const m of ds.market.filter((x) => x.yahooAdp7d !== null && x.yahooAdp7d < 67)) {
-        const p = appendPick(e, { playerId: m.canonicalPlayerId, by: 'OTHER', advance: false, at: 't' }, 14, 13);
+        const p = appendPick(
+          e,
+          { playerId: m.canonicalPlayerId, by: 'OTHER', advance: false, at: 't' },
+          14,
+          13,
+        );
         if (p.ok) e = p.events;
       }
       return e;
@@ -92,7 +134,9 @@ describe('T-ADP-2: ADP may change next-pick scarcity and urgency', () => {
     if (process.env.DBG) console.log('qIn', qIn, 'qOut', qOut);
     expect(qIn).toBeGreaterThan(0.1);
     expect(qOut).toBeLessThan(0.05);
-    expect(evIn.byId.get('ASTAR')!.market.nextPickScarcity).toBeGreaterThan(evOut.byId.get('ASTAR')!.market.nextPickScarcity);
+    expect(evIn.byId.get('ASTAR')!.market.nextPickScarcity).toBeGreaterThan(
+      evOut.byId.get('ASTAR')!.market.nextPickScarcity,
+    );
     // Urgency: band and label move with ADP…
     const aIn = evIn.byId.get('ASTAR')!;
     const aOut = evOut.byId.get('ASTAR')!;
@@ -110,7 +154,22 @@ describe('T-ADP-2: ADP may change next-pick scarcity and urgency', () => {
 describe('pool scarcity reacts to the actual remaining pool', () => {
   it('drafting the AST-rich players raises AST pool scarcity; REB stays low when rebounders remain', () => {
     const pool = synthPool(250);
-    const guards = Array.from({ length: 12 }, (_, i) => ({ id: `G${i}`, positions: ['PG' as const], pts: 20, ast: 9.5, reb: 3.5, threes: 2.6, stl: 1.3, blk: 0.2, to: 2.6, fgm: 7.5, fga: 16, ftm: 3.5, fta: 4, adp: 5 + i }));
+    const guards = Array.from({ length: 12 }, (_, i) => ({
+      id: `G${i}`,
+      positions: ['PG' as const],
+      pts: 20,
+      ast: 9.5,
+      reb: 3.5,
+      threes: 2.6,
+      stl: 1.3,
+      blk: 0.2,
+      to: 2.6,
+      fgm: 7.5,
+      fga: 16,
+      ftm: 3.5,
+      fta: 4,
+      adp: 5 + i,
+    }));
     const ds = withSynth(synthDataset(pool), guards);
     const before = run(ds, league()).ev;
     let e: DraftEvent[] = [];
@@ -123,7 +182,9 @@ describe('pool scarcity reacts to the actual remaining pool', () => {
     expect(q(after, 'AST')).toBeGreaterThan(q(before, 'AST') + 0.1);
     expect(q(after, 'REB')).toBeLessThan(q(after, 'AST'));
     // Source data of drafted players is untouched.
-    expect(run(ds, league(), { events: e, flags: {}, puntOverrides: {} }).ctx.byId.get('G0')!.player.proj).toEqual(before.byId.get('G0') ? run(ds, league()).ctx.byId.get('G0')!.player.proj : null);
+    expect(
+      run(ds, league(), { events: e, flags: {}, puntOverrides: {} }).ctx.byId.get('G0')!.player.proj,
+    ).toEqual(before.byId.get('G0') ? run(ds, league()).ctx.byId.get('G0')!.player.proj : null);
   });
 
   it('scarcity denominators are guarded', () => {
@@ -141,7 +202,9 @@ describe('survival bands and timing labels', () => {
     expect(b.band).toBe('SAFE');
     // DDP 95 vs 93 on the display scale → rel 1.0 and ~0.96 (S from the pool)
     expect(timingLabel({ ddpRel: 1, band: a.band, missRel: 0.3, avoid: false }, cfg).label).toBe('DRAFT_NOW');
-    expect(['WAIT', 'SAFE_WAIT']).toContain(timingLabel({ ddpRel: 0.96, band: b.band, missRel: 0.1, avoid: false }, cfg).label);
+    expect(['WAIT', 'SAFE_WAIT']).toContain(
+      timingLabel({ ddpRel: 0.96, band: b.band, missRel: 0.1, avoid: false }, cfg).label,
+    );
   });
 
   it('spec §32 examples', () => {
@@ -171,23 +234,35 @@ describe('survival bands and timing labels', () => {
 
   it('labels: PASS, LEAN, UNKNOWN never DRAFT NOW, avoid', () => {
     expect(timingLabel({ ddpRel: 0.3, band: 'UNLIKELY', missRel: 0, avoid: false }, cfg).label).toBe('PASS');
-    expect(timingLabel({ ddpRel: 0.8, band: 'TOSSUP', missRel: 0, avoid: false }, cfg).label).toBe('LEAN_DRAFT');
-    expect(timingLabel({ ddpRel: 1, band: 'UNKNOWN', missRel: 1, avoid: false }, cfg).label).toBe('LEAN_DRAFT');
+    expect(timingLabel({ ddpRel: 0.8, band: 'TOSSUP', missRel: 0, avoid: false }, cfg).label).toBe(
+      'LEAN_DRAFT',
+    );
+    expect(timingLabel({ ddpRel: 1, band: 'UNKNOWN', missRel: 1, avoid: false }, cfg).label).toBe(
+      'LEAN_DRAFT',
+    );
     expect(timingLabel({ ddpRel: 0.7, band: 'UNLIKELY', missRel: 0, avoid: true }, cfg).label).toBe('PASS');
-    expect(timingLabel({ ddpRel: 0.9, band: 'LIKELY', missRel: 0.4, avoid: false }, cfg).label).toBe('LEAN_DRAFT');
+    expect(timingLabel({ ddpRel: 0.9, band: 'LIKELY', missRel: 0.4, avoid: false }, cfg).label).toBe(
+      'LEAN_DRAFT',
+    );
     expect(timingLabel({ ddpRel: 0.9, band: 'LIKELY', missRel: 0.1, avoid: false }, cfg).label).toBe('WAIT');
   });
 
   it('T-BAND-1: bands are ordinal — no exported numeric band mapping; zS moves within a band change nothing', () => {
     for (const v of Object.values(marketModule)) {
-      if (v && typeof v === 'object') expect(Object.keys(v)).not.toEqual(expect.arrayContaining(['SAFE', 'LIKELY']));
+      if (v && typeof v === 'object')
+        expect(Object.keys(v)).not.toEqual(expect.arrayContaining(['SAFE', 'LIKELY']));
     }
     const ds = sampleDataset();
     const events = draftToPick(ds, 67);
     const base = run(ds, league(), { events, flags: {}, puntOverrides: {} }).ev;
     const target = base.players.find((p) => p.market.band === 'SAFE' && p.planning)!;
     expect(target).toBeDefined();
-    const moved: Dataset = { ...ds, market: ds.market.map((m) => (m.canonicalPlayerId === target.playerId ? { ...m, yahooAdp7d: m.yahooAdp7d! + 3 } : m)) };
+    const moved: Dataset = {
+      ...ds,
+      market: ds.market.map((m) =>
+        m.canonicalPlayerId === target.playerId ? { ...m, yahooAdp7d: m.yahooAdp7d! + 3 } : m,
+      ),
+    };
     const alt = run(moved, league(), { events, flags: {}, puntOverrides: {} }).ev.byId.get(target.playerId)!;
     expect(alt.market.band).toBe('SAFE');
     expect(alt.market.zS).not.toBe(target.market.zS);

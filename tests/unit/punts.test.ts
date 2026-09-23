@@ -22,7 +22,9 @@ function inputs(opts: {
   const sigmaT = mapCategories(() => Math.sqrt(opts.k));
   const B = mapCategories(() => 0);
   const s = mapCategories((c) => d[c] * sigmaT[c]);
-  const correlations = mapCategories((c) => mapCategories((c2) => (c === c2 ? 1 : (opts.corr?.[c]?.[c2] ?? opts.corr?.[c2]?.[c] ?? 0))));
+  const correlations = mapCategories((c) =>
+    mapCategories((c2) => (c === c2 ? 1 : (opts.corr?.[c]?.[c2] ?? opts.corr?.[c2]?.[c] ?? 0))),
+  );
   const pool = Array.from({ length: 60 }, () => fake({ AST: opts.supplyAST ?? 0, TO: opts.supplyAST ?? 0 }));
   return {
     standing: { s, B, sigmaT, d },
@@ -60,7 +62,10 @@ describe('punt confidence with recoverability (R2-3)', () => {
   });
 
   it('T-PUNT-REC-1: weak but fully recoverable category never becomes a punt, even with coherence', () => {
-    const r = computePunts(inputs({ d: { AST: -2.5, PTS: 2, THREES: 2 }, k: 7, supplyAST: 3, corr: coherent }), cfg);
+    const r = computePunts(
+      inputs({ d: { AST: -2.5, PTS: 2, THREES: 2 }, k: 7, supplyAST: 3, corr: coherent }),
+      cfg,
+    );
     expect(r.entries.AST.deficit).toBe(1);
     expect(r.entries.AST.coherence).toBeGreaterThan(0.9);
     expect(r.entries.AST.recoverability).toBe(1);
@@ -74,7 +79,10 @@ describe('punt confidence with recoverability (R2-3)', () => {
     expect(hard.hardGatePassed).toBe(true);
     expect(hard.pi).toBeGreaterThanOrEqual(0.9);
     // recoverability 0.5
-    const recHalf = computePunts(inputs({ ...base, supplyAST: 0 }), { ...cfg, hardPuntGate: { ...cfg.hardPuntGate, maxRecoverability: -0.01 } }).entries.AST;
+    const recHalf = computePunts(inputs({ ...base, supplyAST: 0 }), {
+      ...cfg,
+      hardPuntGate: { ...cfg.hardPuntGate, maxRecoverability: -0.01 },
+    }).entries.AST;
     expect(recHalf.pi).toBeLessThanOrEqual(0.85);
     // coherence too low
     const noCoh = computePunts(inputs({ ...base, corr: {} }), cfg).entries.AST;
@@ -98,18 +106,27 @@ describe('punt confidence with recoverability (R2-3)', () => {
   });
 
   it('multi-punt resistance damps secondary punts; warnings fire', () => {
-    const r = computePunts(inputs({ d: { AST: -3, THREES: -3, FT_PCT: -3, PTS: 2 }, k: 9, supplyAST: 0 }), cfg);
+    const r = computePunts(
+      inputs({ d: { AST: -3, THREES: -3, FT_PCT: -3, PTS: 2 }, k: 9, supplyAST: 0 }),
+      cfg,
+    );
     const ranked = [...CATEGORIES].sort((a, b) => r.entries[b].piAuto - r.entries[a].piAuto);
     expect(r.entries[ranked[1]!].damping).toBe(0.6);
     expect(r.entries[ranked[2]!].damping).toBe(0.4);
-    const three = computePunts(inputs({ d: {}, k: 3, overrides: { TO: 'HARD', FT_PCT: 'HARD', AST: 'SOFT' } }), cfg);
+    const three = computePunts(
+      inputs({ d: {}, k: 3, overrides: { TO: 'HARD', FT_PCT: 'HARD', AST: 'SOFT' } }),
+      cfg,
+    );
     expect(three.warnings.map((w) => w.code)).toContain('MULTI_PUNT_BUILD_RISK');
     const two = computePunts(inputs({ d: {}, k: 3, overrides: { TO: 'HARD', FT_PCT: 'HARD' } }), cfg);
     expect(two.warnings.map((w) => w.code)).toEqual(['TWO_HARD_PUNTS']);
   });
 
   it('user overrides', () => {
-    const r = computePunts(inputs({ d: { TO: -3 }, k: 8, overrides: { TO: 'NONE', FT_PCT: 'HARD', AST: 'SOFT' } }), cfg);
+    const r = computePunts(
+      inputs({ d: { TO: -3 }, k: 8, overrides: { TO: 'NONE', FT_PCT: 'HARD', AST: 'SOFT' } }),
+      cfg,
+    );
     expect(r.entries.TO.pi).toBe(0);
     expect(r.entries.FT_PCT.pi).toBe(1);
     expect(r.m.FT_PCT).toBe(0);

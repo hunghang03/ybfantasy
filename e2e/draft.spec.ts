@@ -14,7 +14,9 @@ async function importFile(page: Page, kind: string, provider: string, file: stri
 }
 
 async function firstRowIds(page: Page, n = 10): Promise<string[]> {
-  return page.locator('[data-testid^=row-]').evaluateAll((rows, k) => rows.slice(0, k).map((r) => r.getAttribute('data-testid') ?? ''), n);
+  return page
+    .locator('[data-testid^=row-]')
+    .evaluateAll((rows, k) => rows.slice(0, k).map((r) => r.getAttribute('data-testid') ?? ''), n);
 }
 
 async function snapshot(page: Page) {
@@ -41,7 +43,10 @@ async function advanceToMyTurn(page: Page) {
 }
 
 async function draftFirstCenter(page: Page) {
-  const row = page.locator('[data-testid^=row-]').filter({ has: page.locator('td:nth-child(4)', { hasText: 'C' }) }).first();
+  const row = page
+    .locator('[data-testid^=row-]')
+    .filter({ has: page.locator('td:nth-child(4)', { hasText: 'C' }) })
+    .first();
   const id = (await row.getAttribute('data-testid'))!.replace('row-', '');
   await page.getByTestId(`mine-${id}`).click();
 }
@@ -144,7 +149,9 @@ test('full live-draft workflow (§51)', async ({ page }) => {
   expect(await snapshot(page)).toEqual(beforeUndoPick);
 
   // 15. Changing draft position regenerates snake picks.
-  const bLabel = (await page.getByTestId('league-switcher').locator('option').allTextContents()).find((o) => o.startsWith('League B'))!;
+  const bLabel = (await page.getByTestId('league-switcher').locator('option').allTextContents()).find((o) =>
+    o.startsWith('League B'),
+  )!;
   await page.getByTestId('league-switcher').selectOption({ label: bLabel });
   await page.goto('/setup/');
   await page.getByTestId('draft-position').fill('14');

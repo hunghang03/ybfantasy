@@ -71,7 +71,12 @@ function cellsFor(row: Record<string, string>, map: Record<string, string | null
 class Collector {
   errors: string[] = [];
   warnings: string[] = [];
-  num(cells: Cells, key: string, label: string, opts: { required?: boolean; min?: number; max?: number } = {}): number | null {
+  num(
+    cells: Cells,
+    key: string,
+    label: string,
+    opts: { required?: boolean; min?: number; max?: number } = {},
+  ): number | null {
     const v = parseNumber(cells(key));
     if (v === null) {
       if (opts.required) this.errors.push(`${label} is required.`);
@@ -125,7 +130,9 @@ function shooting(
   }
   if (makes > attempts + 1e-9) c.errors.push(`${label}M cannot exceed ${label}A.`);
   if (pct !== null && attempts > 0 && Math.abs(makes / attempts - pct) > tol)
-    c.warnings.push(`${label}% ${pct.toFixed(3)} disagrees with ${label}M/${label}A ${(makes / attempts).toFixed(3)}; makes/attempts used.`);
+    c.warnings.push(
+      `${label}% ${pct.toFixed(3)} disagrees with ${label}M/${label}A ${(makes / attempts).toFixed(3)}; makes/attempts used.`,
+    );
   if (pct !== null && (pct < 0 || pct > 1)) c.errors.push(`${label}% must be between 0 and 1.`);
   return { makes, attempts, pct };
 }
@@ -200,7 +207,8 @@ export function validateRow(
         if (s === 'INVALID') c.warnings.push(`Unrecognized status "${sanitizeText(rawStatus, 20)}" ignored.`);
         else status = s;
       }
-      if (xrank === null && rank === null && adp === null) c.warnings.push('No market values (ADP/XRank/Rank) on this row.');
+      if (xrank === null && rank === null && adp === null)
+        c.warnings.push('No market values (ADP/XRank/Rank) on this row.');
       return done<MarketRow>({ ...id, xrank, rank, adp, status });
     }
     case 'AVAILABILITY': {

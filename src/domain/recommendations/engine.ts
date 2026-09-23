@@ -1,6 +1,13 @@
 import { replay, type DraftState } from '../draft/replay';
 import { pickTiming, userPicks, type PickTiming } from '../draft/snake';
-import { marketOrder, marketRef, survivalBand, tierBand, timingLabel, valueOverMarket } from '../market/market';
+import {
+  marketOrder,
+  marketRef,
+  survivalBand,
+  tierBand,
+  timingLabel,
+  valueOverMarket,
+} from '../market/market';
 import { baseState, rosterTotals } from '../roster/profile';
 import { gapFactor, nextPickScarcity, scarcityAdjustment } from '../scarcity/scarcity';
 import { cmpId, sanitizeFinite } from '../numeric/safe';
@@ -52,7 +59,12 @@ export interface RosterEntry {
 export interface DraftEvaluation {
   status: 'OK' | 'INSUFFICIENT_DATA';
   timing: PickTiming;
-  draft: { currentOverall: number; unrecordedPicks: number; offSchedulePicks: number[]; draftedCount: number };
+  draft: {
+    currentOverall: number;
+    unrecordedPicks: number;
+    offSchedulePicks: number[];
+    draftedCount: number;
+  };
   round: number;
   k: number;
   profile: CategoryProfileEntry[];
@@ -96,7 +108,8 @@ export function evaluateDraft(sc: StaticContext, input: DraftInput): DraftEvalua
   for (const p of available) scored.set(p.player.id, scorePlayer(p, rc, sc, flagsOf(p.player.id)));
   const candidates = available.filter((p) => !flagsOf(p.player.id).doNotDraft);
   const byDdp = [...candidates].sort(
-    (a, b) => scored.get(b.player.id)!.ddpRaw - scored.get(a.player.id)!.ddpRaw || cmpId(a.player.id, b.player.id),
+    (a, b) =>
+      scored.get(b.player.id)!.ddpRaw - scored.get(a.player.id)!.ddpRaw || cmpId(a.player.id, b.player.id),
   );
   const ddpRank = new Map(byDdp.map((p, i) => [p.player.id, i + 1]));
 
@@ -109,7 +122,8 @@ export function evaluateDraft(sc: StaticContext, input: DraftInput): DraftEvalua
 
   // ---- Market layer ----
   const bands = new Map<string, ReturnType<typeof survivalBand>>();
-  for (const p of available) bands.set(p.player.id, survivalBand(p.player.market, state.currentOverall, timing.p1, config));
+  for (const p of available)
+    bands.set(p.player.id, survivalBand(p.player.market, state.currentOverall, timing.p1, config));
   const order = marketOrder(available);
   const gBefore = timing.picksBeforeNext;
   const nWindow = Math.max(1, Math.round(config.nextPickScarcity.windowRounds * sc.teams));
@@ -133,14 +147,32 @@ export function evaluateDraft(sc: StaticContext, input: DraftInput): DraftEvalua
   const gFallback = timing.p1 !== null ? Math.max(0, timing.p1 - state.currentOverall - 1) : 0;
   const candidatePool = candidates; // DND never a next-pick target
   const nextBest = (rosterIds: string[], excluded: string): PlanningBlock['nextBestConservative'] => {
-    if (timing.p1 === null || rosterIds.length >= sc.rounds) return { playerId: null, ddpRaw: 0, tier: 'NONE' };
+    if (timing.p1 === null || rosterIds.length >= sc.rounds)
+      return { playerId: null, ddpRaw: 0, tier: 'NONE' };
     const pool = candidatePool.filter((p) => p.player.id !== excluded);
     const poolAll = available.filter((p) => p.player.id !== excluded);
-    const ctx: RosterContext = buildRosterContext(sc, rosterIds, rosterIds.map(positionsOf), poolAll, roundP1, input.puntOverrides);
-    const fallbackSet = new Set(marketOrder(poolAll).slice(gFallback).map((p) => p.player.id));
+    const ctx: RosterContext = buildRosterContext(
+      sc,
+      rosterIds,
+      rosterIds.map(positionsOf),
+      poolAll,
+      roundP1,
+      input.puntOverrides,
+    );
+    const fallbackSet = new Set(
+      marketOrder(poolAll)
+        .slice(gFallback)
+        .map((p) => p.player.id),
+    );
     const tiers: ((p: StaticPlayer) => boolean)[] = [
-      (p) => (config.pickPair.conservativeBands as SurvivalBand[]).includes(tierBand(bands.get(p.player.id)!.band, config)),
-      (p) => (config.pickPair.neutralBands as SurvivalBand[]).includes(tierBand(bands.get(p.player.id)!.band, config)),
+      (p) =>
+        (config.pickPair.conservativeBands as SurvivalBand[]).includes(
+          tierBand(bands.get(p.player.id)!.band, config),
+        ),
+      (p) =>
+        (config.pickPair.neutralBands as SurvivalBand[]).includes(
+          tierBand(bands.get(p.player.id)!.band, config),
+        ),
       (p) => fallbackSet.has(p.player.id),
     ];
     for (let t = 0; t < tiers.length; t++) {
@@ -233,7 +265,9 @@ export function evaluateDraft(sc: StaticContext, input: DraftInput): DraftEvalua
   const bandIdx = (e: PlayerEvaluation) => BAND_ORDER.indexOf(tierBand(e.market.band, config));
   // A contender must also be LEAN-DRAFT quality on its own (ddpRel ≥ leanDraftRel), so the at-risk
   // tiebreak can never promote a clearly weaker player. If nobody qualifies, pair score decides.
-  const qualified = [...planning.entries()].filter(([id]) => relOf(scored.get(id)!.ddpRaw) >= config.marketTimingThresholds.leanDraftRel);
+  const qualified = [...planning.entries()].filter(
+    ([id]) => relOf(scored.get(id)!.ddpRaw) >= config.marketTimingThresholds.leanDraftRel,
+  );
   const bestQualified = Math.max(...qualified.map(([, p]) => p.pairScore), Number.NEGATIVE_INFINITY);
   const isContender = (e: PlayerEvaluation) =>
     !!e.planning &&
@@ -268,8 +302,7 @@ export function evaluateDraft(sc: StaticContext, input: DraftInput): DraftEvalua
   const profile: CategoryProfileEntry[] = CATEGORIES.map((c) => {
     const punt = rc.punts.entries[c];
     const bs = baseState(rc.standing.d[c], config);
-    const state =
-      punt.level === 'HARD' ? 'PUNT' : punt.level === 'SOFT' ? 'SOFT_PUNT' : bs;
+    const state = punt.level === 'HARD' ? 'PUNT' : punt.level === 'SOFT' ? 'SOFT_PUNT' : bs;
     return {
       category: c,
       rosterSum: rc.standing.s[c],
@@ -303,7 +336,10 @@ export function evaluateDraft(sc: StaticContext, input: DraftInput): DraftEvalua
       fitAtDraft: mp.snapshot?.teamFit ?? null,
       ddpAtDraft: mp.snapshot?.ddpRaw ?? null,
       keyCategories: sp
-        ? [...CATEGORIES].sort((a, b) => sp.stats.cappedZ[b] - sp.stats.cappedZ[a]).filter((c) => sp.stats.cappedZ[c] > 0.5).slice(0, 3)
+        ? [...CATEGORIES]
+            .sort((a, b) => sp.stats.cappedZ[b] - sp.stats.cappedZ[a])
+            .filter((c) => sp.stats.cappedZ[c] > 0.5)
+            .slice(0, 3)
         : [],
       risk: sp?.availability.risk ?? null,
       projected: !!sp,
@@ -312,13 +348,29 @@ export function evaluateDraft(sc: StaticContext, input: DraftInput): DraftEvalua
 
   const warnings: EngineWarning[] = [...sc.warnings, ...rc.warnings];
   if (state.unrecordedPicks > 0)
-    warnings.push({ code: 'UNRECORDED_PICKS', message: `${state.unrecordedPicks} pick(s) not recorded locally. Mark missing players as taken (no advance).`, severity: 'info' });
+    warnings.push({
+      code: 'UNRECORDED_PICKS',
+      message: `${state.unrecordedPicks} pick(s) not recorded locally. Mark missing players as taken (no advance).`,
+      severity: 'info',
+    });
   if (state.unrecordedPicks < 0)
-    warnings.push({ code: 'OVERRECORDED_PICKS', message: `More picks recorded than the current pick implies (${-state.unrecordedPicks}). Check the current pick.`, severity: 'warn' });
+    warnings.push({
+      code: 'OVERRECORDED_PICKS',
+      message: `More picks recorded than the current pick implies (${-state.unrecordedPicks}). Check the current pick.`,
+      severity: 'warn',
+    });
   if (state.offSchedulePicks.length)
-    warnings.push({ code: 'OFF_SCHEDULE_PICK', message: `Your pick(s) at ${state.offSchedulePicks.join(', ')} are not on your snake schedule.`, severity: 'warn' });
+    warnings.push({
+      code: 'OFF_SCHEDULE_PICK',
+      message: `Your pick(s) at ${state.offSchedulePicks.join(', ')} are not on your snake schedule.`,
+      severity: 'warn',
+    });
   if (timing.p0 !== null && timing.p1 === null && !timing.draftComplete)
-    warnings.push({ code: 'FINAL_PICK', message: 'This is your final pick — waiting is not possible.', severity: 'info' });
+    warnings.push({
+      code: 'FINAL_PICK',
+      message: 'This is your final pick — waiting is not possible.',
+      severity: 'info',
+    });
 
   const advisor = buildAdvisor({ sc, timing, rc, profile, evals, recommendedId, warnings, round });
 
@@ -358,7 +410,11 @@ export function evaluateDraft(sc: StaticContext, input: DraftInput): DraftEvalua
   repairs.push(...prof.bad.map((b) => `profile.${b}`));
   result.finiteRepairs = repairs;
   if (repairs.length)
-    result.warnings.push({ code: 'NON_FINITE_REPAIRED', message: `${repairs.length} non-finite value(s) replaced by 0.`, severity: 'warn' });
+    result.warnings.push({
+      code: 'NON_FINITE_REPAIRED',
+      message: `${repairs.length} non-finite value(s) replaced by 0.`,
+      severity: 'warn',
+    });
   result.byId = new Map(result.players.map((p) => [p.playerId, p]));
   return result;
 }

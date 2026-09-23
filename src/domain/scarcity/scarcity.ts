@@ -10,10 +10,12 @@ import type { StaticPlayer } from '../types/evaluation';
  * NEXT-PICK scarcity: Yahoo-market-ordered windows. Market layer only.
  */
 
-export function supply(players: readonly StaticPlayer[], zRepl: CategoryRecord<number>): CategoryRecord<number> {
+export function supply(
+  players: readonly StaticPlayer[],
+  zRepl: CategoryRecord<number>,
+): CategoryRecord<number> {
   const out = mapCategories(() => 0);
-  for (const p of players)
-    for (const c of CATEGORIES) out[c] += Math.max(p.stats.cappedZ[c] - zRepl[c], 0);
+  for (const p of players) for (const c of CATEGORIES) out[c] += Math.max(p.stats.cappedZ[c] - zRepl[c], 0);
   return out;
 }
 
@@ -75,5 +77,9 @@ export function scarcityAdjustment(
 }
 
 export function gapFactor(gap: number, teams: number, config: StrategyConfig): number {
-  return clamp(safeDiv(gap, teams, 0), config.nextPickScarcity.gapFactor.min, config.nextPickScarcity.gapFactor.max);
+  return clamp(
+    safeDiv(gap, teams, 0),
+    config.nextPickScarcity.gapFactor.min,
+    config.nextPickScarcity.gapFactor.max,
+  );
 }

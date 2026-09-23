@@ -7,9 +7,12 @@ import { useApp } from '@/state/store';
 import { Button, Field, Panel, Select } from '@/components/ui/primitives';
 
 function diffKeys(a: unknown, b: unknown, path = ''): string[] {
-  if (typeof a !== 'object' || a === null || typeof b !== 'object' || b === null) return JSON.stringify(a) === JSON.stringify(b) ? [] : [path];
+  if (typeof a !== 'object' || a === null || typeof b !== 'object' || b === null)
+    return JSON.stringify(a) === JSON.stringify(b) ? [] : [path];
   const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
-  return [...keys].flatMap((k) => diffKeys((a as Record<string, unknown>)[k], (b as Record<string, unknown>)[k], path ? `${path}.${k}` : k));
+  return [...keys].flatMap((k) =>
+    diffKeys((a as Record<string, unknown>)[k], (b as Record<string, unknown>)[k], path ? `${path}.${k}` : k),
+  );
 }
 
 export default function SettingsPage() {
@@ -50,14 +53,21 @@ export default function SettingsPage() {
       <Panel title="Display">
         <div className="flex gap-4">
           <Field label="Theme">
-            <Select value={settings.theme} onChange={(e) => updateSettings({ theme: e.target.value as typeof settings.theme })}>
+            <Select
+              value={settings.theme}
+              onChange={(e) => updateSettings({ theme: e.target.value as typeof settings.theme })}
+            >
               <option value="system">System</option>
               <option value="light">Light</option>
               <option value="dark">Dark</option>
             </Select>
           </Field>
           <Field label="Compact table">
-            <input type="checkbox" checked={settings.compactMode} onChange={(e) => updateSettings({ compactMode: e.target.checked })} />
+            <input
+              type="checkbox"
+              checked={settings.compactMode}
+              onChange={(e) => updateSettings({ compactMode: e.target.checked })}
+            />
           </Field>
         </div>
       </Panel>
@@ -79,7 +89,10 @@ export default function SettingsPage() {
             >
               Reset to defaults
             </Button>
-            <Button size="sm" onClick={() => downloadText('strategy-config.json', JSON.stringify(config, null, 2))}>
+            <Button
+              size="sm"
+              onClick={() => downloadText('strategy-config.json', JSON.stringify(config, null, 2))}
+            >
               Export
             </Button>
             <Button size="sm" onClick={() => fileRef.current?.click()}>
@@ -100,7 +113,8 @@ export default function SettingsPage() {
         }
       >
         <p className="mb-2 text-xs text-slate-600 dark:text-slate-400">
-          Every engine weight lives here (see STRATEGY_ENGINE.md for each formula). Changes are validated with the schema before they apply. Changed from defaults:{' '}
+          Every engine weight lives here (see STRATEGY_ENGINE.md for each formula). Changes are validated with
+          the schema before they apply. Changed from defaults:{' '}
           <b>{changed.length ? changed.join(', ') : 'none'}</b>
         </p>
         {errors.length > 0 && (
@@ -128,7 +142,12 @@ export default function SettingsPage() {
           variant="danger"
           size="sm"
           onClick={() => {
-            if (window.confirm('Delete ALL local data (leagues, drafts, datasets, config)? Export a backup first.')) void clearAll();
+            if (
+              window.confirm(
+                'Delete ALL local data (leagues, drafts, datasets, config)? Export a backup first.',
+              )
+            )
+              void clearAll();
           }}
         >
           Clear all local data

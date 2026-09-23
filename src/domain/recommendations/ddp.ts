@@ -2,10 +2,22 @@ import type { StrategyConfig } from '../config/strategyConfig';
 import { riskAdjustment } from '../availability/availability';
 import { positionFraction, positionReport } from '../positions/positions';
 import { computePunts, type PuntResult } from '../punts/punts';
-import { computeNeed, computeStanding, computeSurplus, fitPhaseWeight, type Standing } from '../roster/profile';
+import {
+  computeNeed,
+  computeStanding,
+  computeSurplus,
+  fitPhaseWeight,
+  type Standing,
+} from '../roster/profile';
 import { poolScarcity } from '../scarcity/scarcity';
 import { CATEGORIES, mapCategories, type Category, type CategoryRecord, type Position } from '../types/core';
-import type { AdjustmentBlock, EngineWarning, FitBlock, PositionReport, StaticPlayer } from '../types/evaluation';
+import type {
+  AdjustmentBlock,
+  EngineWarning,
+  FitBlock,
+  PositionReport,
+  StaticPlayer,
+} from '../types/evaluation';
 import type { PlayerFlags, PuntOverride } from '../types/league';
 import { upsideAdjustment } from '../upside/upside';
 import type { StaticContext } from './staticContext';
@@ -47,7 +59,11 @@ export function buildRosterContext(
   const roster = rosterIds.map((id) => sc.byId.get(id)).filter((x): x is StaticPlayer => x !== undefined);
   const warnings: EngineWarning[] = [];
   if (roster.length < rosterIds.length)
-    warnings.push({ code: 'ROSTER_UNPROJECTED', message: 'A rostered player has no primary projection; his categories are not counted.', severity: 'warn' });
+    warnings.push({
+      code: 'ROSTER_UNPROJECTED',
+      message: 'A rostered player has no primary projection; his categories are not counted.',
+      severity: 'warn',
+    });
   const k = rosterIds.length;
   const standing = computeStanding(roster, sc.cumulativeExpected, sc.teamSdBase, eps);
   const punts = computePunts(
@@ -66,13 +82,41 @@ export function buildRosterContext(
   );
   const need = computeNeed(standing.d, punts.m, k, config);
   const surplus = computeSurplus(standing.d, config);
-  const gate = Math.min(1, CATEGORIES.reduce((a, c) => a + need[c], 0));
+  const gate = Math.min(
+    1,
+    CATEGORIES.reduce((a, c) => a + need[c], 0),
+  );
   const phi = fitPhaseWeight(k, config);
-  const { q: qP } = poolScarcity(availableByBpv, sc.poolWindow, sc.poolStartSupply, sc.replacement.zRepl, eps);
+  const { q: qP } = poolScarcity(
+    availableByBpv,
+    sc.poolWindow,
+    sc.poolStartSupply,
+    sc.replacement.zRepl,
+    eps,
+  );
   const positions = positionReport(rosterPositions, sc.league.roster, sc.rounds);
   if (!positions.feasible)
-    warnings.push({ code: 'ROSTER_INFEASIBLE', message: 'Your remaining picks can no longer legally fill every active slot.', severity: 'critical' });
-  return { k, rosterIds: [...rosterIds], roster, standing, punts, m: punts.m, need, surplus, gate, phi, qP, positions, round, warnings: [...warnings, ...punts.warnings] };
+    warnings.push({
+      code: 'ROSTER_INFEASIBLE',
+      message: 'Your remaining picks can no longer legally fill every active slot.',
+      severity: 'critical',
+    });
+  return {
+    k,
+    rosterIds: [...rosterIds],
+    roster,
+    standing,
+    punts,
+    m: punts.m,
+    need,
+    surplus,
+    gate,
+    phi,
+    qP,
+    positions,
+    round,
+    warnings: [...warnings, ...punts.warnings],
+  };
 }
 
 export interface ScoredDdp {

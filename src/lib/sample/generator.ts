@@ -16,9 +16,112 @@ export function mulberry32(seed: number): () => number {
   };
 }
 
-const FIRST = ['Avery', 'Blake', 'Cam', 'Dante', 'Eli', 'Finn', 'Gage', 'Hollis', 'Idris', 'Jalen', 'Kade', 'Lior', 'Marek', 'Nico', 'Orin', 'Pax', 'Quincy', 'Rowan', 'Soren', 'Tate', 'Ulises', 'Vance', 'Wes', 'Xander', 'Yuri', 'Zane', 'Ansel', 'Bram', 'Cyrus', 'Dorian', 'Emeka', 'Florian', 'Galen', 'Hugo', 'Ivo', 'Jonah', 'Kellan', 'Linus', 'Milo', 'Niall'];
-const LAST = ['Ashgrove', 'Birchwell', 'Calloway', 'Draven', 'Eastlake', 'Fairbourne', 'Garrow', 'Hartwell', 'Ingram', 'Jessop', 'Kestrel', 'Lockhart', 'Marlow', 'Northcott', 'Oakridge', 'Pembrook', 'Quill', 'Ravensworth', 'Stroud', 'Thorne', 'Underhill', 'Vexley', 'Wolcott', 'Yarrow', 'Zeller', 'Abernet', 'Blackwood', 'Corvell', 'Dunmore', 'Everly'];
-export const SAMPLE_TEAMS = ['ALB', 'BRV', 'CDR', 'DLT', 'EMB', 'FRG', 'GLN', 'HVN', 'IRN', 'JAD', 'KNG', 'LYX', 'MTR', 'NOV', 'ORC', 'PHN', 'QST', 'RVR', 'SUM', 'TID', 'UMB', 'VIP', 'WLD', 'XEN', 'YTI', 'ZEP', 'ARC', 'BOL', 'CRS', 'DUN'];
+const FIRST = [
+  'Avery',
+  'Blake',
+  'Cam',
+  'Dante',
+  'Eli',
+  'Finn',
+  'Gage',
+  'Hollis',
+  'Idris',
+  'Jalen',
+  'Kade',
+  'Lior',
+  'Marek',
+  'Nico',
+  'Orin',
+  'Pax',
+  'Quincy',
+  'Rowan',
+  'Soren',
+  'Tate',
+  'Ulises',
+  'Vance',
+  'Wes',
+  'Xander',
+  'Yuri',
+  'Zane',
+  'Ansel',
+  'Bram',
+  'Cyrus',
+  'Dorian',
+  'Emeka',
+  'Florian',
+  'Galen',
+  'Hugo',
+  'Ivo',
+  'Jonah',
+  'Kellan',
+  'Linus',
+  'Milo',
+  'Niall',
+];
+const LAST = [
+  'Ashgrove',
+  'Birchwell',
+  'Calloway',
+  'Draven',
+  'Eastlake',
+  'Fairbourne',
+  'Garrow',
+  'Hartwell',
+  'Ingram',
+  'Jessop',
+  'Kestrel',
+  'Lockhart',
+  'Marlow',
+  'Northcott',
+  'Oakridge',
+  'Pembrook',
+  'Quill',
+  'Ravensworth',
+  'Stroud',
+  'Thorne',
+  'Underhill',
+  'Vexley',
+  'Wolcott',
+  'Yarrow',
+  'Zeller',
+  'Abernet',
+  'Blackwood',
+  'Corvell',
+  'Dunmore',
+  'Everly',
+];
+export const SAMPLE_TEAMS = [
+  'ALB',
+  'BRV',
+  'CDR',
+  'DLT',
+  'EMB',
+  'FRG',
+  'GLN',
+  'HVN',
+  'IRN',
+  'JAD',
+  'KNG',
+  'LYX',
+  'MTR',
+  'NOV',
+  'ORC',
+  'PHN',
+  'QST',
+  'RVR',
+  'SUM',
+  'TID',
+  'UMB',
+  'VIP',
+  'WLD',
+  'XEN',
+  'YTI',
+  'ZEP',
+  'ARC',
+  'BOL',
+  'CRS',
+  'DUN',
+];
 
 type Archetype = 'PG' | 'WING_G' | 'WING_F' | 'STRETCH' | 'BIG';
 
@@ -79,31 +182,86 @@ export function generateSample(seed = 20260923, count = 300): SampleFiles {
     const mpg = Math.min(37, Math.max(12, 16 + 14 * q + 2 * gauss()));
     const usage = 0.6 + 0.6 * q + 0.1 * gauss();
     const base = mpg / 30;
-    let pts = 0, reb = 0, ast = 0, stl = 0, blk = 0, threes = 0, fgPct = 0.46, ftPct = 0.78, to = 0, positions = '';
+    let pts = 0,
+      reb = 0,
+      ast = 0,
+      stl = 0,
+      blk = 0,
+      threes = 0,
+      fgPct = 0.46,
+      ftPct = 0.78,
+      to = 0,
+      positions = '';
     switch (arche) {
       case 'PG':
-        pts = 14 * base * usage; reb = 3.6 * base; ast = 6.8 * base * usage; stl = 1.1 * base; blk = 0.3 * base;
-        threes = 2.1 * base * usage; fgPct = 0.455; ftPct = 0.84; to = 2.6 * base * usage; positions = rnd() < 0.4 ? 'PG,SG' : 'PG';
+        pts = 14 * base * usage;
+        reb = 3.6 * base;
+        ast = 6.8 * base * usage;
+        stl = 1.1 * base;
+        blk = 0.3 * base;
+        threes = 2.1 * base * usage;
+        fgPct = 0.455;
+        ftPct = 0.84;
+        to = 2.6 * base * usage;
+        positions = rnd() < 0.4 ? 'PG,SG' : 'PG';
         break;
       case 'WING_G':
-        pts = 15 * base * usage; reb = 4.2 * base; ast = 3.6 * base; stl = 1.0 * base; blk = 0.4 * base;
-        threes = 2.4 * base * usage; fgPct = 0.455; ftPct = 0.82; to = 1.8 * base * usage; positions = rnd() < 0.5 ? 'SG,SF' : 'SG';
+        pts = 15 * base * usage;
+        reb = 4.2 * base;
+        ast = 3.6 * base;
+        stl = 1.0 * base;
+        blk = 0.4 * base;
+        threes = 2.4 * base * usage;
+        fgPct = 0.455;
+        ftPct = 0.82;
+        to = 1.8 * base * usage;
+        positions = rnd() < 0.5 ? 'SG,SF' : 'SG';
         break;
       case 'WING_F':
-        pts = 14 * base * usage; reb = 5.8 * base; ast = 2.8 * base; stl = 1.0 * base; blk = 0.6 * base;
-        threes = 1.7 * base * usage; fgPct = 0.47; ftPct = 0.78; to = 1.6 * base * usage; positions = rnd() < 0.5 ? 'SF,PF' : 'SF';
+        pts = 14 * base * usage;
+        reb = 5.8 * base;
+        ast = 2.8 * base;
+        stl = 1.0 * base;
+        blk = 0.6 * base;
+        threes = 1.7 * base * usage;
+        fgPct = 0.47;
+        ftPct = 0.78;
+        to = 1.6 * base * usage;
+        positions = rnd() < 0.5 ? 'SF,PF' : 'SF';
         break;
       case 'STRETCH':
-        pts = 13 * base * usage; reb = 7.0 * base; ast = 2.2 * base; stl = 0.7 * base; blk = 1.0 * base;
-        threes = 1.6 * base * usage; fgPct = 0.48; ftPct = 0.8; to = 1.5 * base * usage; positions = rnd() < 0.5 ? 'PF,C' : 'PF';
+        pts = 13 * base * usage;
+        reb = 7.0 * base;
+        ast = 2.2 * base;
+        stl = 0.7 * base;
+        blk = 1.0 * base;
+        threes = 1.6 * base * usage;
+        fgPct = 0.48;
+        ftPct = 0.8;
+        to = 1.5 * base * usage;
+        positions = rnd() < 0.5 ? 'PF,C' : 'PF';
         break;
       case 'BIG':
-        pts = 12.5 * base * usage; reb = 10.5 * base; ast = 2.2 * base; stl = 0.7 * base; blk = 1.6 * base;
-        threes = 0.3 * base; fgPct = 0.58; ftPct = 0.66; to = 1.7 * base * usage; positions = 'C';
+        pts = 12.5 * base * usage;
+        reb = 10.5 * base;
+        ast = 2.2 * base;
+        stl = 0.7 * base;
+        blk = 1.6 * base;
+        threes = 0.3 * base;
+        fgPct = 0.58;
+        ftPct = 0.66;
+        to = 1.7 * base * usage;
+        positions = 'C';
         break;
     }
     const jit = (x: number, s = 0.12) => Math.max(0, x * (1 + s * gauss()));
-    pts = jit(pts); reb = jit(reb); ast = jit(ast); stl = jit(stl, 0.2); blk = jit(blk, 0.25); threes = jit(threes, 0.2); to = jit(to, 0.15);
+    pts = jit(pts);
+    reb = jit(reb);
+    ast = jit(ast);
+    stl = jit(stl, 0.2);
+    blk = jit(blk, 0.25);
+    threes = jit(threes, 0.2);
+    to = jit(to, 0.15);
     fgPct = Math.min(0.68, Math.max(0.38, fgPct + 0.03 * gauss()));
     ftPct = Math.min(0.94, Math.max(0.5, ftPct + 0.05 * gauss()));
     const fta = Math.max(0.4, pts * (arche === 'BIG' ? 0.3 : 0.22) * (1 + 0.2 * gauss()));
@@ -113,15 +271,34 @@ export function generateSample(seed = 20260923, count = 300): SampleFiles {
     const age = Math.round(Math.min(37, Math.max(19, 26 + 4 * gauss())));
     players.push({
       id: `SMP${String(i + 1).padStart(4, '0')}`,
-      name, team: SAMPLE_TEAMS[i % SAMPLE_TEAMS.length]!, positions, arche, gp, mpg,
-      fgm: fga * fgPct, fga, ftm: fta * ftPct, fta, threes, pts, reb, ast, stl, blk, to,
-      value: q, age, prone,
+      name,
+      team: SAMPLE_TEAMS[i % SAMPLE_TEAMS.length]!,
+      positions,
+      arche,
+      gp,
+      mpg,
+      fgm: fga * fgPct,
+      fga,
+      ftm: fta * ftPct,
+      fta,
+      threes,
+      pts,
+      reb,
+      ast,
+      stl,
+      blk,
+      to,
+      value: q,
+      age,
+      prone,
     });
   }
 
   // Market: ADP follows value with noise; XRank and Rank are separate noisy views.
   const byValue = [...players].sort((a, b) => b.value - a.value);
-  const adpRank = byValue.map((p) => ({ p, s: byValue.indexOf(p) + 1 + 6 * gauss() })).sort((a, b) => a.s - b.s);
+  const adpRank = byValue
+    .map((p) => ({ p, s: byValue.indexOf(p) + 1 + 6 * gauss() }))
+    .sort((a, b) => a.s - b.s);
   const adp = new Map<string, number>();
   adpRank.forEach((x, i) => adp.set(x.p.id, i < 190 ? r1(i + 1 + Math.abs(1.5 * gauss())) : NaN));
   const xr = byValue.map((p, i) => ({ p, s: i + 1 + 8 * gauss() })).sort((a, b) => a.s - b.s);
@@ -130,30 +307,78 @@ export function generateSample(seed = 20260923, count = 300): SampleFiles {
   const rank = new Map(rk.map((x, i) => [x.p.id, i + 1]));
 
   const csv = (rows: (string | number)[][]) =>
-    rows.map((r) => r.map((c) => (typeof c === 'string' && /[",]/.test(c) ? `"${c.replace(/"/g, '""')}"` : String(c))).join(',')).join('\n') + '\n';
+    rows
+      .map((r) =>
+        r
+          .map((c) => (typeof c === 'string' && /[",]/.test(c) ? `"${c.replace(/"/g, '""')}"` : String(c)))
+          .join(','),
+      )
+      .join('\n') + '\n';
 
   const statuses = (p: GenPlayer) => (p.prone > 0.85 ? 'INJ' : p.prone > 0.75 ? 'GTD' : '');
-  const market: (string | number)[][] = [['Player', 'Team', 'Pos', 'Yahoo ID', 'XRank', 'Rank', 'Last 7 Days ADP', 'Status']];
+  const market: (string | number)[][] = [
+    ['Player', 'Team', 'Pos', 'Yahoo ID', 'XRank', 'Rank', 'Last 7 Days ADP', 'Status'],
+  ];
   for (const p of players) {
     const a = adp.get(p.id)!;
-    market.push([p.name, p.team, p.positions, `y${p.id}`, xrank.get(p.id)!, rank.get(p.id)!, Number.isNaN(a) ? '' : a, statuses(p)]);
+    market.push([
+      p.name,
+      p.team,
+      p.positions,
+      `y${p.id}`,
+      xrank.get(p.id)!,
+      rank.get(p.id)!,
+      Number.isNaN(a) ? '' : a,
+      statuses(p),
+    ]);
   }
 
-  const hashtag: (string | number)[][] = [['PLAYER', 'TEAM', 'POS', 'GP', 'MPG', 'FG%', 'FT%', '3PM', 'PTS', 'TREB', 'AST', 'STL', 'BLK', 'TO']];
+  const hashtag: (string | number)[][] = [
+    ['PLAYER', 'TEAM', 'POS', 'GP', 'MPG', 'FG%', 'FT%', '3PM', 'PTS', 'TREB', 'AST', 'STL', 'BLK', 'TO'],
+  ];
   for (const p of players)
     hashtag.push([
-      p.name, p.team, p.positions, p.gp, r1(p.mpg),
-      `${r3(p.fgm / p.fga)} (${r1(p.fgm)}/${r1(p.fga)})`, `${r3(p.ftm / p.fta)} (${r1(p.ftm)}/${r1(p.fta)})`,
-      r1(p.threes), r1(p.pts), r1(p.reb), r1(p.ast), r1(p.stl), r1(p.blk), r1(p.to),
+      p.name,
+      p.team,
+      p.positions,
+      p.gp,
+      r1(p.mpg),
+      `${r3(p.fgm / p.fga)} (${r1(p.fgm)}/${r1(p.fga)})`,
+      `${r3(p.ftm / p.fta)} (${r1(p.ftm)}/${r1(p.fta)})`,
+      r1(p.threes),
+      r1(p.pts),
+      r1(p.reb),
+      r1(p.ast),
+      r1(p.stl),
+      r1(p.blk),
+      r1(p.to),
     ]);
   // Hashtag "TREB" isn't a synonym by default → keep standard "REB" header for auto-mapping.
   hashtag[0]![9] = 'REB';
 
-  const bbm: (string | number)[][] = [['Name', 'Team', 'g', 'm/g', 'fgm', 'fga', 'ftm', 'fta', '3pm', 'pts', 'reb', 'ast', 'stl', 'blk', 'to']];
+  const bbm: (string | number)[][] = [
+    ['Name', 'Team', 'g', 'm/g', 'fgm', 'fga', 'ftm', 'fta', '3pm', 'pts', 'reb', 'ast', 'stl', 'blk', 'to'],
+  ];
   for (const p of players) {
     const d = p.prone > 0.7 && rnd() < 0.5 ? 0.25 : 0.05; // some strong disagreements
     const f = (x: number) => r1(Math.max(0, x * (1 + d * gauss())));
-    bbm.push([p.name, p.team, Math.round(Math.min(82, Math.max(10, p.gp + (d > 0.1 ? -18 : 2) * rnd()))), r1(p.mpg), f(p.fgm), f(p.fga) || 1, f(p.ftm), Math.max(f(p.fta), f(p.ftm)), f(p.threes), f(p.pts), f(p.reb), f(p.ast), f(p.stl), f(p.blk), f(p.to)]);
+    bbm.push([
+      p.name,
+      p.team,
+      Math.round(Math.min(82, Math.max(10, p.gp + (d > 0.1 ? -18 : 2) * rnd()))),
+      r1(p.mpg),
+      f(p.fgm),
+      f(p.fga) || 1,
+      f(p.ftm),
+      Math.max(f(p.fta), f(p.ftm)),
+      f(p.threes),
+      f(p.pts),
+      f(p.reb),
+      f(p.ast),
+      f(p.stl),
+      f(p.blk),
+      f(p.to),
+    ]);
   }
   // Ensure makes ≤ attempts after independent jitter.
   for (let i = 1; i < bbm.length; i++) {
@@ -162,7 +387,20 @@ export function generateSample(seed = 20260923, count = 300): SampleFiles {
     if (Number(row[6]) > Number(row[7])) row[6] = row[7]!;
   }
 
-  const avail: (string | number)[][] = [['Player', 'Team', 'Season', 'GP', 'Team Games', 'Missed Low', 'Missed Moderate', 'Missed High', 'Missed Unclassified', 'Note']];
+  const avail: (string | number)[][] = [
+    [
+      'Player',
+      'Team',
+      'Season',
+      'GP',
+      'Team Games',
+      'Missed Low',
+      'Missed Moderate',
+      'Missed High',
+      'Missed Unclassified',
+      'Note',
+    ],
+  ];
   for (const p of players.slice(0, 240)) {
     for (const [si, season] of ['2025-26', '2024-25', '2023-24'].entries()) {
       if (p.age - si < 20) continue;
@@ -171,11 +409,24 @@ export function generateSample(seed = 20260923, count = 300): SampleFiles {
       const high = p.prone > 0.6 ? Math.round(missed * 0.7) : 0;
       const low = Math.round((missed - high) * 0.5);
       const mod = missed - high - low;
-      avail.push([p.name, p.team, season, gp, 82, low, mod, high, 0, high > 0 ? 'recurring lower-body issue (fictional)' : '']);
+      avail.push([
+        p.name,
+        p.team,
+        season,
+        gp,
+        82,
+        low,
+        mod,
+        high,
+        0,
+        high > 0 ? 'recurring lower-body issue (fictional)' : '',
+      ]);
     }
   }
 
-  const ctx: (string | number)[][] = [['Player', 'Team', 'Age', 'Status', 'Risk Delta', 'Manual Upside', 'Role Tags', 'Prev MPG', 'Note']];
+  const ctx: (string | number)[][] = [
+    ['Player', 'Team', 'Age', 'Status', 'Risk Delta', 'Manual Upside', 'Role Tags', 'Prev MPG', 'Note'],
+  ];
   for (const [i, p] of players.entries()) {
     const tags = i % 23 === 7 ? 'STARTER_OPPORTUNITY' : i % 31 === 5 ? 'INJURY_AWAY_ROLE' : '';
     const status = p.prone > 0.85 ? 'OUT_SHORT' : p.prone > 0.75 ? 'DTD' : 'HEALTHY';
@@ -184,7 +435,14 @@ export function generateSample(seed = 20260923, count = 300): SampleFiles {
   }
 
   const po: (string | number)[][] = [['Team', 'W18', 'W19', 'W20', 'W21']];
-  for (const t of SAMPLE_TEAMS) po.push([t, 3 + Math.floor(rnd() * 2), 3 + Math.floor(rnd() * 2), 3 + Math.floor(rnd() * 2), 3 + Math.floor(rnd() * 2)]);
+  for (const t of SAMPLE_TEAMS)
+    po.push([
+      t,
+      3 + Math.floor(rnd() * 2),
+      3 + Math.floor(rnd() * 2),
+      3 + Math.floor(rnd() * 2),
+      3 + Math.floor(rnd() * 2),
+    ]);
 
   return {
     'yahoo-market.sample.csv': csv(market),

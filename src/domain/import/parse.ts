@@ -1,5 +1,12 @@
 import Papa from 'papaparse';
-import { INJURY_STATUSES, POSITIONS, ROLE_TAGS, type InjuryStatus, type Position, type RoleTag } from '../types/core';
+import {
+  INJURY_STATUSES,
+  POSITIONS,
+  ROLE_TAGS,
+  type InjuryStatus,
+  type Position,
+  type RoleTag,
+} from '../types/core';
 
 export const MAX_IMPORT_BYTES = 5 * 1024 * 1024;
 export const MAX_IMPORT_ROWS = 5000;
@@ -52,14 +59,19 @@ function parseJsonTable(text: string): ParsedTable {
     }
     rows.push(o);
   }
-  return { headers: [...headers], rows, errors: data.length > MAX_IMPORT_ROWS ? ['Truncated to row limit.'] : [] };
+  return {
+    headers: [...headers],
+    rows,
+    errors: data.length > MAX_IMPORT_ROWS ? ['Truncated to row limit.'] : [],
+  };
 }
 
 /** Parse a numeric cell: "12.3", "45%", "1,234", "" → number | null. Non-numeric → NaN (caller rejects). */
 export function parseNumber(cell: string | undefined): number | null {
   if (cell === undefined) return null;
   const t = cell.trim();
-  if (t === '' || t === '-' || t === '—' || t.toLowerCase() === 'n/a' || t.toLowerCase() === 'na') return null;
+  if (t === '' || t === '-' || t === '—' || t.toLowerCase() === 'n/a' || t.toLowerCase() === 'na')
+    return null;
   const pct = t.endsWith('%');
   const n = Number(t.replace(/[%,\s]/g, ''));
   if (!Number.isFinite(n)) return Number.NaN;
@@ -70,7 +82,11 @@ export function parseNumber(cell: string | undefined): number | null {
  * Parse a percentage cell that may carry makes/attempts, e.g. Hashtag style "0.483 (7.1/14.7)".
  * Percent values > 1 are treated as 0–100 scale.
  */
-export function parsePctCell(cell: string | undefined): { pct: number | null; makes: number | null; attempts: number | null } {
+export function parsePctCell(cell: string | undefined): {
+  pct: number | null;
+  makes: number | null;
+  attempts: number | null;
+} {
   if (cell === undefined || cell.trim() === '') return { pct: null, makes: null, attempts: null };
   const m = /^\s*([\d.]+%?)\s*\(\s*([\d.]+)\s*\/\s*([\d.]+)\s*\)\s*$/.exec(cell);
   if (m) {
@@ -136,7 +152,10 @@ export function parseRoleTags(cell: string | undefined): { tags: RoleTag[]; inva
   const tags: RoleTag[] = [];
   const invalid: string[] = [];
   for (const raw of (cell ?? '').split(/[;,|]+/)) {
-    const t = raw.trim().toUpperCase().replace(/[\s-]+/g, '_');
+    const t = raw
+      .trim()
+      .toUpperCase()
+      .replace(/[\s-]+/g, '_');
     if (!t) continue;
     if ((ROLE_TAGS as readonly string[]).includes(t)) tags.push(t as RoleTag);
     else invalid.push(t);
@@ -146,5 +165,8 @@ export function parseRoleTags(cell: string | undefined): { tags: RoleTag[]; inva
 
 /** Strip control characters and cap length for free-text fields. Rendered only via React escaping. */
 export function sanitizeText(s: string | undefined, max = 300): string {
-  return (s ?? '').replace(/[\u0000-\u001f\u007f]/g, ' ').trim().slice(0, max);
+  return (s ?? '')
+    .replace(/[\u0000-\u001f\u007f]/g, ' ')
+    .trim()
+    .slice(0, max);
 }
