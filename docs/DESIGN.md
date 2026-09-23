@@ -1,6 +1,6 @@
 # Technical Design — Yahoo Fantasy Basketball 9-Cat Draft Decision Engine
 
-Status: **REVISION 2 — DRAFT FOR CODEX REVIEW. No application code has been written.**
+Status: **REVISION 3 — APPROVED FOR IMPLEMENTATION (Codex QA approved rev 2; rev 3 is a small calibration change).**
 Every formula below is a proposal. Once approved, it becomes the contract that `STRATEGY_ENGINE.md` and the tests are built from.
 
 ## Revision log
@@ -9,6 +9,7 @@ Every formula below is a proposal. Once approved, it becomes the contract that `
 |---|---|
 | 1 | Initial design. Architecture approved by Codex QA. |
 | 2 | Addresses the Codex QA review of rev 1 (items R2-1 … R2-8 below). |
+| 3 | R3-1: durability residual-risk weight (§6.9) and calibration fixtures (T-DUR-1…3). R3-2: documents the limitation of the single replacement coefficient (§14). No other formula changed. |
 
 Rev 2 changes, mapped to the Codex review:
 
@@ -298,6 +299,7 @@ export const DEFAULT_STRATEGY_CONFIG = {
   unknownHistoryRisk: 0.10,
   riskBands: { low: 85, moderate: 70, high: 50 },
   riskWeightsByRound: [{fromRound:1,w:0.60},{fromRound:4,w:0.35},{fromRound:7,w:0.15},{fromRound:11,w:0.05}],
+  durabilityResidualWeight: 0.5,         // R3-1: share of HISTORICAL risk applied on top of projected GP
 
   // Playoffs
   playoffWeight: 0.03, playoffWeekWeights: { 18: 1, 19: 1, 20: 1, 21: 1 },
@@ -624,25 +626,37 @@ PosAdj_i      = U_i · [0.05·u_i + 0.20·max(0, (u_i − 0.5)/0.5)]
 MultiPosAdj_i = U_i · min(0.02, 0.01·(|positions_i| − 1))
 ```
 
-### 6.8 Availability / durability (unchanged, guarded)
+### 6.8 Availability / durability (split into historical and current components in rev 3)
 
 ```
 wMiss_s = Σ_abs games·recurrenceWeight / teamGames_s     (or (1 − GP/teamGames)·0.75 without detail)
           import validation: teamGames > 0, 0 ≤ GP ≤ teamGames
 H = Σ w_s·wMiss_s / Σ w_s over seasons present            (no seasons → 0.10, flagged)
-ρ_i = clamp(H + Chronic(0.05) + 0.01·max(0, age−30) + statusRisk + manualRiskDelta, 0, 1)
+
+ρ_hist_i = H + Chronic(0.05) + 0.01·max(0, age−30)        historical / structural durability
+ρ_now_i  = statusRisk[currentStatus] + manualRiskDelta     current status + explicit user judgment
+ρ_i      = clamp(ρ_hist_i + ρ_now_i, 0, 1)                 full risk index (display)
 AvailabilityScore = round(100·(1 − ρ_i));  ≥85 LOW, ≥70 MODERATE, ≥50 HIGH, else VERY HIGH
 ```
 
-Projected GP stays excluded from ρ. It is priced by `a_i` in §5.4.
+The Availability Score and risk label show the **full** risk index, so the user sees the complete durability picture. Projected GP stays excluded from ρ. It is priced by `a_i` in §5.4.
 
-### 6.9 Round-dependent risk (unchanged)
+### 6.9 Round-dependent risk with a residual durability weight (R3-1)
+
+Projection providers (Hashtag, BBM and others) often already lower a player's projected GP because of his injury history. That lower GP is priced by ESV through `a_i`. Applying the whole historical risk index again in RiskAdj would punish the same injury history twice. Rev 3 applies only a **residual** share of the historical component:
 
 ```
-RiskAdj_i = − riskWeight(round) · ρ_i · U_i          0.60 / 0.35 / 0.15 / 0.05 (R1–3 / 4–6 / 7–10 / 11+)
+ρ_eff_i  = clamp(durabilityResidualWeight · ρ_hist_i + ρ_now_i, 0, 1)      durabilityResidualWeight = 0.5
+RiskAdj_i = − riskWeight(round) · ρ_eff_i · U_i       0.60 / 0.35 / 0.15 / 0.05 (R1–3 / 4–6 / 7–10 / 11+)
 ```
 
-This term is never positive.
+- **What this term means.** `RiskAdj` represents downside and tail risk *beyond* the primary projection's GP assumption. Examples: a recurrence that wipes out a whole season rather than the expected 15–20 games, playoff-week absences, or a recovery timeline that slips. It is **not** a second estimate of expected missed games.
+- **The residual weight applies only to history** (H, chronic pattern, age). Current status and the manual risk delta are applied in full. A projection made before a new injury may not reflect it, and a manual delta is explicit user judgment.
+- **`durabilityResidualWeight` is configurable:**
+  - 0 → trust the projection's GP entirely.
+  - 1 → rev-2 behavior, the full historical index on top of GP.
+- **This term is never positive.** Durability alone never adds value.
+- **Debug shows** `ρ_hist`, `ρ_now`, `ρ_eff`, the residual weight, the round weight, and the resulting RiskAdj, next to the ESV availability loss. That makes the two separate availability effects visible side by side.
 
 ### 6.10 Playoffs (guarded)
 
@@ -897,6 +911,9 @@ Warnings are prepended:
 | T-RESYNC-2 | Resync bounds and draft-position change | RESYNC outside 1 … N·K + 1 is rejected. Changing draft position after a resync recomputes P0 and P1 from the same current. |
 | T-FINITE-1 | **All normalization is finite on pathological data** | Seeded generator plus hand-made datasets: all-identical players (σ = 0 in every category); one category constant; zero FGA or FTA for everyone; exactly 30 eligible players; fewer than 30 (expects INSUFFICIENT_DATA); P larger than the pool; a single available player; all DDP negative; all DDP equal; everyone missing ADP; GP = 0; replacement band empty; playoff games identical for all teams; no history anywhere; extreme values (1e6 stats). For each: every numeric output is `Number.isFinite`, rel is in [0, 1], score is in [0, 100], labels are valid enums, and there is no throw. |
 | T-FINITE-2 | Guard unit tests | `safeDiv`, `safeSd` and `zOrZero` at eps boundaries; `S ≥ minSpread`; scarcity ratios with zero baselines; coherence with all-positive correlations (zero denominator); Rec with `Required = 0`. |
+| T-DUR-1 | **Durability calibration: rounds 1–3** | Fixtures: **Elite-Fragile** (PGV ≈ 8.0, GP 62, high-recurrence history → ρ_hist ≈ 0.35), **Good-Solid** (PGV ≈ 6.0, GP 72, ρ_hist ≈ 0.12), **Durable-Lower** (PGV ≈ 4.5, GP 78, ρ_hist ≈ 0.03), all with neutral fit. In round 1: (a) Elite-Fragile's DDP > Durable-Lower's; (b) Elite-Fragile's combined availability penalty (ESV loss + RiskAdj) is a moderate share of its PGV (15–40 %), so it is neither ignored nor crushed; (c) the Elite-Fragile vs Good-Solid DDP gap is materially smaller than their per-game gap (the model is moderately aggressive about durability). |
+| T-DUR-2 | Residual weight is honored | Raising `durabilityResidualWeight` from 0 → 0.5 → 1.0 makes Elite-Fragile's RiskAdj strictly more negative and never changes ESV. At 0, RiskAdj depends only on ρ_now. `ρ_now` (for example OUT_LONG) is applied in full regardless of the weight. |
+| T-DUR-3 | Round dependence | The same trio in round 12: the risk terms shrink (weight 0.05), and the ordering follows BPV (ESV blend) alone. Elite-Fragile's RiskAdj in round 1 is at least 10× its round-12 RiskAdj. |
 | T-BAND-1 | Bands are ordinal | Static check: `survivalBands.ts` exports no numeric mapping. Changing a player's zS within the same band leaves PairScore, MissCost and label unchanged. |
 
 ### 12.3 Invariant suite (§53 / §60)
@@ -941,5 +958,22 @@ Warnings are prepended:
 | A16 | Weights | Starting values. One calibration pass is expected on real data. |
 | A17 | New: recoverability horizon | Recovery assumes up to 3 dedicated picks drawn from the top 3N available players by BPV. It ignores the BPV cost of those picks. A known simplification, conservative toward *not* punting. |
 | A18 | New: minutes-growth upside | Needs both projected MPG and previous-season MPG. Otherwise the signal is 0 (never inferred). |
+| A19 | Rev 3: residual durability | Provider GP is assumed to already contain some injury-history discount. Only 50 % of historical risk is applied again as tail risk (configurable). |
+
+---
+
+## 14. Known limitations and future calibration
+
+1. **One replacement coefficient for every absence (R3-2).** v1 uses a single `replacementCoefficient` (0.35) for all missed games. In reality, absence types stream differently:
+   - **Extended, predictable absences** (a multi-week injury announced in advance) are *more* replaceable. The player can move to an IL slot and a streamer or pickup fills a full active slot for weeks.
+   - **Sporadic DTD, rest or load-management absences** are *less* replaceable. They are often announced close to tip-off, and within 4 weekly acquisitions in a 14-team league they rarely produce a usable streamer.
+
+   A future calibration could split the coefficient by absence type (for example `r_extended` and `r_sporadic`), weighted by the player's historical absence mix and IL availability. v1 deliberately does **not** build an absence simulator.
+2. **Durability residual weight** (0.5) is a judgment prior, not a fitted value. Calibrate it once real provider GP and three-season history are available. For example, check how much of the historical miss rate the primary provider's GP already embeds.
+3. **Default weights** (A16) need one calibration pass on real Hashtag and Yahoo data.
+4. **The recoverability heuristic** (A17) ignores the BPV cost of rescue picks.
+5. **Survival bands** use an assumed ADP spread (A11), because Yahoo L7 ADP gives no distribution.
+6. **Pick-pair planning** looks only one user pick ahead.
+
 
 **Awaiting Codex review before implementation.**
