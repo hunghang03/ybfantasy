@@ -977,3 +977,17 @@ Warnings are prepended:
 
 
 **Awaiting Codex review before implementation.**
+
+---
+
+## 15. Implementation notes (post-approval)
+
+The implemented formulas and the calibrations made while building are documented in `STRATEGY_ENGINE.md` §12:
+
+- pick-pair discount of 1.0, with an ordinal "most at-risk first" tiebreak among LEAN-quality contenders
+- label rule R0
+- the `VOID` event
+- catch-up picks count as recorded
+- the draft-position invariant clarified: DDP can change through round-dependent risk and upside only
+
+None of these changes the approved rev-3 formulas for value, availability, punts, scarcity or bands.
