@@ -1,0 +1,11 @@
+{
+  "name": "9-Cat Draft Engine",
+  "short_name": "Draft Engine",
+  "description": "Local-first Yahoo Fantasy Basketball 9-cat live draft decision engine.",
+  "start_url": "/draft/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

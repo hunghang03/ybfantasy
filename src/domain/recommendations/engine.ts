@@ -231,7 +231,15 @@ export function evaluateDraft(sc: StaticContext, input: DraftInput): DraftEvalua
   const bestPair = Math.max(...[...planning.values()].map((p) => p.pairScore), Number.NEGATIVE_INFINITY);
   const tol = config.pickPair.tieToleranceRel * S;
   const bandIdx = (e: PlayerEvaluation) => BAND_ORDER.indexOf(tierBand(e.market.band, config));
-  const isContender = (e: PlayerEvaluation) => !!e.planning && e.planning.pairScore >= bestPair - tol;
+  // A contender must also be LEAN-DRAFT quality on its own (ddpRel ≥ leanDraftRel), so the at-risk
+  // tiebreak can never promote a clearly weaker player. If nobody qualifies, pair score decides.
+  const qualified = [...planning.entries()].filter(([id]) => relOf(scored.get(id)!.ddpRaw) >= config.marketTimingThresholds.leanDraftRel);
+  const bestQualified = Math.max(...qualified.map(([, p]) => p.pairScore), Number.NEGATIVE_INFINITY);
+  const isContender = (e: PlayerEvaluation) =>
+    !!e.planning &&
+    (qualified.length > 0
+      ? e.ddpRel >= config.marketTimingThresholds.leanDraftRel && e.planning.pairScore >= bestQualified - tol
+      : e.planning.pairScore >= bestPair - tol);
   evals.sort((a, b) => {
     const ad = a.flags.doNotDraft ? 1 : 0;
     const bd = b.flags.doNotDraft ? 1 : 0;
@@ -239,7 +247,9 @@ export function evaluateDraft(sc: StaticContext, input: DraftInput): DraftEvalua
     const ac = isContender(a) ? 0 : 1;
     const bc = isContender(b) ? 0 : 1;
     if (ac !== bc) return ac - bc;
-    if (ac === 0 && bandIdx(a) !== bandIdx(b)) return bandIdx(a) - bandIdx(b);
+    // Among contenders: most at-risk band first; within the same band, the higher DDP first
+    // (pair scores inside the tolerance are treated as ties, so take the better player now).
+    if (ac === 0) return bandIdx(a) - bandIdx(b) || b.ddpRaw - a.ddpRaw || cmpId(a.playerId, b.playerId);
     const ap = a.planning ? 0 : 1;
     const bp = b.planning ? 0 : 1;
     if (ap !== bp) return ap - bp;

@@ -67,3 +67,34 @@ export function positionFraction(positions: readonly Position[], report: Positio
   const multiPosFraction = Math.min(config.multiPositionBonusCap, config.multiPositionBonus * Math.max(0, positions.length - 1));
   return { urgency: u, fraction, multiPosFraction };
 }
+
+/**
+ * Display helper: assign roster players to active slots (maximum matching, deterministic),
+ * remaining players go to the bench. Returns slot labels in Yahoo order.
+ */
+export function assignSlots(
+  players: readonly { id: string; positions: readonly Position[] }[],
+  roster: RosterSettings,
+): { slot: string; playerId: string | null }[] {
+  const slots: { label: string; elig: readonly Position[] }[] = [];
+  for (const s of ACTIVE_SLOTS) for (let i = 0; i < roster.active[s]; i++) slots.push({ label: s, elig: SLOT_ELIGIBILITY[s] });
+  const owner = new Array<number>(slots.length).fill(-1);
+  const can = (pi: number, si: number) => players[pi]!.positions.some((p) => slots[si]!.elig.includes(p));
+  const tryAssign = (pi: number, seen: boolean[]): boolean => {
+    for (let si = 0; si < slots.length; si++) {
+      if (seen[si] || !can(pi, si)) continue;
+      seen[si] = true;
+      if (owner[si] === -1 || tryAssign(owner[si]!, seen)) {
+        owner[si] = pi;
+        return true;
+      }
+    }
+    return false;
+  };
+  for (let pi = 0; pi < players.length; pi++) tryAssign(pi, new Array<boolean>(slots.length).fill(false));
+  const placed = new Set(owner.filter((o) => o >= 0));
+  const out = slots.map((s, i) => ({ slot: s.label, playerId: owner[i]! >= 0 ? players[owner[i]!]!.id : null }));
+  const bench = players.filter((_, i) => !placed.has(i));
+  for (let b = 0; b < Math.max(roster.bench, bench.length); b++) out.push({ slot: 'BN', playerId: bench[b]?.id ?? null });
+  return out;
+}
