@@ -12,9 +12,9 @@ export interface DraftState {
   drafted: Set<string>;
   /** My roster, in draft order. */
   myPicks: { playerId: string; overallPick: number | null; seq: number; snapshot?: PickSnapshot }[];
-  /** Number of advancing picks recorded. */
+  /** Number of picks recorded (advancing or catch-up), excluding voided picks. */
   accountedPicks: number;
-  /** currentOverall − 1 − accountedPicks: picks the local log never recorded (after a resync). */
+  /** currentOverall − 1 − accountedPicks: slots on the clock with no recorded player (after a resync or void). */
   unrecordedPicks: number;
   offSchedulePicks: number[];
 }
@@ -36,10 +36,10 @@ export function replay(events: readonly DraftEvent[], userPickSet?: ReadonlySet<
     }
     if (e.type === 'PICK') {
       drafted.add(e.playerId);
-      if (e.advance) {
-        accounted += 1;
-        current += 1;
-      }
+      // Every recorded pick accounts for one slot on the clock — including catch-up picks that
+      // do not advance (they fill slots skipped by a RESYNC).
+      accounted += 1;
+      if (e.advance) current += 1;
       if (e.by === 'ME') {
         myPicks.push({ playerId: e.playerId, overallPick: e.overallPick, seq: e.seq, snapshot: e.snapshot });
         if (userPickSet && e.overallPick !== null && !userPickSet.has(e.overallPick)) offSchedule.push(e.overallPick);

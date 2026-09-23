@@ -88,6 +88,7 @@ describe('manual resync (T-RESYNC-1/2)', () => {
     for (let i = 61; i <= 66; i++) e = pick(e, `p${i}`, 'OTHER', false);
     const caught = replay(e);
     expect(caught.currentOverall).toBe(67);
+    expect(caught.unrecordedPicks).toBe(0);
     expect(caught.drafted).toEqual(replay(full).drafted);
     // undo the RESYNC (after undoing catch-ups) restores current = 61 exactly
     let u = e;
