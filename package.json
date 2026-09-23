@@ -1,0 +1,48 @@
+{
+  "name": "ybfantasy-draft-engine",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Yahoo Fantasy Basketball 9-cat live draft decision engine (local-first, deterministic).",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "npx serve out",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "sample-data": "tsx sample-data/generate.ts",
+    "check": "npm run typecheck && npm run lint && npm run test"
+  },
+  "dependencies": {
+    "dexie": "^4.4.6",
+    "next": "^16.3.6",
+    "papaparse": "^5.7.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "zod": "^4.6.5",
+    "zustand": "^5.0.15"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^26.6.2",
+    "@types/papaparse": "^5.5.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitest/coverage-v8": "^5.0.1",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.3.6",
+    "fake-indexeddb": "^6.2.5",
+    "postcss": "^8.5.28",
+    "prettier": "^3.9.9",
+    "serve": "^14.2.6",
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.1"
+  }
+}
