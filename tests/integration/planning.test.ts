@@ -36,6 +36,11 @@ function atPick11(ds: Dataset): DraftEvent[] {
 }
 
 describe('pick-pair ordering (deterministic, ordinal)', () => {
+  it('default next-pick discount is 0.90', async () => {
+    const { defaultConfig } = await import('@/domain/config/defaults');
+    expect(defaultConfig().pickPair.nextDiscount).toBe(0.9);
+  });
+
   it('take the at-risk star now when the slightly better star will safely last', () => {
     // Pool ADPs start at 1; shift pool so its players do not collide with the stars' ADP.
     const pool = synthPool(250).map((s) => ({ ...s, adp: (s.adp ?? 0) + 5 }));
@@ -53,6 +58,11 @@ describe('pick-pair ordering (deterministic, ordinal)', () => {
     expect(b.market.band).toBe('SAFE');
     expect(ev.recommendedId).toBe('AT_RISK');
     expect(a.planning!.nextBestConservative.playerId).toBe('SAFE_BETTER');
+    // Future value is weighted 0.90 (substantial, not equal): pair = DDP + next-pick scarcity + 0.9 × next.
+    expect(a.planning!.pairScore).toBeCloseTo(
+      a.ddpRaw + a.market.nextPickScarcity + 0.9 * a.planning!.nextBestConservative.ddpRaw,
+      10,
+    );
     expect(['DRAFT_NOW', 'LEAN_DRAFT']).toContain(a.label);
     expect(b.label).toBe('SAFE_WAIT');
   });

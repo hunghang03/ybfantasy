@@ -115,9 +115,10 @@ export const DEFAULT_STRATEGY_CONFIG: StrategyConfig = {
 
   pickPair: {
     candidates: 10,
-    // Implementation calibration (see STRATEGY_ENGINE.md §8.3): no discount, plus an ordinal
-    // "most at-risk first" tiebreak among near-equal pair scores.
-    nextDiscount: 1.0,
+    // Future next-pick value gets substantial but not equal weight: survival bands are ordinal
+    // heuristics, not probabilities (Codex QA). Ordering also uses the LEAN-quality contender gate
+    // and an ordinal "most at-risk first" tiebreak (STRATEGY_ENGINE.md §9.4).
+    nextDiscount: 0.9,
     tieToleranceRel: 0.06,
     conservativeBands: ['SAFE', 'LIKELY'],
     neutralBands: ['SAFE', 'LIKELY', 'TOSSUP'],

@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { defaultConfig } from '@/domain/config/defaults';
-import { computePunts, puntMultiplier, type PuntInputs } from '@/domain/punts/punts';
+import {
+  computePunts,
+  puntMultiplier,
+  recoverability,
+  rescueCohortIndex,
+  type PuntInputs,
+} from '@/domain/punts/punts';
 import { CATEGORIES, mapCategories, type Category, type CategoryRecord } from '@/domain/types/core';
 import type { StaticPlayer } from '@/domain/types/evaluation';
 
@@ -138,5 +144,49 @@ describe('punt confidence with recoverability (R2-3)', () => {
     expect(none.score).toBe(0);
     const some = computePunts(inputs({ d: { TO: -0.8 }, k: 6 }), cfg).entries.TO;
     expect(some.score).toBeGreaterThan(0.1 - 1e-9);
+  });
+});
+
+describe('recoverability cohort indexing (Codex QA blocker 1)', () => {
+  // cohortMean is 1-indexed by round (index 0 = zero pad). Give each round a distinct AST mean = round
+  // number so the cohort each rescue pick is compared with is visible in the gain.
+  const cohorts = Array.from({ length: 14 }, (_, j) => ({ ...mapCategories(() => 0), AST: j }));
+  const recInputs = (k: number, zs: number[]): PuntInputs => ({
+    ...inputs({ d: { AST: -3 }, k }),
+    standing: {
+      s: { ...mapCategories(() => 0), AST: -1000 },
+      B: mapCategories(() => 0),
+      sigmaT: mapCategories(() => 1),
+      d: { ...mapCategories(() => 0), AST: -3 },
+    },
+    cohortMean: cohorts,
+    availableByBpv: zs.map((z) => fake({ AST: z })),
+  });
+
+  it('rescueCohortIndex: pick 1 → cohort k+1, pick 2 → k+2, …', () => {
+    expect(rescueCohortIndex(0, 1, 14)).toBe(1);
+    expect(rescueCohortIndex(0, 3, 14)).toBe(3);
+    expect(rescueCohortIndex(3, 1, 14)).toBe(4);
+    expect(rescueCohortIndex(3, 2, 14)).toBe(5);
+    expect(rescueCohortIndex(11, 2, 14)).toBe(13);
+  });
+
+  it('k = 0: rescue picks compared with cohorts 1, 2, 3', () => {
+    const r = recoverability('AST', recInputs(0, [10, 9, 8]), cfg);
+    expect(r.gain).toBe(10 - 1 + (9 - 2) + (8 - 3));
+  });
+
+  it('k = 3: rescue picks compared with cohorts 4, 5, 6', () => {
+    const r = recoverability('AST', recInputs(3, [10, 9, 8]), cfg);
+    expect(r.gain).toBe(10 - 4 + (9 - 5) + (8 - 6));
+  });
+
+  it('late draft (k = 11 of 13): only 2 rescue picks, compared with cohorts 12 and 13', () => {
+    const r = recoverability('AST', recInputs(11, [20, 19, 18]), cfg);
+    expect(r.gain).toBe(20 - 12 + (19 - 13));
+  });
+
+  it('roster full (k = 13): no rescue picks, no gain', () => {
+    expect(recoverability('AST', recInputs(13, [20, 19, 18]), cfg).gain).toBe(0);
   });
 });

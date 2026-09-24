@@ -61,11 +61,21 @@ export function recoverability(
     .sort((a, b) => b - a)
     .slice(0, m);
   let gain = 0;
-  best.forEach((z, j) => {
-    const cohort = cohortMean[Math.min(k + j + 1, cohortMean.length - 1)]!;
+  best.forEach((z, i) => {
+    const cohort = cohortMean[rescueCohortIndex(k, i + 1, cohortMean.length)]!;
     gain += Math.max(0, z - cohort[c]);
   });
   return { required, gain, rec: clamp01(safeDiv(gain, required, 0, eps)) };
+}
+
+/**
+ * Cohort compared with rescue pick number `pickNumber` (1-based) for a roster of size k.
+ * `cohortMean` is 1-indexed by draft round (index 0 is a zero pad; cohortMean[j] = round j), so
+ * rescue pick 1 is the roster's (k+1)-th player and is compared with cohort k+1, pick 2 with k+2, …
+ * Because at most K − k rescue picks are taken, the clamp to the last round never binds in practice.
+ */
+export function rescueCohortIndex(k: number, pickNumber: number, cohortLength: number): number {
+  return Math.min(k + pickNumber, cohortLength - 1);
 }
 
 export function coherence(

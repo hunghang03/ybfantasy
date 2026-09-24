@@ -113,3 +113,116 @@ describe('manual resync (T-RESYNC-1/2)', () => {
     expect(pickTiming({ teams: T, slot: 4, rounds: R }, cur).p0).toBe(32);
   });
 });
+
+describe('catch-up accounting (Codex QA blocker 2)', () => {
+  const T2 = 14;
+  const R2 = 13;
+  const tryPick = (e: DraftEvent[], id: string, advance: boolean) =>
+    appendPick(e, { playerId: id, by: 'OTHER', advance, at }, T2, R2);
+
+  it('catch-up without an unrecorded slot is rejected', () => {
+    expect(tryPick([], 'x', false).ok).toBe(false);
+    const e = pick([], 'a');
+    expect(tryPick(e, 'x', false).ok).toBe(false);
+  });
+
+  it('resync forward by 2 → exactly two catch-up picks accepted, the third rejected', () => {
+    let e = pick(pick([], 'a'), 'b'); // current 3
+    const r = appendResync(e, 5, T2, R2, at);
+    if (!r.ok) throw new Error(r.error);
+    e = r.events;
+    expect(replay(e).unrecordedPicks).toBe(2);
+    const c1 = tryPick(e, 'c', false);
+    expect(c1.ok).toBe(true);
+    if (!c1.ok) return;
+    const c2 = tryPick(c1.events, 'd', false);
+    expect(c2.ok).toBe(true);
+    if (!c2.ok) return;
+    expect(replay(c2.events).unrecordedPicks).toBe(0);
+    expect(replay(c2.events).currentOverall).toBe(5);
+    expect(tryPick(c2.events, 'e', false).ok).toBe(false);
+  });
+
+  it('a voided advancing pick opens exactly one catch-up slot', () => {
+    let e = pick(pick([], 'a'), 'b');
+    const v = appendVoid(e, e[1]!.seq, at);
+    if (!v.ok) throw new Error(v.error);
+    e = v.events;
+    expect(replay(e).unrecordedPicks).toBe(1);
+    const c = tryPick(e, 'z', false);
+    expect(c.ok).toBe(true);
+    if (c.ok) expect(tryPick(c.events, 'y', false).ok).toBe(false);
+  });
+
+  it('resync cannot move behind already-recorded picks', () => {
+    let e: DraftEvent[] = [];
+    for (let i = 0; i < 5; i++) e = pick(e, `p${i}`); // 5 recorded, current 6
+    expect(appendResync(e, 5, T2, R2, at).ok).toBe(false);
+    expect(appendResync(e, 3, T2, R2, at).ok).toBe(false);
+    expect(appendResync(e, 8, T2, R2, at).ok).toBe(true);
+  });
+
+  it('unrecorded count is never negative across randomized valid action sequences; undo restores exact state', () => {
+    let seed = 42;
+    const rnd = () => {
+      seed = (seed * 1103515245 + 12345) % 2147483648;
+      return seed / 2147483648;
+    };
+    let e: DraftEvent[] = [];
+    const history: string[] = [];
+    let n = 0;
+    for (let step = 0; step < 400; step++) {
+      const before = JSON.stringify(e);
+      const roll = rnd();
+      let next: DraftEvent[] | null = null;
+      if (roll < 0.45) {
+        const r = appendPick(e, { playerId: `p${n++}`, by: rnd() < 0.1 ? 'ME' : 'OTHER', at }, T2, R2);
+        if (r.ok) next = r.events;
+      } else if (roll < 0.65) {
+        const r = tryPick(e, `p${n++}`, false);
+        if (r.ok) next = r.events;
+      } else if (roll < 0.8) {
+        const st = replay(e);
+        const r = appendResync(e, st.currentOverall + Math.floor(rnd() * 7) - 3, T2, R2, at);
+        if (r.ok) next = r.events;
+      } else if (roll < 0.87) {
+        const picks = e.filter((x) => x.type === 'PICK');
+        const target = picks[Math.floor(rnd() * picks.length)];
+        if (target) {
+          const r = appendVoid(e, target.seq, at);
+          if (r.ok) next = r.events;
+        }
+      } else if (e.length > 0) {
+        // undo must restore exactly the state before the last accepted action
+        const restored = undoLast(e);
+        expect(JSON.stringify(restored)).toBe(history[history.length - 1]);
+        history.pop();
+        e = restored;
+        continue;
+      }
+      if (next) {
+        history.push(before);
+        e = next;
+      }
+      const st = replay(e);
+      expect(st.unrecordedPicks).toBeGreaterThanOrEqual(0);
+      expect(st.accountedPicks).toBeLessThanOrEqual(st.currentOverall - 1);
+    }
+  });
+
+  it('undo → resync → catch-up sequence restores the exact state', () => {
+    let e = pick(pick(pick([], 'a'), 'b'), 'c'); // current 4
+    const snap0 = JSON.stringify(e);
+    const r = appendResync(e, 7, T2, R2, at);
+    if (!r.ok) throw new Error(r.error);
+    const snap1 = JSON.stringify(r.events);
+    const c = tryPick(r.events, 'd', false);
+    if (!c.ok) throw new Error(c.error);
+    e = undoLast(c.events);
+    expect(JSON.stringify(e)).toBe(snap1);
+    expect(replay(e).unrecordedPicks).toBe(3);
+    e = undoLast(e);
+    expect(JSON.stringify(e)).toBe(snap0);
+    expect(replay(e)).toEqual(replay(JSON.parse(snap0)));
+  });
+});

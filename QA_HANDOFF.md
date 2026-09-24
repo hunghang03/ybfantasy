@@ -30,7 +30,7 @@ The `PW_CHROMIUM_PATH` variable is only needed where Playwright's own browser is
 
 | Risk                  | Why                                                                                                                         | Where it is covered                             |
 | --------------------- | --------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
-| Pick-pair ordering    | Implementation calibration (γ = 1, ordinal at-risk tiebreak, LEAN-quality contenders) goes beyond design rev 3              | `planning.test.ts`, STRATEGY_ENGINE §9.4 / §12  |
+| Pick-pair ordering    | Implementation calibration (γ = 0.90, ordinal at-risk tiebreak, LEAN-quality contenders) goes beyond design rev 3           | `planning.test.ts`, STRATEGY_ENGINE §9.4 / §12  |
 | Punt recoverability   | Depends on cohort means. Pools where AST (etc.) is common raise cohort means and lower Gain, by design.                     | `punts.test.ts`, `teamfit.test.ts`              |
 | Relative scale S      | All thresholds (PASS / LEAN / DRAFT NOW, missRel) depend on `S = max(top − DDP@2N, 0.5)`                                    | `finite.test.ts`, market tests                  |
 | Replacement level     | With small or synthetic pools the replacement band sits low, so PGV values are large. Real data is expected to be moderate. | `value.test.ts`, `REPLACEMENT_FALLBACK` warning |
@@ -75,7 +75,15 @@ The `PW_CHROMIUM_PATH` variable is only needed where Playwright's own browser is
 
 ## Unresolved questions for the product owner
 
-1. Should `tieToleranceRel` (0.06) and the LEAN-quality contender rule stay, or return to a γ < 1 discount?
+1. ~~Discount vs tiebreak~~ Resolved by Codex QA: γ = 0.90, keeping the LEAN-quality gate, `tieToleranceRel` and the at-risk-first tiebreak.
 2. Should draft position affect DDP at all (through round-dependent risk/upside), or should those terms use the _current_ round only?
 3. Keepers and traded picks: needed for any league?
 4. Should validation providers ever gate recommendations (for example, never DRAFT NOW on flagged disagreement)? Currently they are only flagged.
+
+## Fixes after the QA review of `65ba8875`
+
+| Item                                     | Resolution                                                                                                                                                                                                                                  | Tests                                                                                                                                                            |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Recoverability cohort indexing (blocker) | Audited: **no off-by-one existed**. `cohortMean[0]` is a zero pad, `cohortMean[j]` is round j, and the loop index was 0-based, so rescue pick 1 was already compared with cohort k+1. Made explicit via `rescueCohortIndex(k, pickNumber)`. | `tests/unit/punts.test.ts` › recoverability cohort indexing (k = 0, 3, 11, 13)                                                                                   |
+| Catch-up accounting (blocker)            | `appendPick(advance=false)` is rejected unless `unrecordedPicks > 0`. `appendResync` is rejected if it would move behind the recorded picks. The UI surfaces the rejection message.                                                         | `tests/unit/replay.test.ts` › catch-up accounting (6 tests, including a randomized property test); `e2e/draft.spec.ts` resync scenario (third catch-up rejected) |
+| Pick-pair discount                       | `pickPair.nextDiscount` 1.0 → 0.90. The gate, tolerance and tiebreak are unchanged.                                                                                                                                                         | `tests/integration/planning.test.ts`                                                                                                                             |

@@ -85,6 +85,10 @@ export function appendPick(
   const advance = input.advance ?? true;
   if (advance && state.currentOverall > totalPicks(teams, rounds))
     return { ok: false, error: 'The draft is complete; no picks remain.' };
+  // A catch-up (non-advancing) pick must fill a genuinely unrecorded slot on the clock; otherwise it
+  // would record more players than picks made (accountedPicks > currentOverall − 1).
+  if (!advance && state.unrecordedPicks <= 0)
+    return { ok: false, error: 'No unrecorded picks to catch up. Resync to the Yahoo pick number first.' };
   if (input.by === 'ME' && state.myPicks.length >= rounds)
     return { ok: false, error: 'Your roster is full.' };
   const ev: PickEvent = {
@@ -113,6 +117,12 @@ export function appendResync(
     return { ok: false, error: `Current pick must be an integer between 1 and ${max}.` };
   const state = replay(events);
   if (state.currentOverall === setCurrentOverall) return { ok: false, error: 'Already at that pick.' };
+  // Never resync behind the picks already recorded (that would make unrecordedPicks negative).
+  if (setCurrentOverall - 1 < state.accountedPicks)
+    return {
+      ok: false,
+      error: `${state.accountedPicks} picks are already recorded; the current pick cannot be earlier than ${state.accountedPicks + 1}. Undo or remove picks first.`,
+    };
   const ev: ResyncEvent = {
     seq: nextSeq(events),
     at: at ?? new Date().toISOString(),

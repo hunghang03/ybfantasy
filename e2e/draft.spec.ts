@@ -184,6 +184,12 @@ test('manual resync after missed picks', async ({ page }) => {
   await takeTopOthers(page, 2);
   await expect(page.getByTestId('current-pick')).toHaveText('11');
   await expect(page.getByTestId('unrecorded-banner')).toHaveCount(0);
+  // A third catch-up has no unrecorded slot to fill → rejected, nothing recorded.
+  const firstRow = await page.locator('[data-testid^=row-]').first().getAttribute('data-testid');
+  await page.locator('[data-testid^=taken-]').first().click();
+  await expect(page.getByRole('status')).toContainText('No unrecorded picks');
+  await expect(page.locator('[data-testid^=row-]').first()).toHaveAttribute('data-testid', firstRow!);
+  await expect(page.getByTestId('current-pick')).toHaveText('11');
   await page.getByTestId('undo').click();
   await expect(page.getByTestId('unrecorded-banner')).toContainText('1 pick');
 });

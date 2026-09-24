@@ -125,6 +125,8 @@ D_c   = clamp((−0.5 − d_c)/1.5, 0, 1)
 Coh_c = Σ_{c'} max(0, −ρ_cc')·clamp(d_c'/1.5, 0, 1) / Σ max(0, −ρ_cc')     ρ = Pearson corr of ẑ over the population
 Required_c = max(0, B_c(k) − 0.5·√K·sdBase_c − s_c)
 Gain_c = Σ_{j=1..min(K−k, 3)} max(0, ẑ_(j),c − cohortMean_{k+j},c)    over the 3 best ẑ_c among the top 3N AVAILABLE by BPV
+         cohortMean is 1-indexed by round (index 0 = zero pad): rescue pick j is compared with cohort k+j
+         (rescueCohortIndex(k, j) = k + j; tested for k = 0, 3, 11)
 Rec_c  = Required ≤ eps ? 1 : clamp(Gain/Required, 0, 1)
 score  = D·(0.30 + 0.70·(1 − Rec))·(0.70 + 0.30·Coh) + 0.10·[c = TO ∧ D > 0]
 π_auto = min(cap_k, min(1, k/5)·clamp(score))       cap_k = 0, .30, .30, .70, .70, 1.0 (k = 0…5+)
@@ -210,8 +212,15 @@ replay: PICK advance → current += 1; PICK no-advance → catch-up (clock uncha
 P0 = first user pick ≥ current;  P1 = next user pick after P0
 g (picks before my next) = on the clock ? P1 − P0 − 1 : P0 − current
 gapType: P1 − P0 vs N → SHORT / EVEN / LONG
-unrecorded = current − 1 − (non-voided recorded picks)
+unrecorded = current − 1 − (non-voided recorded picks)      invariant: unrecorded ≥ 0
 ```
+
+**Event validation.** Invalid events are rejected; the engine does not clamp them.
+
+- A catch-up (non-advancing) PICK is accepted only when `unrecorded > 0`, meaning a RESYNC skipped slots or a VOID freed one.
+- A RESYNC is rejected if it would set `current − 1` below the number of picks already recorded.
+
+Every event is validated against its prefix, so every prefix of the log is valid, and undo can never produce an invalid state.
 
 ### 9.2 Survival bands (ordinal)
 
@@ -244,7 +253,7 @@ NextScarAdj feeds pair score, miss cost and priority. **It is never part of DDP.
 Candidates = top 10 non-DND by DDP_raw
 Tiers at P1: CONSERVATIVE = band ∈ {SAFE, LIKELY};  NEUTRAL = + TOSSUP (UNKNOWN counts as TOSSUP);  FALLBACK = MarketOrder[P1 − current − 1 :]
 NextBest(roster', pool') = argmax DDP' in the first non-empty tier, where DDP' is fully re-evaluated with roster' and the round of P1
-PairScore(X) = DDP(X) + NextScarAdj(X) + nextDiscount(1.0)·NextBest(roster ∪ {X}, pool \ {X})
+PairScore(X) = DDP(X) + NextScarAdj(X) + nextDiscount(0.90)·NextBest(roster ∪ {X}, pool \ {X})
 MissCost(X)  = DDP(X) + NextScarAdj(X) − NextBest(roster, pool \ {X});    missRel = MissCost/S
 ```
 
@@ -306,14 +315,14 @@ The advisor is built from deterministic templates over evaluation output:
 
 These were found while running the engine on realistic data. Each has a regression test in `tests/integration/planning.test.ts`, and each is configurable.
 
-1. **`pickPair.nextDiscount` 0.85 → 1.0, plus an ordinal at-risk-first tiebreak.**
-   - With 0.85, the engine always preferred the higher-DDP player now, even when he was SAFE and an equal-pair UNLIKELY player would be gone.
-   - Pair scores within tolerance are treated as ties, and order is decided ordinally (band, then DDP).
+1. **`pickPair.nextDiscount` = 0.90, plus an ordinal at-risk-first tiebreak.**
+   - The design had 0.85. The first implementation used 1.0. Codex QA set 0.90: future next-pick value gets substantial but not equal weight, because survival bands are ordinal heuristics, not probabilities.
+   - Pair scores within `tieToleranceRel · S` are treated as ties, and order is decided ordinally (band, then DDP).
    - Bands are still never converted to numbers.
 2. **Contenders must be LEAN-quality** (`ddpRel ≥ 0.75`). Without this, the at-risk tiebreak could recommend a clearly weaker player.
 3. **Rule R0.** The recommended pick is never labeled WAIT, SAFE WAIT or PASS.
 4. **`VOID` event** for removing a pick from the roster panel without moving the clock (undoable).
-5. **Catch-up picks count as recorded.** Previously, non-advancing picks did not count, so `unrecorded` never cleared.
+5. **Catch-up picks count as recorded, and only fill genuinely unrecorded slots.** A catch-up pick is accepted only while `unrecorded > 0`. A RESYNC behind the recorded picks is rejected. `unrecorded` is therefore never negative (Codex QA blocker 2).
 6. **Draft-position invariant clarified.** DDP includes round-weighted risk and upside, so changing draft position may change DDP through those terms only. Neutral quality (stats and BPV) never changes.
 7. **Need, punt, pool-scarcity and redundancy are all scaled by φ_k**, as DESIGN §7 states. §6.6's formula omitted φ for pool scarcity.
 
@@ -326,3 +335,9 @@ These were found while running the engine on realistic data. Each has a regressi
 - **ADP spread** is assumed (12%). Yahoo L7 ADP has no distribution.
 - **Pick-pair planning** looks one pick ahead only.
 - **Keepers and traded picks** are not supported. Draft type is snake only.
+
+## 14. QA fix log
+
+- **Recoverability cohort indexing** (Codex blocker 1). The audit found the original `cohortMean[k + j + 1]` was correct, because the loop index `j` was 0-based and `cohortMean` is 1-indexed by round. The code now uses an explicit `rescueCohortIndex(k, pickNumber)` with 1-based pick numbers. Tests pin rescue pick 1 → cohort k+1, pick 2 → cohort k+2, and so on, for k = 0, k = 3 and late draft (k = 11 of 13).
+- **Catch-up accounting** (Codex blocker 2). Non-advancing picks without an unrecorded slot are now rejected, as is a RESYNC behind the recorded picks. A randomized 400-step property test asserts `unrecorded ≥ 0` and exact undo.
+- **Pick-pair discount.** Changed to 0.90 (see §12.1).
