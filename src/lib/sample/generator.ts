@@ -334,7 +334,26 @@ export function generateSample(seed = 20260923, count = 300): SampleFiles {
   }
 
   const hashtag: (string | number)[][] = [
-    ['PLAYER', 'TEAM', 'POS', 'GP', 'MPG', 'FG%', 'FT%', '3PM', 'PTS', 'TREB', 'AST', 'STL', 'BLK', 'TO'],
+    [
+      'PLAYER',
+      'TEAM',
+      'POS',
+      'GP',
+      'MPG',
+      'FGM',
+      'FGA',
+      'FG%',
+      'FTM',
+      'FTA',
+      'FT%',
+      '3PM',
+      'PTS',
+      'TREB',
+      'AST',
+      'STL',
+      'BLK',
+      'TO',
+    ],
   ];
   for (const p of players)
     hashtag.push([
@@ -343,8 +362,13 @@ export function generateSample(seed = 20260923, count = 300): SampleFiles {
       p.positions,
       p.gp,
       r1(p.mpg),
-      `${r3(p.fgm / p.fga)} (${r1(p.fgm)}/${r1(p.fga)})`,
-      `${r3(p.ftm / p.fta)} (${r1(p.ftm)}/${r1(p.fta)})`,
+      // Hashtag-style explicit makes/attempts plus the published percentage (all six kept raw).
+      r1(p.fgm),
+      r1(p.fga),
+      r3(p.fgm / p.fga),
+      r1(p.ftm),
+      r1(p.fta),
+      r3(p.ftm / p.fta),
       r1(p.threes),
       r1(p.pts),
       r1(p.reb),
@@ -354,7 +378,7 @@ export function generateSample(seed = 20260923, count = 300): SampleFiles {
       r1(p.to),
     ]);
   // Hashtag "TREB" isn't a synonym by default → keep standard "REB" header for auto-mapping.
-  hashtag[0]![9] = 'REB';
+  hashtag[0]![13] = 'REB';
 
   const bbm: (string | number)[][] = [
     ['Name', 'Team', 'g', 'm/g', 'fgm', 'fga', 'ftm', 'fta', '3pm', 'pts', 'reb', 'ast', 'stl', 'blk', 'to'],

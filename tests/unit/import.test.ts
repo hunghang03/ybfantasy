@@ -108,13 +108,30 @@ describe('CSV validation', () => {
     );
     expect(p.records.projections[0]).toMatchObject({ pts: 14, fga: 10, fta: 2.5 });
   });
-  it('flags pct/makes disagreement as a warning, uses makes/attempts', () => {
-    const p = plan(
+  it('pct vs makes/attempts: rounding tolerated, small mismatch warns, gross mismatch rejected', () => {
+    const H = 'PLAYER,GP,FGM,FGA,FG%,FTM,FTA,FT%,3PM,PTS,REB,AST,STL,BLK,TO';
+    const row = (fg: string, ft: string) => `A,50,${fg},${ft},1,12,4,3,1,1,2`;
+    // Source rounding: 0.9/1.1 = 0.818 published as 80.0% — within rounding, no warning.
+    const ok = plan('PROJECTION', `${H}\n${row('5.0,10.0,0.500', '0.9,1.1,80.0%')}\n`);
+    expect(ok.rejected).toEqual([]);
+    expect(ok.rowWarnings).toEqual([]);
+    // Small mismatch beyond rounding → warning, makes/attempts used.
+    const warn = plan('PROJECTION', `${H}\n${row('5.0,10.0,0.530', '2.0,2.5,0.800')}\n`);
+    expect(warn.rowWarnings[0]!.warnings.join()).toMatch(/disagrees/);
+    expect(warn.records.projections[0]!.fgm).toBe(5);
+    // Gross mismatch (likely mis-mapped column) → rejected.
+    const bad = plan('PROJECTION', `${H}\n${row('5.0,10.0,0.600', '2.0,2.5,0.800')}\n`);
+    expect(bad.rejected[0]!.errors.join()).toMatch(/inconsistent/);
+  });
+  it('never derives makes or attempts from a percentage', () => {
+    const H = 'PLAYER,GP,FGA,FG%,FTM,FTA,3PM,PTS,REB,AST,STL,BLK,TO';
+    const p = plan('PROJECTION', `${H}\nA,50,10,0.5,2,3,1,12,4,3,1,1,2\n`);
+    expect(p.rejected[0]!.errors.join()).toMatch(/FGM \(makes\) is required/);
+    const q = plan(
       'PROJECTION',
-      `PLAYER,GP,FGM,FGA,FG%,FTM,FTA,3PM,PTS,REB,AST,STL,BLK,TO\nA,50,5,10,0.6,2,3,1,12,4,3,1,1,2\n`,
+      `PLAYER,GP,FGM,FG%,FTM,FTA,3PM,PTS,REB,AST,STL,BLK,TO\nA,50,5,0.5,2,3,1,12,4,3,1,1,2\n`,
     );
-    expect(p.rowWarnings[0]!.warnings.join()).toMatch(/disagrees/);
-    expect(p.records.projections[0]!.fgm).toBe(5);
+    expect(q.rejected[0]!.errors.join()).toMatch(/FGA \(attempts\) is required/);
   });
 });
 

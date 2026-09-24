@@ -137,6 +137,21 @@ function identityFields(c: Collector, cells: Cells): IdentityFields {
 }
 
 /** Resolve makes/attempts/pct triple (DESIGN §5.1). */
+/** Half of one unit in the last displayed decimal place of a numeric cell ("7.1" → 0.05, "0.483" → 0.0005). */
+function halfUnit(cell: string | undefined, fallback: number): number {
+  const m = /\.(\d+)/.exec((cell ?? '').trim());
+  if (!m) return (cell ?? '').trim() !== '' && /^\d+$/.test((cell ?? '').trim()) ? 0.5 : fallback;
+  return 0.5 * 10 ** -m[1]!.length;
+}
+
+/**
+ * Resolve makes / attempts / pct (DESIGN §5.1, data-pipeline fix):
+ * - makes AND attempts must come from the source (FGM/FGA columns, or a "pct (makes/attempts)" cell);
+ *   neither is ever reconstructed from a percentage.
+ * - the supplied percentage is only a cross-check. Tolerance = config tolerance + the error that
+ *   source rounding of makes, attempts and pct can produce. Beyond it → warning; far beyond
+ *   (> 0.05 more, e.g. a mis-mapped column) → the row is rejected.
+ */
 function shooting(
   c: Collector,
   cells: Cells,
@@ -144,30 +159,61 @@ function shooting(
   tol: number,
 ): { makes: number; attempts: number; pct: number | null } {
   const label = prefix.toUpperCase();
-  const pctCell = parsePctCell(cells(`${prefix}Pct`));
+  const pctRaw = cells(`${prefix}Pct`);
+  const pctCell = parsePctCell(pctRaw);
+  const mRaw = cells(`${prefix}m`);
+  const aRaw = cells(`${prefix}a`);
   let makes = c.num(cells, `${prefix}m`, `${label}M`, { min: 0 });
   let attempts = c.num(cells, `${prefix}a`, `${label}A`, { min: 0 });
-  if (makes === null && pctCell.makes !== null) makes = pctCell.makes;
-  if (attempts === null && pctCell.attempts !== null) attempts = pctCell.attempts;
+  let hm = halfUnit(mRaw, 0.05);
+  let ha = halfUnit(aRaw, 0.05);
+  // Columns win over a "pct (m/a)" cell; if both are present they must agree within rounding.
+  if (pctCell.makes !== null && pctCell.attempts !== null) {
+    if (makes === null) makes = pctCell.makes;
+    else if (Math.abs(makes - pctCell.makes) > hm + 0.05)
+      c.warnings.push(
+        `${label}M column ${makes} differs from the ${label}% cell (${pctCell.makes}); column used.`,
+      );
+    if (attempts === null) attempts = pctCell.attempts;
+    else if (Math.abs(attempts - pctCell.attempts) > ha + 0.05)
+      c.warnings.push(
+        `${label}A column ${attempts} differs from the ${label}% cell (${pctCell.attempts}); column used.`,
+      );
+    if (mRaw === undefined || mRaw.trim() === '') hm = 0.05;
+    if (aRaw === undefined || aRaw.trim() === '') ha = 0.05;
+  }
   const pct = pctCell.pct !== null && Number.isNaN(pctCell.pct) ? null : pctCell.pct;
   if (pctCell.pct !== null && Number.isNaN(pctCell.pct)) c.errors.push(`${label}% is not a number.`);
   if (attempts === null) {
-    c.errors.push(`${label}A (attempts) is required — percentages need volume.`);
+    c.errors.push(
+      `${label}A (attempts) is required — percentages need volume; attempts are never derived from ${label}%.`,
+    );
     return { makes: 0, attempts: 0, pct };
   }
   if (makes === null) {
-    if (pct === null) {
-      c.errors.push(`${label}M or ${label}% is required.`);
-      return { makes: 0, attempts, pct };
-    }
-    makes = pct * attempts;
+    c.errors.push(`${label}M (makes) is required — makes are never derived from ${label}%.`);
+    return { makes: 0, attempts, pct };
   }
   if (makes > attempts + 1e-9) c.errors.push(`${label}M cannot exceed ${label}A.`);
-  if (pct !== null && attempts > 0 && Math.abs(makes / attempts - pct) > tol)
-    c.warnings.push(
-      `${label}% ${pct.toFixed(3)} disagrees with ${label}M/${label}A ${(makes / attempts).toFixed(3)}; makes/attempts used.`,
-    );
   if (pct !== null && (pct < 0 || pct > 1)) c.errors.push(`${label}% must be between 0 and 1.`);
+  if (pct !== null && attempts > 0) {
+    const derived = makes / attempts;
+    // Worst-case effect of rounding makes/attempts (± half a unit each) on m/a, plus pct display rounding.
+    const pctHalf =
+      pctRaw && /%\s*$/.test(pctRaw)
+        ? halfUnit(pctRaw.replace('%', ''), 0.05) / 100
+        : halfUnit(pctRaw?.split('(')[0], 0.0005);
+    const bound = tol + pctHalf + (hm + derived * ha) / Math.max(attempts - ha, 1e-9);
+    const gap = Math.abs(derived - pct);
+    if (gap > bound + 0.05)
+      c.errors.push(
+        `${label}% ${pct.toFixed(3)} is inconsistent with ${label}M/${label}A ${derived.toFixed(3)} beyond source rounding — check column mapping.`,
+      );
+    else if (gap > bound)
+      c.warnings.push(
+        `${label}% ${pct.toFixed(3)} disagrees with ${label}M/${label}A ${derived.toFixed(3)} beyond rounding; makes/attempts used.`,
+      );
+  }
   return { makes, attempts, pct };
 }
 

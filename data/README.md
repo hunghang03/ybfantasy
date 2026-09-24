@@ -31,10 +31,13 @@ Use `templates/yahoo-screenshot.template.csv`. Add one row per player, for rough
 Use `templates/hashtag-projections.template.csv`. The headers follow Hashtag's projection table:
 
 ```
-R#, ADP, PLAYER, TEAM, POS, GP, MPG, FG%, FT%, 3PM, PTS, TREB, AST, STL, BLK, TO, W18, W19, W20, W21
+R#, ADP, PLAYER, TEAM, POS, GP, MPG, FGM, FGA, FG%, FTM, FTA, FT%, 3PM, PTS, TREB, AST, STL, BLK, TO, W18, W19, W20, W21
 ```
 
-- **FG% and FT% need attempts.** Hashtag's `0.483 (7.1/14.7)` cells are parsed into pct, makes and attempts. Alternatively, supply separate `FGM`, `FGA`, `FTM` and `FTA` columns.
+- **FG% and FT% need makes and attempts.** Copy Hashtag's `FGM`, `FGA`, `FG%`, `FTM`, `FTA` and `FT%` values exactly. All six are kept raw.
+  - The engine uses **makes and attempts**. Makes and attempts are never reconstructed from a percentage: a row missing FGM/FGA or FTM/FTA is rejected.
+  - The published percentage is a rounding-aware cross-check. A small mismatch gives a warning; a gross mismatch (likely a mis-mapped column) rejects the row.
+  - A Hashtag-style `0.483 (7.1/14.7)` cell is also accepted as the source of makes/attempts.
 - `W18`–`W21` (per-player games in the fantasy playoff weeks) are optional. When present, the team playoff schedule is derived from them.
 - `R#` and `ADP` are kept for comparison only.
 - Per-game values are the default. If your file holds season totals, add a `BASIS` column with the value `TOTAL`.
