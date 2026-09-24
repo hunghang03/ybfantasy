@@ -1,0 +1,1162 @@
+{
+ "slot": 4,
+ "foundation": "softPuntTO",
+ "overrides": {
+  "TO": "SOFT"
+ },
+ "snapshots": [
+  {
+   "afterRound": 1,
+   "currentPick": 25,
+   "nextPick": 25,
+   "roster": [
+    {
+     "pick": 4,
+     "name": "Quincy Calloway",
+     "pos": "PG",
+     "reason": "recommended"
+    }
+   ],
+   "build": "Build: Soft punt TO — 60% confidence (still recoverable) [manual].",
+   "priority": "Priority: FG% > BLK > REB",
+   "reason": "BLK is your weakest competitive category. FT%, AST, STL are already strong.",
+   "categories": [
+    {
+     "cat": "FG%",
+     "state": "CRITICAL",
+     "d": -1.25,
+     "need": 1,
+     "pi": 0.02,
+     "punt": "NONE"
+    },
+    {
+     "cat": "FT%",
+     "state": "ELITE",
+     "d": 1.53,
+     "need": 0.04,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "3PM",
+     "state": "COMPETITIVE",
+     "d": 0.33,
+     "need": 0.25,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "PTS",
+     "state": "COMPETITIVE",
+     "d": 0.01,
+     "need": 0.41,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "REB",
+     "state": "WEAK",
+     "d": -0.85,
+     "need": 0.8,
+     "pi": 0.01,
+     "punt": "NONE"
+    },
+    {
+     "cat": "AST",
+     "state": "ELITE",
+     "d": 2.17,
+     "need": 0.04,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "STL",
+     "state": "ELITE",
+     "d": 1.73,
+     "need": 0.04,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "BLK",
+     "state": "CRITICAL",
+     "d": -1.54,
+     "need": 1,
+     "pi": 0.04,
+     "punt": "NONE"
+    },
+    {
+     "cat": "TO",
+     "state": "SOFT_PUNT",
+     "d": -0.66,
+     "need": 0.47,
+     "pi": 0.6,
+     "punt": "SOFT"
+    }
+   ],
+   "warnings": [],
+   "recommended": {
+    "name": "Cyrus Ingram",
+    "label": "LEAN_DRAFT",
+    "why": "Adds PTS, 3PM, FT% (costs TO); adds positional flexibility and fits the punt build. Yahoo L7 ADP suggests he will likely last."
+   },
+   "top5": [
+    {
+     "name": "Cyrus Ingram",
+     "pos": "SG/SF",
+     "ddp": 100,
+     "ddpRaw": 10.51,
+     "label": "LEAN_DRAFT",
+     "rule": "L2",
+     "band": "LIKELY",
+     "adp": 38.6,
+     "fitTags": "PTS 3PM FT%"
+    },
+    {
+     "name": "Linus Eastlake",
+     "pos": "C",
+     "ddp": 65,
+     "ddpRaw": 8.18,
+     "label": "SAFE_WAIT",
+     "rule": "S1",
+     "band": "SAFE",
+     "adp": 49.2,
+     "fitTags": "BLK REB FG%"
+    },
+    {
+     "name": "Emeka Blackwood",
+     "pos": "C",
+     "ddp": 63,
+     "ddpRaw": 8.06,
+     "label": "WAIT",
+     "rule": "W1",
+     "band": "LIKELY",
+     "adp": 35.1,
+     "fitTags": "FG% BLK REB"
+    },
+    {
+     "name": "Milo Ashgrove",
+     "pos": "C",
+     "ddp": 42,
+     "ddpRaw": 6.64,
+     "label": "PASS",
+     "rule": "P1",
+     "band": "TOSSUP",
+     "adp": 32.9,
+     "fitTags": "FG% REB BLK"
+    },
+    {
+     "name": "Soren Northcott",
+     "pos": "C",
+     "ddp": 38,
+     "ddpRaw": 6.36,
+     "label": "PASS",
+     "rule": "P1",
+     "band": "SAFE",
+     "adp": 54.3,
+     "fitTags": "BLK REB FG%"
+    }
+   ]
+  },
+  {
+   "afterRound": 2,
+   "currentPick": 32,
+   "nextPick": 32,
+   "roster": [
+    {
+     "pick": 4,
+     "name": "Quincy Calloway",
+     "pos": "PG",
+     "reason": "recommended"
+    },
+    {
+     "pick": 25,
+     "name": "Cyrus Ingram",
+     "pos": "SG/SF",
+     "reason": "recommended"
+    }
+   ],
+   "build": "Build: Soft punt TO — 60% confidence (still recoverable) [manual].",
+   "priority": "Priority: BLK > REB > FG%",
+   "reason": "BLK is your weakest competitive category. FT%, 3PM, AST, STL are already strong.",
+   "categories": [
+    {
+     "cat": "FG%",
+     "state": "COMPETITIVE",
+     "d": -0.49,
+     "need": 0.62,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "FT%",
+     "state": "ELITE",
+     "d": 2.67,
+     "need": 0.03,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "3PM",
+     "state": "STRONG",
+     "d": 1.03,
+     "need": 0.03,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "PTS",
+     "state": "COMPETITIVE",
+     "d": 0.67,
+     "need": 0.07,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "REB",
+     "state": "WEAK",
+     "d": -1.18,
+     "need": 0.97,
+     "pi": 0.03,
+     "punt": "NONE"
+    },
+    {
+     "cat": "AST",
+     "state": "STRONG",
+     "d": 1.33,
+     "need": 0.03,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "STL",
+     "state": "ELITE",
+     "d": 2.08,
+     "need": 0.03,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "BLK",
+     "state": "CRITICAL",
+     "d": -1.79,
+     "need": 1,
+     "pi": 0.1,
+     "punt": "NONE"
+    },
+    {
+     "cat": "TO",
+     "state": "SOFT_PUNT",
+     "d": -0.62,
+     "need": 0.46,
+     "pi": 0.6,
+     "punt": "SOFT"
+    }
+   ],
+   "warnings": [],
+   "recommended": {
+    "name": "Linus Eastlake",
+    "label": "DRAFT_NOW",
+    "why": "Adds BLK, REB, FG% (costs FT%, 3PM); fills category needs and has a strong playoff schedule. Yahoo L7 ADP says he is unlikely to last to your next pick."
+   },
+   "top5": [
+    {
+     "name": "Linus Eastlake",
+     "pos": "C",
+     "ddp": 100,
+     "ddpRaw": 8.86,
+     "label": "DRAFT_NOW",
+     "rule": "D1",
+     "band": "UNLIKELY",
+     "adp": 49.2,
+     "fitTags": "BLK REB FG%"
+    },
+    {
+     "name": "Emeka Blackwood",
+     "pos": "C",
+     "ddp": 93,
+     "ddpRaw": 8.49,
+     "label": "DRAFT_NOW",
+     "rule": "D1",
+     "band": "UNLIKELY",
+     "adp": 35.1,
+     "fitTags": "FG% BLK REB"
+    },
+    {
+     "name": "Niall Northcott",
+     "pos": "PF/C",
+     "ddp": 73,
+     "ddpRaw": 7.47,
+     "label": "WAIT",
+     "rule": "W1",
+     "band": "UNLIKELY",
+     "adp": 35.5,
+     "fitTags": "BLK 3PM PTS"
+    },
+    {
+     "name": "Ulises Birchwell",
+     "pos": "PF/C",
+     "ddp": 74,
+     "ddpRaw": 7.53,
+     "label": "WAIT",
+     "rule": "W1",
+     "band": "UNLIKELY",
+     "adp": 33.3,
+     "fitTags": "REB BLK FG%"
+    },
+    {
+     "name": "Kellan Lockhart",
+     "pos": "PG",
+     "ddp": 60,
+     "ddpRaw": 6.81,
+     "label": "WAIT",
+     "rule": "W1",
+     "band": "UNLIKELY",
+     "adp": 37.7,
+     "fitTags": "AST 3PM STL"
+    }
+   ]
+  },
+  {
+   "afterRound": 4,
+   "currentPick": 60,
+   "nextPick": 60,
+   "roster": [
+    {
+     "pick": 4,
+     "name": "Quincy Calloway",
+     "pos": "PG",
+     "reason": "recommended"
+    },
+    {
+     "pick": 25,
+     "name": "Cyrus Ingram",
+     "pos": "SG/SF",
+     "reason": "recommended"
+    },
+    {
+     "pick": 32,
+     "name": "Linus Eastlake",
+     "pos": "C",
+     "reason": "recommended"
+    },
+    {
+     "pick": 53,
+     "name": "Soren Northcott",
+     "pos": "C",
+     "reason": "recommended"
+    }
+   ],
+   "build": "Build: Soft punt TO — 60% confidence (still recoverable) [manual].",
+   "priority": "Priority: 3PM > FT% > TO",
+   "reason": "FT% is your weakest competitive category. FG%, REB, STL, BLK are already strong.",
+   "categories": [
+    {
+     "cat": "FG%",
+     "state": "STRONG",
+     "d": 1.03,
+     "need": 0,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "FT%",
+     "state": "WEAK",
+     "d": -1.03,
+     "need": 0.9,
+     "pi": 0.08,
+     "punt": "NONE"
+    },
+    {
+     "cat": "3PM",
+     "state": "WEAK",
+     "d": -0.79,
+     "need": 0.78,
+     "pi": 0.02,
+     "punt": "NONE"
+    },
+    {
+     "cat": "PTS",
+     "state": "COMPETITIVE",
+     "d": 0.39,
+     "need": 0.19,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "REB",
+     "state": "ELITE",
+     "d": 1.73,
+     "need": 0,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "AST",
+     "state": "COMPETITIVE",
+     "d": 0.24,
+     "need": 0.27,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "STL",
+     "state": "STRONG",
+     "d": 1.26,
+     "need": 0.01,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "BLK",
+     "state": "STRONG",
+     "d": 1.38,
+     "need": 0,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "TO",
+     "state": "SOFT_PUNT",
+     "d": -0.06,
+     "need": 0.27,
+     "pi": 0.6,
+     "punt": "SOFT"
+    }
+   ],
+   "warnings": [],
+   "recommended": {
+    "name": "Milo Northcott",
+    "label": "DRAFT_NOW",
+    "why": "Adds FT%, BLK, REB; fills category needs and adds scarce categories. Yahoo L7 ADP says he is unlikely to last to your next pick."
+   },
+   "top5": [
+    {
+     "name": "Milo Northcott",
+     "pos": "PF",
+     "ddp": 100,
+     "ddpRaw": 5.74,
+     "label": "DRAFT_NOW",
+     "rule": "D1",
+     "band": "UNLIKELY",
+     "adp": 68.1,
+     "fitTags": "FT% BLK REB"
+    },
+    {
+     "name": "Galen Stroud",
+     "pos": "SF",
+     "ddp": 87,
+     "ddpRaw": 5.32,
+     "label": "DRAFT_NOW",
+     "rule": "D1",
+     "band": "UNLIKELY",
+     "adp": 64.9,
+     "fitTags": "FT% 3PM PTS"
+    },
+    {
+     "name": "Florian Yarrow",
+     "pos": "PG/SG",
+     "ddp": 76,
+     "ddpRaw": 4.95,
+     "label": "WAIT",
+     "rule": "W1",
+     "band": "LIKELY",
+     "adp": 86.5,
+     "fitTags": "FT% AST"
+    },
+    {
+     "name": "Hugo Kestrel",
+     "pos": "PG",
+     "ddp": 72,
+     "ddpRaw": 4.82,
+     "label": "SAFE_WAIT",
+     "rule": "S1",
+     "band": "SAFE",
+     "adp": 120.9,
+     "fitTags": "FT% 3PM AST"
+    },
+    {
+     "name": "Dorian Underhill",
+     "pos": "SG/SF",
+     "ddp": 58,
+     "ddpRaw": 4.38,
+     "label": "WAIT",
+     "rule": "W1",
+     "band": "UNLIKELY",
+     "adp": 66.2,
+     "fitTags": "3PM FT%"
+    }
+   ]
+  },
+  {
+   "afterRound": 6,
+   "currentPick": 88,
+   "nextPick": 88,
+   "roster": [
+    {
+     "pick": 4,
+     "name": "Quincy Calloway",
+     "pos": "PG",
+     "reason": "recommended"
+    },
+    {
+     "pick": 25,
+     "name": "Cyrus Ingram",
+     "pos": "SG/SF",
+     "reason": "recommended"
+    },
+    {
+     "pick": 32,
+     "name": "Linus Eastlake",
+     "pos": "C",
+     "reason": "recommended"
+    },
+    {
+     "pick": 53,
+     "name": "Soren Northcott",
+     "pos": "C",
+     "reason": "recommended"
+    },
+    {
+     "pick": 60,
+     "name": "Milo Northcott",
+     "pos": "PF",
+     "reason": "recommended"
+    },
+    {
+     "pick": 81,
+     "name": "Florian Yarrow",
+     "pos": "PG/SG",
+     "reason": "recommended"
+    }
+   ],
+   "build": "Build: Soft punt TO — 60% confidence (still recoverable) [manual].",
+   "priority": "Priority: 3PM > PTS > TO",
+   "reason": "3PM is your weakest competitive category and 3PM supply is declining. FG%, REB, STL, BLK are already strong.",
+   "categories": [
+    {
+     "cat": "FG%",
+     "state": "STRONG",
+     "d": 0.83,
+     "need": 0,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "FT%",
+     "state": "COMPETITIVE",
+     "d": 0.35,
+     "need": 0.2,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "3PM",
+     "state": "WEAK",
+     "d": -0.61,
+     "need": 0.68,
+     "pi": 0.02,
+     "punt": "NONE"
+    },
+    {
+     "cat": "PTS",
+     "state": "COMPETITIVE",
+     "d": 0.35,
+     "need": 0.2,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "REB",
+     "state": "STRONG",
+     "d": 1.1,
+     "need": 0,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "AST",
+     "state": "COMPETITIVE",
+     "d": 0.62,
+     "need": 0.06,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "STL",
+     "state": "STRONG",
+     "d": 0.99,
+     "need": 0,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "BLK",
+     "state": "STRONG",
+     "d": 1.08,
+     "need": 0,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "TO",
+     "state": "SOFT_PUNT",
+     "d": -0.18,
+     "need": 0.31,
+     "pi": 0.6,
+     "punt": "SOFT"
+    }
+   ],
+   "warnings": [],
+   "recommended": {
+    "name": "Idris Pembrook",
+    "label": "DRAFT_NOW",
+    "why": "Adds 3PM, FT%, STL (costs FG%); fills category needs and adds scarce categories. Yahoo L7 ADP says he is unlikely to last to your next pick."
+   },
+   "top5": [
+    {
+     "name": "Idris Pembrook",
+     "pos": "SG",
+     "ddp": 90,
+     "ddpRaw": 4.28,
+     "label": "DRAFT_NOW",
+     "rule": "D1",
+     "band": "UNLIKELY",
+     "adp": 97,
+     "fitTags": "3PM FT% STL"
+    },
+    {
+     "name": "Eli Birchwell",
+     "pos": "PG",
+     "ddp": 89,
+     "ddpRaw": 4.24,
+     "label": "DRAFT_NOW",
+     "rule": "D1",
+     "band": "UNLIKELY",
+     "adp": 89.2,
+     "fitTags": "3PM AST FT%"
+    },
+    {
+     "name": "Emeka Corvell",
+     "pos": "SG",
+     "ddp": 80,
+     "ddpRaw": 3.97,
+     "label": "LEAN_DRAFT",
+     "rule": "L1",
+     "band": "UNLIKELY",
+     "adp": 97.4,
+     "fitTags": "3PM STL"
+    },
+    {
+     "name": "Hugo Kestrel",
+     "pos": "PG",
+     "ddp": 100,
+     "ddpRaw": 4.57,
+     "label": "WAIT",
+     "rule": "W1",
+     "band": "LIKELY",
+     "adp": 120.9,
+     "fitTags": "3PM FT% AST"
+    },
+    {
+     "name": "Eli Zeller",
+     "pos": "PG/SG",
+     "ddp": 77,
+     "ddpRaw": 3.88,
+     "label": "SAFE_WAIT",
+     "rule": "S1",
+     "band": "SAFE",
+     "adp": 169,
+     "fitTags": "FT% AST"
+    }
+   ]
+  },
+  {
+   "afterRound": 9,
+   "currentPick": 137,
+   "nextPick": 137,
+   "roster": [
+    {
+     "pick": 4,
+     "name": "Quincy Calloway",
+     "pos": "PG",
+     "reason": "recommended"
+    },
+    {
+     "pick": 25,
+     "name": "Cyrus Ingram",
+     "pos": "SG/SF",
+     "reason": "recommended"
+    },
+    {
+     "pick": 32,
+     "name": "Linus Eastlake",
+     "pos": "C",
+     "reason": "recommended"
+    },
+    {
+     "pick": 53,
+     "name": "Soren Northcott",
+     "pos": "C",
+     "reason": "recommended"
+    },
+    {
+     "pick": 60,
+     "name": "Milo Northcott",
+     "pos": "PF",
+     "reason": "recommended"
+    },
+    {
+     "pick": 81,
+     "name": "Florian Yarrow",
+     "pos": "PG/SG",
+     "reason": "recommended"
+    },
+    {
+     "pick": 88,
+     "name": "Idris Pembrook",
+     "pos": "SG",
+     "reason": "recommended"
+    },
+    {
+     "pick": 109,
+     "name": "Hugo Kestrel",
+     "pos": "PG",
+     "reason": "recommended"
+    },
+    {
+     "pick": 116,
+     "name": "Eli Zeller",
+     "pos": "PG/SG",
+     "reason": "recommended"
+    }
+   ],
+   "build": "Build: Soft punt TO — 60% confidence (still recoverable) [manual].",
+   "priority": "Priority: TO > 3PM > REB",
+   "reason": "REB is your weakest competitive category. FT%, AST, STL are already strong.",
+   "categories": [
+    {
+     "cat": "FG%",
+     "state": "COMPETITIVE",
+     "d": 0.16,
+     "need": 0.29,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "FT%",
+     "state": "ELITE",
+     "d": 1.73,
+     "need": 0,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "3PM",
+     "state": "COMPETITIVE",
+     "d": 0.34,
+     "need": 0.21,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "PTS",
+     "state": "COMPETITIVE",
+     "d": 0.43,
+     "need": 0.16,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "REB",
+     "state": "COMPETITIVE",
+     "d": -0.03,
+     "need": 0.39,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "AST",
+     "state": "ELITE",
+     "d": 1.6,
+     "need": 0,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "STL",
+     "state": "ELITE",
+     "d": 1.7,
+     "need": 0,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "BLK",
+     "state": "COMPETITIVE",
+     "d": 0.07,
+     "need": 0.34,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "TO",
+     "state": "SOFT_PUNT",
+     "d": -0.77,
+     "need": 0.51,
+     "pi": 0.6,
+     "punt": "SOFT"
+    }
+   ],
+   "warnings": [],
+   "recommended": {
+    "name": "Eli Fairbourne",
+    "label": "LEAN_DRAFT",
+    "why": "Adds BLK, REB, FG% (costs 3PM, PTS); fills category needs. Yahoo L7 ADP suggests he will likely last."
+   },
+   "top5": [
+    {
+     "name": "Eli Fairbourne",
+     "pos": "C",
+     "ddp": 100,
+     "ddpRaw": 4.36,
+     "label": "LEAN_DRAFT",
+     "rule": "R0",
+     "band": "LIKELY",
+     "adp": 157.5,
+     "fitTags": "BLK REB FG%"
+    },
+    {
+     "name": "Eli Ravensworth",
+     "pos": "C",
+     "ddp": 63,
+     "ddpRaw": 3.09,
+     "label": "WAIT",
+     "rule": "W1",
+     "band": "LIKELY",
+     "adp": 161.2,
+     "fitTags": "BLK REB FG%"
+    },
+    {
+     "name": "Blake Hartwell",
+     "pos": "PF",
+     "ddp": 40,
+     "ddpRaw": 2.3,
+     "label": "PASS",
+     "rule": "P1",
+     "band": "LIKELY",
+     "adp": 156.9,
+     "fitTags": "BLK"
+    },
+    {
+     "name": "Rowan Hartwell",
+     "pos": "C",
+     "ddp": 48,
+     "ddpRaw": 2.58,
+     "label": "PASS",
+     "rule": "P1",
+     "band": "SAFE",
+     "adp": 188.4,
+     "fitTags": "REB TO FG%"
+    },
+    {
+     "name": "Lior Vexley",
+     "pos": "C",
+     "ddp": 49,
+     "ddpRaw": 2.62,
+     "label": "PASS",
+     "rule": "P1",
+     "band": "LIKELY",
+     "adp": 175.5,
+     "fitTags": "BLK FG% REB"
+    }
+   ]
+  },
+  {
+   "afterRound": 12,
+   "currentPick": 172,
+   "nextPick": 172,
+   "roster": [
+    {
+     "pick": 4,
+     "name": "Quincy Calloway",
+     "pos": "PG",
+     "reason": "recommended"
+    },
+    {
+     "pick": 25,
+     "name": "Cyrus Ingram",
+     "pos": "SG/SF",
+     "reason": "recommended"
+    },
+    {
+     "pick": 32,
+     "name": "Linus Eastlake",
+     "pos": "C",
+     "reason": "recommended"
+    },
+    {
+     "pick": 53,
+     "name": "Soren Northcott",
+     "pos": "C",
+     "reason": "recommended"
+    },
+    {
+     "pick": 60,
+     "name": "Milo Northcott",
+     "pos": "PF",
+     "reason": "recommended"
+    },
+    {
+     "pick": 81,
+     "name": "Florian Yarrow",
+     "pos": "PG/SG",
+     "reason": "recommended"
+    },
+    {
+     "pick": 88,
+     "name": "Idris Pembrook",
+     "pos": "SG",
+     "reason": "recommended"
+    },
+    {
+     "pick": 109,
+     "name": "Hugo Kestrel",
+     "pos": "PG",
+     "reason": "recommended"
+    },
+    {
+     "pick": 116,
+     "name": "Eli Zeller",
+     "pos": "PG/SG",
+     "reason": "recommended"
+    },
+    {
+     "pick": 137,
+     "name": "Eli Fairbourne",
+     "pos": "C",
+     "reason": "recommended"
+    },
+    {
+     "pick": 144,
+     "name": "Ulises Vexley",
+     "pos": "PG",
+     "reason": "recommended"
+    },
+    {
+     "pick": 165,
+     "name": "Lior Vexley",
+     "pos": "C",
+     "reason": "recommended"
+    }
+   ],
+   "build": "Build: Soft punt TO — 60% confidence (still recoverable) [manual].",
+   "priority": "Priority: 3PM > PTS > TO",
+   "reason": "3PM is your weakest competitive category and 3PM supply is declining. FT%, AST, STL, BLK are already strong.",
+   "categories": [
+    {
+     "cat": "FG%",
+     "state": "COMPETITIVE",
+     "d": 0.45,
+     "need": 0.15,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "FT%",
+     "state": "STRONG",
+     "d": 1.27,
+     "need": 0,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "3PM",
+     "state": "COMPETITIVE",
+     "d": -0.02,
+     "need": 0.38,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "PTS",
+     "state": "COMPETITIVE",
+     "d": 0.16,
+     "need": 0.29,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "REB",
+     "state": "COMPETITIVE",
+     "d": 0.65,
+     "need": 0.05,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "AST",
+     "state": "ELITE",
+     "d": 1.56,
+     "need": 0,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "STL",
+     "state": "STRONG",
+     "d": 1.47,
+     "need": 0,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "BLK",
+     "state": "STRONG",
+     "d": 0.98,
+     "need": 0,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "TO",
+     "state": "SOFT_PUNT",
+     "d": -0.5,
+     "need": 0.42,
+     "pi": 0.6,
+     "punt": "SOFT"
+    }
+   ],
+   "warnings": [],
+   "recommended": {
+    "name": "Rowan Hartwell",
+    "label": "DRAFT_NOW",
+    "why": "Adds TO, REB, FG% (costs 3PM, PTS). Yahoo L7 ADP says he is unlikely to last to your next pick."
+   },
+   "top5": [
+    {
+     "name": "Rowan Hartwell",
+     "pos": "C",
+     "ddp": 100,
+     "ddpRaw": 2.08,
+     "label": "DRAFT_NOW",
+     "rule": "D1",
+     "band": "UNLIKELY",
+     "adp": 188.4,
+     "fitTags": "TO REB FG%"
+    },
+    {
+     "name": "Ansel Stroud",
+     "pos": "C",
+     "ddp": 94,
+     "ddpRaw": 1.96,
+     "label": "DRAFT_NOW",
+     "rule": "D1",
+     "band": "UNLIKELY",
+     "adp": null,
+     "fitTags": "FG% REB TO"
+    },
+    {
+     "name": "Nico Fairbourne",
+     "pos": "C",
+     "ddp": 93,
+     "ddpRaw": 1.94,
+     "label": "DRAFT_NOW",
+     "rule": "D1",
+     "band": "UNLIKELY",
+     "adp": null,
+     "fitTags": "TO BLK FG%"
+    },
+    {
+     "name": "Blake Calloway",
+     "pos": "SF/PF",
+     "ddp": 80,
+     "ddpRaw": 1.69,
+     "label": "LEAN_DRAFT",
+     "rule": "L1",
+     "band": "UNLIKELY",
+     "adp": 178.6,
+     "fitTags": "TO"
+    },
+    {
+     "name": "Kade Ingram",
+     "pos": "C",
+     "ddp": 77,
+     "ddpRaw": 1.64,
+     "label": "LEAN_DRAFT",
+     "rule": "L1",
+     "band": "UNLIKELY",
+     "adp": null,
+     "fitTags": "REB TO FG%"
+    }
+   ]
+  }
+ ],
+ "finalRoster": [
+  {
+   "pick": 4,
+   "name": "Quincy Calloway",
+   "pos": "PG"
+  },
+  {
+   "pick": 25,
+   "name": "Cyrus Ingram",
+   "pos": "SG/SF"
+  },
+  {
+   "pick": 32,
+   "name": "Linus Eastlake",
+   "pos": "C"
+  },
+  {
+   "pick": 53,
+   "name": "Soren Northcott",
+   "pos": "C"
+  },
+  {
+   "pick": 60,
+   "name": "Milo Northcott",
+   "pos": "PF"
+  },
+  {
+   "pick": 81,
+   "name": "Florian Yarrow",
+   "pos": "PG/SG"
+  },
+  {
+   "pick": 88,
+   "name": "Idris Pembrook",
+   "pos": "SG"
+  },
+  {
+   "pick": 109,
+   "name": "Hugo Kestrel",
+   "pos": "PG"
+  },
+  {
+   "pick": 116,
+   "name": "Eli Zeller",
+   "pos": "PG/SG"
+  },
+  {
+   "pick": 137,
+   "name": "Eli Fairbourne",
+   "pos": "C"
+  },
+  {
+   "pick": 144,
+   "name": "Ulises Vexley",
+   "pos": "PG"
+  },
+  {
+   "pick": 165,
+   "name": "Lior Vexley",
+   "pos": "C"
+  },
+  {
+   "pick": 172,
+   "name": "Rowan Hartwell",
+   "pos": "C"
+  }
+ ]
+}

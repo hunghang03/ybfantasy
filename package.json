@@ -15,7 +15,9 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "sample-data": "tsx sample-data/generate.ts",
-    "check": "npm run typecheck && npm run lint && npm run test"
+    "check": "npm run typecheck && npm run lint && npm run test",
+    "calibrate": "tsx scripts/calibrate.ts",
+    "calibrate:sample": "tsx scripts/calibrate.ts --sample"
   },
   "dependencies": {
     "dexie": "^4.4.6",

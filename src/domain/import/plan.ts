@@ -114,6 +114,10 @@ export function recordFor(
         to: v.to,
         sourcePct: v.sourcePct,
         providerUpside: v.upside,
+        providerRank: v.providerRank,
+        providerAdp: v.providerAdp,
+        ...(Object.keys(v.weekGames).length ? { weekGames: v.weekGames } : {}),
+        raw: v.raw,
       });
       return;
     }
@@ -127,6 +131,8 @@ export function recordFor(
         yahooRank: v.rank,
         yahooAdp7d: v.adp,
         status: v.status,
+        meta: v.meta,
+        raw: v.raw,
       });
       return;
     }
@@ -256,7 +262,7 @@ export function planImport(req: ImportRequest): ImportPlan {
 
   const specs = requiredFieldsFor(kind);
   const missingRequiredColumns = specs.filter((k) => !columnMap[k]);
-  const weekColumns = kind === 'PLAYOFF' ? detectWeekColumns(table.headers) : {};
+  const weekColumns = kind === 'PLAYOFF' || kind === 'PROJECTION' ? detectWeekColumns(table.headers) : {};
 
   const idx = buildIdentityIndex(req.identities, req.mappings);
   const allowCreate =

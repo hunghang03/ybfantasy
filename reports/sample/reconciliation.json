@@ -1,0 +1,2127 @@
+{
+ "season": "2026-27",
+ "counts": {
+  "hashtagRows": 300,
+  "yahooRows": 300,
+  "matched": 300,
+  "yahooOnly": 0,
+  "hashtagOnly": 0,
+  "ambiguous": 0,
+  "teamMismatch": 0,
+  "hashtagRejected": 0,
+  "yahooRejected": 0,
+  "duplicates": 0
+ },
+ "matched": [
+  {
+   "name": "Ansel Lockhart",
+   "team": "ALB",
+   "otherName": "Ansel Lockhart",
+   "otherTeam": "ALB",
+   "canonicalPlayerId": "hb-00241"
+  },
+  {
+   "name": "Ansel Pembrook",
+   "team": "TID",
+   "otherName": "Ansel Pembrook",
+   "otherTeam": "TID",
+   "canonicalPlayerId": "hb-00110"
+  },
+  {
+   "name": "Ansel Stroud",
+   "team": "KNG",
+   "otherName": "Ansel Stroud",
+   "otherTeam": "KNG",
+   "canonicalPlayerId": "hb-00191"
+  },
+  {
+   "name": "Avery Ashgrove",
+   "team": "ALB",
+   "otherName": "Avery Ashgrove",
+   "otherTeam": "ALB",
+   "canonicalPlayerId": "hb-00151"
+  },
+  {
+   "name": "Avery Fairbourne",
+   "team": "GLN",
+   "otherName": "Avery Fairbourne",
+   "otherTeam": "GLN",
+   "canonicalPlayerId": "hb-00007"
+  },
+  {
+   "name": "Avery Lockhart",
+   "team": "ORC",
+   "otherName": "Avery Lockhart",
+   "otherTeam": "ORC",
+   "canonicalPlayerId": "hb-00015"
+  },
+  {
+   "name": "Avery Quill",
+   "team": "FRG",
+   "otherName": "Avery Quill",
+   "otherTeam": "FRG",
+   "canonicalPlayerId": "hb-00246"
+  },
+  {
+   "name": "Blake Blackwood",
+   "team": "ALB",
+   "otherName": "Blake Blackwood",
+   "otherTeam": "ALB",
+   "canonicalPlayerId": "hb-00121"
+  },
+  {
+   "name": "Blake Calloway",
+   "team": "TID",
+   "otherName": "Blake Calloway",
+   "otherTeam": "TID",
+   "canonicalPlayerId": "hb-00140"
+  },
+  {
+   "name": "Blake Fairbourne",
+   "team": "WLD",
+   "otherName": "Blake Fairbourne",
+   "otherTeam": "WLD",
+   "canonicalPlayerId": "hb-00233"
+  },
+  {
+   "name": "Blake Hartwell",
+   "team": "ALB",
+   "otherName": "Blake Hartwell",
+   "otherTeam": "ALB",
+   "canonicalPlayerId": "hb-00211"
+  },
+  {
+   "name": "Blake Ravensworth",
+   "team": "CDR",
+   "otherName": "Blake Ravensworth",
+   "otherTeam": "CDR",
+   "canonicalPlayerId": "hb-00273"
+  },
+  {
+   "name": "Blake Stroud",
+   "team": "PHN",
+   "otherName": "Blake Stroud",
+   "otherTeam": "PHN",
+   "canonicalPlayerId": "hb-00286"
+  },
+  {
+   "name": "Blake Yarrow",
+   "team": "ARC",
+   "otherName": "Blake Yarrow",
+   "otherTeam": "ARC",
+   "canonicalPlayerId": "hb-00297"
+  },
+  {
+   "name": "Bram Birchwell",
+   "team": "DLT",
+   "otherName": "Bram Birchwell",
+   "otherTeam": "DLT",
+   "canonicalPlayerId": "hb-00154"
+  },
+  {
+   "name": "Bram Dunmore",
+   "team": "NOV",
+   "otherName": "Bram Dunmore",
+   "otherTeam": "NOV",
+   "canonicalPlayerId": "hb-00194"
+  },
+  {
+   "name": "Bram Eastlake",
+   "team": "MTR",
+   "otherName": "Bram Eastlake",
+   "otherTeam": "MTR",
+   "canonicalPlayerId": "hb-00253"
+  },
+  {
+   "name": "Bram Hartwell",
+   "team": "MTR",
+   "otherName": "Bram Hartwell",
+   "otherTeam": "MTR",
+   "canonicalPlayerId": "hb-00103"
+  },
+  {
+   "name": "Bram Lockhart",
+   "team": "QST",
+   "otherName": "Bram Lockhart",
+   "otherTeam": "QST",
+   "canonicalPlayerId": "hb-00167"
+  },
+  {
+   "name": "Bram Marlow",
+   "team": "MTR",
+   "otherName": "Bram Marlow",
+   "otherTeam": "MTR",
+   "canonicalPlayerId": "hb-00193"
+  },
+  {
+   "name": "Bram Pembrook",
+   "team": "CDR",
+   "otherName": "Bram Pembrook",
+   "otherTeam": "CDR",
+   "canonicalPlayerId": "hb-00063"
+  },
+  {
+   "name": "Bram Wolcott",
+   "team": "PHN",
+   "otherName": "Bram Wolcott",
+   "otherTeam": "PHN",
+   "canonicalPlayerId": "hb-00136"
+  },
+  {
+   "name": "Cam Ashgrove",
+   "team": "FRG",
+   "otherName": "Cam Ashgrove",
+   "otherTeam": "FRG",
+   "canonicalPlayerId": "hb-00006"
+  },
+  {
+   "name": "Cam Draven",
+   "team": "EMB",
+   "otherName": "Cam Draven",
+   "otherTeam": "EMB",
+   "canonicalPlayerId": "hb-00275"
+  },
+  {
+   "name": "Cam Garrow",
+   "team": "TID",
+   "otherName": "Cam Garrow",
+   "otherTeam": "TID",
+   "canonicalPlayerId": "hb-00080"
+  },
+  {
+   "name": "Cam Northcott",
+   "team": "YTI",
+   "otherName": "Cam Northcott",
+   "otherTeam": "YTI",
+   "canonicalPlayerId": "hb-00175"
+  },
+  {
+   "name": "Cam Thorne",
+   "team": "WLD",
+   "otherName": "Cam Thorne",
+   "otherTeam": "WLD",
+   "canonicalPlayerId": "hb-00173"
+  },
+  {
+   "name": "Cam Wolcott",
+   "team": "SUM",
+   "otherName": "Cam Wolcott",
+   "otherTeam": "SUM",
+   "canonicalPlayerId": "hb-00139"
+  },
+  {
+   "name": "Cyrus Ingram",
+   "team": "BOL",
+   "otherName": "Cyrus Ingram",
+   "otherTeam": "BOL",
+   "canonicalPlayerId": "hb-00028"
+  },
+  {
+   "name": "Cyrus Lockhart",
+   "team": "BOL",
+   "otherName": "Cyrus Lockhart",
+   "otherTeam": "BOL",
+   "canonicalPlayerId": "hb-00208"
+  },
+  {
+   "name": "Cyrus Pembrook",
+   "team": "LYX",
+   "otherName": "Cyrus Pembrook",
+   "otherTeam": "LYX",
+   "canonicalPlayerId": "hb-00012"
+  },
+  {
+   "name": "Cyrus Ravensworth",
+   "team": "RVR",
+   "otherName": "Cyrus Ravensworth",
+   "otherTeam": "RVR",
+   "canonicalPlayerId": "hb-00288"
+  },
+  {
+   "name": "Dante Ashgrove",
+   "team": "IRN",
+   "otherName": "Dante Ashgrove",
+   "otherTeam": "IRN",
+   "canonicalPlayerId": "hb-00069"
+  },
+  {
+   "name": "Dante Dunmore",
+   "team": "EMB",
+   "otherName": "Dante Dunmore",
+   "otherTeam": "EMB",
+   "canonicalPlayerId": "hb-00245"
+  },
+  {
+   "name": "Dante Garrow",
+   "team": "IRN",
+   "otherName": "Dante Garrow",
+   "otherTeam": "IRN",
+   "canonicalPlayerId": "hb-00279"
+  },
+  {
+   "name": "Dante Quill",
+   "team": "UMB",
+   "otherName": "Dante Quill",
+   "otherTeam": "UMB",
+   "canonicalPlayerId": "hb-00051"
+  },
+  {
+   "name": "Dante Zeller",
+   "team": "WLD",
+   "otherName": "Dante Zeller",
+   "otherTeam": "WLD",
+   "canonicalPlayerId": "hb-00203"
+  },
+  {
+   "name": "Dorian Eastlake",
+   "team": "NOV",
+   "otherName": "Dorian Eastlake",
+   "otherTeam": "NOV",
+   "canonicalPlayerId": "hb-00074"
+  },
+  {
+   "name": "Dorian Fairbourne",
+   "team": "RVR",
+   "otherName": "Dorian Fairbourne",
+   "otherTeam": "RVR",
+   "canonicalPlayerId": "hb-00108"
+  },
+  {
+   "name": "Dorian Garrow",
+   "team": "ALB",
+   "otherName": "Dorian Garrow",
+   "otherTeam": "ALB",
+   "canonicalPlayerId": "hb-00031"
+  },
+  {
+   "name": "Dorian Jessop",
+   "team": "DLT",
+   "otherName": "Dorian Jessop",
+   "otherTeam": "DLT",
+   "canonicalPlayerId": "hb-00274"
+  },
+  {
+   "name": "Dorian Northcott",
+   "team": "JAD",
+   "otherName": "Dorian Northcott",
+   "otherTeam": "JAD",
+   "canonicalPlayerId": "hb-00190"
+  },
+  {
+   "name": "Dorian Underhill",
+   "team": "RVR",
+   "otherName": "Dorian Underhill",
+   "otherTeam": "RVR",
+   "canonicalPlayerId": "hb-00048"
+  },
+  {
+   "name": "Dorian Vexley",
+   "team": "LYX",
+   "otherName": "Dorian Vexley",
+   "otherTeam": "LYX",
+   "canonicalPlayerId": "hb-00042"
+  },
+  {
+   "name": "Eli Birchwell",
+   "team": "IRN",
+   "otherName": "Eli Birchwell",
+   "otherTeam": "IRN",
+   "canonicalPlayerId": "hb-00099"
+  },
+  {
+   "name": "Eli Corvell",
+   "team": "XEN",
+   "otherName": "Eli Corvell",
+   "otherTeam": "XEN",
+   "canonicalPlayerId": "hb-00204"
+  },
+  {
+   "name": "Eli Eastlake",
+   "team": "NOV",
+   "otherName": "Eli Eastlake",
+   "otherTeam": "NOV",
+   "canonicalPlayerId": "hb-00134"
+  },
+  {
+   "name": "Eli Fairbourne",
+   "team": "RVR",
+   "otherName": "Eli Fairbourne",
+   "otherTeam": "RVR",
+   "canonicalPlayerId": "hb-00258"
+  },
+  {
+   "name": "Eli Garrow",
+   "team": "HVN",
+   "otherName": "Eli Garrow",
+   "otherTeam": "HVN",
+   "canonicalPlayerId": "hb-00278"
+  },
+  {
+   "name": "Eli Quill",
+   "team": "JAD",
+   "otherName": "Eli Quill",
+   "otherTeam": "JAD",
+   "canonicalPlayerId": "hb-00130"
+  },
+  {
+   "name": "Eli Ravensworth",
+   "team": "GLN",
+   "otherName": "Eli Ravensworth",
+   "otherTeam": "GLN",
+   "canonicalPlayerId": "hb-00127"
+  },
+  {
+   "name": "Eli Thorne",
+   "team": "UMB",
+   "otherName": "Eli Thorne",
+   "otherTeam": "UMB",
+   "canonicalPlayerId": "hb-00111"
+  },
+  {
+   "name": "Eli Underhill",
+   "team": "EMB",
+   "otherName": "Eli Underhill",
+   "otherTeam": "EMB",
+   "canonicalPlayerId": "hb-00125"
+  },
+  {
+   "name": "Eli Vexley",
+   "team": "NOV",
+   "otherName": "Eli Vexley",
+   "otherTeam": "NOV",
+   "canonicalPlayerId": "hb-00014"
+  },
+  {
+   "name": "Eli Wolcott",
+   "team": "VIP",
+   "otherName": "Eli Wolcott",
+   "otherTeam": "VIP",
+   "canonicalPlayerId": "hb-00292"
+  },
+  {
+   "name": "Eli Zeller",
+   "team": "CRS",
+   "otherName": "Eli Zeller",
+   "otherTeam": "CRS",
+   "canonicalPlayerId": "hb-00179"
+  },
+  {
+   "name": "Emeka Blackwood",
+   "team": "FRG",
+   "otherName": "Emeka Blackwood",
+   "otherTeam": "FRG",
+   "canonicalPlayerId": "hb-00036"
+  },
+  {
+   "name": "Emeka Corvell",
+   "team": "EMB",
+   "otherName": "Emeka Corvell",
+   "otherTeam": "EMB",
+   "canonicalPlayerId": "hb-00095"
+  },
+  {
+   "name": "Emeka Garrow",
+   "team": "ORC",
+   "otherName": "Emeka Garrow",
+   "otherTeam": "ORC",
+   "canonicalPlayerId": "hb-00195"
+  },
+  {
+   "name": "Emeka Jessop",
+   "team": "BRV",
+   "otherName": "Emeka Jessop",
+   "otherTeam": "BRV",
+   "canonicalPlayerId": "hb-00092"
+  },
+  {
+   "name": "Emeka Kestrel",
+   "team": "LYX",
+   "otherName": "Emeka Kestrel",
+   "otherTeam": "LYX",
+   "canonicalPlayerId": "hb-00102"
+  },
+  {
+   "name": "Emeka Pembrook",
+   "team": "TID",
+   "otherName": "Emeka Pembrook",
+   "otherTeam": "TID",
+   "canonicalPlayerId": "hb-00290"
+  },
+  {
+   "name": "Emeka Stroud",
+   "team": "DLT",
+   "otherName": "Emeka Stroud",
+   "otherTeam": "DLT",
+   "canonicalPlayerId": "hb-00184"
+  },
+  {
+   "name": "Emeka Yarrow",
+   "team": "CRS",
+   "otherName": "Emeka Yarrow",
+   "otherTeam": "CRS",
+   "canonicalPlayerId": "hb-00269"
+  },
+  {
+   "name": "Finn Abernet",
+   "team": "BRV",
+   "otherName": "Finn Abernet",
+   "otherTeam": "BRV",
+   "canonicalPlayerId": "hb-00032"
+  },
+  {
+   "name": "Finn Calloway",
+   "team": "MTR",
+   "otherName": "Finn Calloway",
+   "otherTeam": "MTR",
+   "canonicalPlayerId": "hb-00163"
+  },
+  {
+   "name": "Finn Eastlake",
+   "team": "GLN",
+   "otherName": "Finn Eastlake",
+   "otherTeam": "GLN",
+   "canonicalPlayerId": "hb-00277"
+  },
+  {
+   "name": "Finn Marlow",
+   "team": "BOL",
+   "otherName": "Finn Marlow",
+   "otherTeam": "BOL",
+   "canonicalPlayerId": "hb-00058"
+  },
+  {
+   "name": "Finn Northcott",
+   "team": "XEN",
+   "otherName": "Finn Northcott",
+   "otherTeam": "XEN",
+   "canonicalPlayerId": "hb-00234"
+  },
+  {
+   "name": "Finn Oakridge",
+   "team": "ZEP",
+   "otherName": "Finn Oakridge",
+   "otherTeam": "ZEP",
+   "canonicalPlayerId": "hb-00086"
+  },
+  {
+   "name": "Finn Pembrook",
+   "team": "EMB",
+   "otherName": "Finn Pembrook",
+   "otherTeam": "EMB",
+   "canonicalPlayerId": "hb-00065"
+  },
+  {
+   "name": "Finn Ravensworth",
+   "team": "KNG",
+   "otherName": "Finn Ravensworth",
+   "otherTeam": "KNG",
+   "canonicalPlayerId": "hb-00131"
+  },
+  {
+   "name": "Finn Stroud",
+   "team": "RVR",
+   "otherName": "Finn Stroud",
+   "otherTeam": "RVR",
+   "canonicalPlayerId": "hb-00168"
+  },
+  {
+   "name": "Finn Wolcott",
+   "team": "ARC",
+   "otherName": "Finn Wolcott",
+   "otherTeam": "ARC",
+   "canonicalPlayerId": "hb-00057"
+  },
+  {
+   "name": "Florian Calloway",
+   "team": "GLN",
+   "otherName": "Florian Calloway",
+   "otherTeam": "GLN",
+   "canonicalPlayerId": "hb-00187"
+  },
+  {
+   "name": "Florian Ingram",
+   "team": "QST",
+   "otherName": "Florian Ingram",
+   "otherTeam": "QST",
+   "canonicalPlayerId": "hb-00017"
+  },
+  {
+   "name": "Florian Lockhart",
+   "team": "XEN",
+   "otherName": "Florian Lockhart",
+   "otherTeam": "XEN",
+   "canonicalPlayerId": "hb-00264"
+  },
+  {
+   "name": "Florian Pembrook",
+   "team": "XEN",
+   "otherName": "Florian Pembrook",
+   "otherTeam": "XEN",
+   "canonicalPlayerId": "hb-00054"
+  },
+  {
+   "name": "Florian Quill",
+   "team": "WLD",
+   "otherName": "Florian Quill",
+   "otherTeam": "WLD",
+   "canonicalPlayerId": "hb-00293"
+  },
+  {
+   "name": "Florian Ravensworth",
+   "team": "CRS",
+   "otherName": "Florian Ravensworth",
+   "otherTeam": "CRS",
+   "canonicalPlayerId": "hb-00059"
+  },
+  {
+   "name": "Florian Stroud",
+   "team": "SUM",
+   "otherName": "Florian Stroud",
+   "otherTeam": "SUM",
+   "canonicalPlayerId": "hb-00109"
+  },
+  {
+   "name": "Florian Yarrow",
+   "team": "VIP",
+   "otherName": "Florian Yarrow",
+   "otherTeam": "VIP",
+   "canonicalPlayerId": "hb-00082"
+  },
+  {
+   "name": "Gage Abernet",
+   "team": "DLT",
+   "otherName": "Gage Abernet",
+   "otherTeam": "DLT",
+   "canonicalPlayerId": "hb-00064"
+  },
+  {
+   "name": "Gage Ashgrove",
+   "team": "DLT",
+   "otherName": "Gage Ashgrove",
+   "otherTeam": "DLT",
+   "canonicalPlayerId": "hb-00004"
+  },
+  {
+   "name": "Gage Birchwell",
+   "team": "PHN",
+   "otherName": "Gage Birchwell",
+   "otherTeam": "PHN",
+   "canonicalPlayerId": "hb-00166"
+  },
+  {
+   "name": "Gage Draven",
+   "team": "QST",
+   "otherName": "Gage Draven",
+   "otherTeam": "QST",
+   "canonicalPlayerId": "hb-00047"
+  },
+  {
+   "name": "Gage Everly",
+   "team": "HVN",
+   "otherName": "Gage Everly",
+   "otherTeam": "HVN",
+   "canonicalPlayerId": "hb-00218"
+  },
+  {
+   "name": "Gage Fairbourne",
+   "team": "ALB",
+   "otherName": "Gage Fairbourne",
+   "otherTeam": "ALB",
+   "canonicalPlayerId": "hb-00091"
+  },
+  {
+   "name": "Gage Marlow",
+   "team": "UMB",
+   "otherName": "Gage Marlow",
+   "otherTeam": "UMB",
+   "canonicalPlayerId": "hb-00261"
+  },
+  {
+   "name": "Gage Northcott",
+   "team": "GLN",
+   "otherName": "Gage Northcott",
+   "otherTeam": "GLN",
+   "canonicalPlayerId": "hb-00097"
+  },
+  {
+   "name": "Gage Stroud",
+   "team": "TID",
+   "otherName": "Gage Stroud",
+   "otherTeam": "TID",
+   "canonicalPlayerId": "hb-00260"
+  },
+  {
+   "name": "Galen Abernet",
+   "team": "CRS",
+   "otherName": "Galen Abernet",
+   "otherTeam": "CRS",
+   "canonicalPlayerId": "hb-00089"
+  },
+  {
+   "name": "Galen Calloway",
+   "team": "DUN",
+   "otherName": "Galen Calloway",
+   "otherTeam": "DUN",
+   "canonicalPlayerId": "hb-00060"
+  },
+  {
+   "name": "Galen Eastlake",
+   "team": "JAD",
+   "otherName": "Galen Eastlake",
+   "otherTeam": "JAD",
+   "canonicalPlayerId": "hb-00220"
+  },
+  {
+   "name": "Galen Quill",
+   "team": "NOV",
+   "otherName": "Galen Quill",
+   "otherTeam": "NOV",
+   "canonicalPlayerId": "hb-00104"
+  },
+  {
+   "name": "Galen Stroud",
+   "team": "WLD",
+   "otherName": "Galen Stroud",
+   "otherTeam": "WLD",
+   "canonicalPlayerId": "hb-00053"
+  },
+  {
+   "name": "Galen Vexley",
+   "team": "TID",
+   "otherName": "Galen Vexley",
+   "otherTeam": "TID",
+   "canonicalPlayerId": "hb-00230"
+  },
+  {
+   "name": "Hollis Fairbourne",
+   "team": "EMB",
+   "otherName": "Hollis Fairbourne",
+   "otherTeam": "EMB",
+   "canonicalPlayerId": "hb-00035"
+  },
+  {
+   "name": "Hollis Garrow",
+   "team": "IRN",
+   "otherName": "Hollis Garrow",
+   "otherTeam": "IRN",
+   "canonicalPlayerId": "hb-00159"
+  },
+  {
+   "name": "Hollis Northcott",
+   "team": "YTI",
+   "otherName": "Hollis Northcott",
+   "otherTeam": "YTI",
+   "canonicalPlayerId": "hb-00115"
+  },
+  {
+   "name": "Hollis Pembrook",
+   "team": "UMB",
+   "otherName": "Hollis Pembrook",
+   "otherTeam": "UMB",
+   "canonicalPlayerId": "hb-00291"
+  },
+  {
+   "name": "Hollis Quill",
+   "team": "ARC",
+   "otherName": "Hollis Quill",
+   "otherTeam": "ARC",
+   "canonicalPlayerId": "hb-00147"
+  },
+  {
+   "name": "Hollis Thorne",
+   "team": "CRS",
+   "otherName": "Hollis Thorne",
+   "otherTeam": "CRS",
+   "canonicalPlayerId": "hb-00299"
+  },
+  {
+   "name": "Hollis Underhill",
+   "team": "RVR",
+   "otherName": "Hollis Underhill",
+   "otherTeam": "RVR",
+   "canonicalPlayerId": "hb-00018"
+  },
+  {
+   "name": "Hollis Wolcott",
+   "team": "HVN",
+   "otherName": "Hollis Wolcott",
+   "otherTeam": "HVN",
+   "canonicalPlayerId": "hb-00248"
+  },
+  {
+   "name": "Hugo Calloway",
+   "team": "QST",
+   "otherName": "Hugo Calloway",
+   "otherTeam": "QST",
+   "canonicalPlayerId": "hb-00137"
+  },
+  {
+   "name": "Hugo Corvell",
+   "team": "SUM",
+   "otherName": "Hugo Corvell",
+   "otherTeam": "SUM",
+   "canonicalPlayerId": "hb-00019"
+  },
+  {
+   "name": "Hugo Draven",
+   "team": "SUM",
+   "otherName": "Hugo Draven",
+   "otherTeam": "SUM",
+   "canonicalPlayerId": "hb-00289"
+  },
+  {
+   "name": "Hugo Kestrel",
+   "team": "DUN",
+   "otherName": "Hugo Kestrel",
+   "otherTeam": "DUN",
+   "canonicalPlayerId": "hb-00150"
+  },
+  {
+   "name": "Hugo Lockhart",
+   "team": "UMB",
+   "otherName": "Hugo Lockhart",
+   "otherTeam": "UMB",
+   "canonicalPlayerId": "hb-00081"
+  },
+  {
+   "name": "Hugo Quill",
+   "team": "ARC",
+   "otherName": "Hugo Quill",
+   "otherTeam": "ARC",
+   "canonicalPlayerId": "hb-00177"
+  },
+  {
+   "name": "Hugo Ravensworth",
+   "team": "ZEP",
+   "otherName": "Hugo Ravensworth",
+   "otherTeam": "ZEP",
+   "canonicalPlayerId": "hb-00026"
+  },
+  {
+   "name": "Hugo Yarrow",
+   "team": "DLT",
+   "otherName": "Hugo Yarrow",
+   "otherTeam": "DLT",
+   "canonicalPlayerId": "hb-00034"
+  },
+  {
+   "name": "Hugo Zeller",
+   "team": "BRV",
+   "otherName": "Hugo Zeller",
+   "otherTeam": "BRV",
+   "canonicalPlayerId": "hb-00122"
+  },
+  {
+   "name": "Idris Abernet",
+   "team": "ZEP",
+   "otherName": "Idris Abernet",
+   "otherTeam": "ZEP",
+   "canonicalPlayerId": "hb-00236"
+  },
+  {
+   "name": "Idris Birchwell",
+   "team": "BOL",
+   "otherName": "Idris Birchwell",
+   "otherTeam": "BOL",
+   "canonicalPlayerId": "hb-00148"
+  },
+  {
+   "name": "Idris Fairbourne",
+   "team": "FRG",
+   "otherName": "Idris Fairbourne",
+   "otherTeam": "FRG",
+   "canonicalPlayerId": "hb-00096"
+  },
+  {
+   "name": "Idris Lockhart",
+   "team": "PHN",
+   "otherName": "Idris Lockhart",
+   "otherTeam": "PHN",
+   "canonicalPlayerId": "hb-00016"
+  },
+  {
+   "name": "Idris Oakridge",
+   "team": "JAD",
+   "otherName": "Idris Oakridge",
+   "otherTeam": "JAD",
+   "canonicalPlayerId": "hb-00280"
+  },
+  {
+   "name": "Idris Pembrook",
+   "team": "ORC",
+   "otherName": "Idris Pembrook",
+   "otherTeam": "ORC",
+   "canonicalPlayerId": "hb-00105"
+  },
+  {
+   "name": "Idris Thorne",
+   "team": "QST",
+   "otherName": "Idris Thorne",
+   "otherTeam": "QST",
+   "canonicalPlayerId": "hb-00197"
+  },
+  {
+   "name": "Idris Underhill",
+   "team": "MTR",
+   "otherName": "Idris Underhill",
+   "otherTeam": "MTR",
+   "canonicalPlayerId": "hb-00073"
+  },
+  {
+   "name": "Idris Yarrow",
+   "team": "HVN",
+   "otherName": "Idris Yarrow",
+   "otherTeam": "HVN",
+   "canonicalPlayerId": "hb-00128"
+  },
+  {
+   "name": "Ivo Ashgrove",
+   "team": "BRV",
+   "otherName": "Ivo Ashgrove",
+   "otherTeam": "BRV",
+   "canonicalPlayerId": "hb-00182"
+  },
+  {
+   "name": "Ivo Calloway",
+   "team": "HVN",
+   "otherName": "Ivo Calloway",
+   "otherTeam": "HVN",
+   "canonicalPlayerId": "hb-00158"
+  },
+  {
+   "name": "Ivo Everly",
+   "team": "CRS",
+   "otherName": "Ivo Everly",
+   "otherTeam": "CRS",
+   "canonicalPlayerId": "hb-00149"
+  },
+  {
+   "name": "Ivo Pembrook",
+   "team": "DUN",
+   "otherName": "Ivo Pembrook",
+   "otherTeam": "DUN",
+   "canonicalPlayerId": "hb-00180"
+  },
+  {
+   "name": "Ivo Vexley",
+   "team": "VIP",
+   "otherName": "Ivo Vexley",
+   "otherTeam": "VIP",
+   "canonicalPlayerId": "hb-00112"
+  },
+  {
+   "name": "Ivo Wolcott",
+   "team": "NOV",
+   "otherName": "Ivo Wolcott",
+   "otherTeam": "NOV",
+   "canonicalPlayerId": "hb-00284"
+  },
+  {
+   "name": "Ivo Yarrow",
+   "team": "PHN",
+   "otherName": "Ivo Yarrow",
+   "otherTeam": "PHN",
+   "canonicalPlayerId": "hb-00076"
+  },
+  {
+   "name": "Jalen Ingram",
+   "team": "IRN",
+   "otherName": "Jalen Ingram",
+   "otherTeam": "IRN",
+   "canonicalPlayerId": "hb-00249"
+  },
+  {
+   "name": "Jalen Marlow",
+   "team": "ZEP",
+   "otherName": "Jalen Marlow",
+   "otherTeam": "ZEP",
+   "canonicalPlayerId": "hb-00266"
+  },
+  {
+   "name": "Jalen Northcott",
+   "team": "KNG",
+   "otherName": "Jalen Northcott",
+   "otherTeam": "KNG",
+   "canonicalPlayerId": "hb-00161"
+  },
+  {
+   "name": "Jalen Pembrook",
+   "team": "CDR",
+   "otherName": "Jalen Pembrook",
+   "otherTeam": "CDR",
+   "canonicalPlayerId": "hb-00213"
+  },
+  {
+   "name": "Jalen Ravensworth",
+   "team": "BRV",
+   "otherName": "Jalen Ravensworth",
+   "otherTeam": "BRV",
+   "canonicalPlayerId": "hb-00212"
+  },
+  {
+   "name": "Jalen Yarrow",
+   "team": "ZEP",
+   "otherName": "Jalen Yarrow",
+   "otherTeam": "ZEP",
+   "canonicalPlayerId": "hb-00206"
+  },
+  {
+   "name": "Jalen Zeller",
+   "team": "GLN",
+   "otherName": "Jalen Zeller",
+   "otherTeam": "GLN",
+   "canonicalPlayerId": "hb-00157"
+  },
+  {
+   "name": "Jonah Blackwood",
+   "team": "SUM",
+   "otherName": "Jonah Blackwood",
+   "otherTeam": "SUM",
+   "canonicalPlayerId": "hb-00229"
+  },
+  {
+   "name": "Jonah Ingram",
+   "team": "DUN",
+   "otherName": "Jonah Ingram",
+   "otherTeam": "DUN",
+   "canonicalPlayerId": "hb-00120"
+  },
+  {
+   "name": "Jonah Northcott",
+   "team": "IRN",
+   "otherName": "Jonah Northcott",
+   "otherTeam": "IRN",
+   "canonicalPlayerId": "hb-00009"
+  },
+  {
+   "name": "Jonah Oakridge",
+   "team": "FRG",
+   "otherName": "Jonah Oakridge",
+   "otherTeam": "FRG",
+   "canonicalPlayerId": "hb-00216"
+  },
+  {
+   "name": "Jonah Thorne",
+   "team": "NOV",
+   "otherName": "Jonah Thorne",
+   "otherTeam": "NOV",
+   "canonicalPlayerId": "hb-00224"
+  },
+  {
+   "name": "Jonah Vexley",
+   "team": "UMB",
+   "otherName": "Jonah Vexley",
+   "otherTeam": "UMB",
+   "canonicalPlayerId": "hb-00141"
+  },
+  {
+   "name": "Kade Abernet",
+   "team": "CDR",
+   "otherName": "Kade Abernet",
+   "otherTeam": "CDR",
+   "canonicalPlayerId": "hb-00153"
+  },
+  {
+   "name": "Kade Ashgrove",
+   "team": "FRG",
+   "otherName": "Kade Ashgrove",
+   "otherTeam": "FRG",
+   "canonicalPlayerId": "hb-00156"
+  },
+  {
+   "name": "Kade Birchwell",
+   "team": "ALB",
+   "otherName": "Kade Birchwell",
+   "otherTeam": "ALB",
+   "canonicalPlayerId": "hb-00001"
+  },
+  {
+   "name": "Kade Draven",
+   "team": "YTI",
+   "otherName": "Kade Draven",
+   "otherTeam": "YTI",
+   "canonicalPlayerId": "hb-00085"
+  },
+  {
+   "name": "Kade Dunmore",
+   "team": "UMB",
+   "otherName": "Kade Dunmore",
+   "otherTeam": "UMB",
+   "canonicalPlayerId": "hb-00171"
+  },
+  {
+   "name": "Kade Ingram",
+   "team": "GLN",
+   "otherName": "Kade Ingram",
+   "otherTeam": "GLN",
+   "canonicalPlayerId": "hb-00247"
+  },
+  {
+   "name": "Kade Lockhart",
+   "team": "DLT",
+   "otherName": "Kade Lockhart",
+   "otherTeam": "DLT",
+   "canonicalPlayerId": "hb-00244"
+  },
+  {
+   "name": "Kade Marlow",
+   "team": "TID",
+   "otherName": "Kade Marlow",
+   "otherTeam": "TID",
+   "canonicalPlayerId": "hb-00170"
+  },
+  {
+   "name": "Kade Stroud",
+   "team": "ARC",
+   "otherName": "Kade Stroud",
+   "otherTeam": "ARC",
+   "canonicalPlayerId": "hb-00117"
+  },
+  {
+   "name": "Kade Wolcott",
+   "team": "DUN",
+   "otherName": "Kade Wolcott",
+   "otherTeam": "DUN",
+   "canonicalPlayerId": "hb-00090"
+  },
+  {
+   "name": "Kade Zeller",
+   "team": "KNG",
+   "otherName": "Kade Zeller",
+   "otherTeam": "KNG",
+   "canonicalPlayerId": "hb-00221"
+  },
+  {
+   "name": "Kellan Abernet",
+   "team": "ARC",
+   "otherName": "Kellan Abernet",
+   "otherTeam": "ARC",
+   "canonicalPlayerId": "hb-00267"
+  },
+  {
+   "name": "Kellan Calloway",
+   "team": "WLD",
+   "otherName": "Kellan Calloway",
+   "otherTeam": "WLD",
+   "canonicalPlayerId": "hb-00113"
+  },
+  {
+   "name": "Kellan Corvell",
+   "team": "VIP",
+   "otherName": "Kellan Corvell",
+   "otherTeam": "VIP",
+   "canonicalPlayerId": "hb-00142"
+  },
+  {
+   "name": "Kellan Fairbourne",
+   "team": "SUM",
+   "otherName": "Kellan Fairbourne",
+   "otherTeam": "SUM",
+   "canonicalPlayerId": "hb-00259"
+  },
+  {
+   "name": "Kellan Lockhart",
+   "team": "XEN",
+   "otherName": "Kellan Lockhart",
+   "otherTeam": "XEN",
+   "canonicalPlayerId": "hb-00024"
+  },
+  {
+   "name": "Kellan Oakridge",
+   "team": "IRN",
+   "otherName": "Kellan Oakridge",
+   "otherTeam": "IRN",
+   "canonicalPlayerId": "hb-00039"
+  },
+  {
+   "name": "Linus Ashgrove",
+   "team": "MTR",
+   "otherName": "Linus Ashgrove",
+   "otherTeam": "MTR",
+   "canonicalPlayerId": "hb-00283"
+  },
+  {
+   "name": "Linus Birchwell",
+   "team": "FRG",
+   "otherName": "Linus Birchwell",
+   "otherTeam": "FRG",
+   "canonicalPlayerId": "hb-00276"
+  },
+  {
+   "name": "Linus Blackwood",
+   "team": "KNG",
+   "otherName": "Linus Blackwood",
+   "otherTeam": "KNG",
+   "canonicalPlayerId": "hb-00071"
+  },
+  {
+   "name": "Linus Calloway",
+   "team": "HVN",
+   "otherName": "Linus Calloway",
+   "otherTeam": "HVN",
+   "canonicalPlayerId": "hb-00188"
+  },
+  {
+   "name": "Linus Draven",
+   "team": "GLN",
+   "otherName": "Linus Draven",
+   "otherTeam": "GLN",
+   "canonicalPlayerId": "hb-00217"
+  },
+  {
+   "name": "Linus Eastlake",
+   "team": "JAD",
+   "otherName": "Linus Eastlake",
+   "otherTeam": "JAD",
+   "canonicalPlayerId": "hb-00040"
+  },
+  {
+   "name": "Linus Everly",
+   "team": "PHN",
+   "otherName": "Linus Everly",
+   "otherTeam": "PHN",
+   "canonicalPlayerId": "hb-00106"
+  },
+  {
+   "name": "Linus Fairbourne",
+   "team": "WLD",
+   "otherName": "Linus Fairbourne",
+   "otherTeam": "WLD",
+   "canonicalPlayerId": "hb-00083"
+  },
+  {
+   "name": "Linus Lockhart",
+   "team": "LYX",
+   "otherName": "Linus Lockhart",
+   "otherTeam": "LYX",
+   "canonicalPlayerId": "hb-00192"
+  },
+  {
+   "name": "Linus Oakridge",
+   "team": "CRS",
+   "otherName": "Linus Oakridge",
+   "otherTeam": "CRS",
+   "canonicalPlayerId": "hb-00209"
+  },
+  {
+   "name": "Linus Underhill",
+   "team": "ORC",
+   "otherName": "Linus Underhill",
+   "otherTeam": "ORC",
+   "canonicalPlayerId": "hb-00165"
+  },
+  {
+   "name": "Lior Blackwood",
+   "team": "IRN",
+   "otherName": "Lior Blackwood",
+   "otherTeam": "IRN",
+   "canonicalPlayerId": "hb-00219"
+  },
+  {
+   "name": "Lior Draven",
+   "team": "CDR",
+   "otherName": "Lior Draven",
+   "otherTeam": "CDR",
+   "canonicalPlayerId": "hb-00183"
+  },
+  {
+   "name": "Lior Everly",
+   "team": "NOV",
+   "otherName": "Lior Everly",
+   "otherTeam": "NOV",
+   "canonicalPlayerId": "hb-00044"
+  },
+  {
+   "name": "Lior Jessop",
+   "team": "ZEP",
+   "otherName": "Lior Jessop",
+   "otherTeam": "ZEP",
+   "canonicalPlayerId": "hb-00176"
+  },
+  {
+   "name": "Lior Underhill",
+   "team": "ALB",
+   "otherName": "Lior Underhill",
+   "otherTeam": "ALB",
+   "canonicalPlayerId": "hb-00181"
+  },
+  {
+   "name": "Lior Vexley",
+   "team": "SUM",
+   "otherName": "Lior Vexley",
+   "otherTeam": "SUM",
+   "canonicalPlayerId": "hb-00169"
+  },
+  {
+   "name": "Marek Birchwell",
+   "team": "CDR",
+   "otherName": "Marek Birchwell",
+   "otherTeam": "CDR",
+   "canonicalPlayerId": "hb-00033"
+  },
+  {
+   "name": "Marek Blackwood",
+   "team": "CRS",
+   "otherName": "Marek Blackwood",
+   "otherTeam": "CRS",
+   "canonicalPlayerId": "hb-00239"
+  },
+  {
+   "name": "Marek Fairbourne",
+   "team": "VIP",
+   "otherName": "Marek Fairbourne",
+   "otherTeam": "VIP",
+   "canonicalPlayerId": "hb-00262"
+  },
+  {
+   "name": "Marek Kestrel",
+   "team": "KNG",
+   "otherName": "Marek Kestrel",
+   "otherTeam": "KNG",
+   "canonicalPlayerId": "hb-00281"
+  },
+  {
+   "name": "Marek Marlow",
+   "team": "DLT",
+   "otherName": "Marek Marlow",
+   "otherTeam": "DLT",
+   "canonicalPlayerId": "hb-00214"
+  },
+  {
+   "name": "Marek Oakridge",
+   "team": "TID",
+   "otherName": "Marek Oakridge",
+   "otherTeam": "TID",
+   "canonicalPlayerId": "hb-00020"
+  },
+  {
+   "name": "Marek Quill",
+   "team": "JAD",
+   "otherName": "Marek Quill",
+   "otherTeam": "JAD",
+   "canonicalPlayerId": "hb-00160"
+  },
+  {
+   "name": "Marek Stroud",
+   "team": "LYX",
+   "otherName": "Marek Stroud",
+   "otherTeam": "LYX",
+   "canonicalPlayerId": "hb-00072"
+  },
+  {
+   "name": "Marek Thorne",
+   "team": "ARC",
+   "otherName": "Marek Thorne",
+   "otherTeam": "ARC",
+   "canonicalPlayerId": "hb-00237"
+  },
+  {
+   "name": "Milo Ashgrove",
+   "team": "ARC",
+   "otherName": "Milo Ashgrove",
+   "otherTeam": "ARC",
+   "canonicalPlayerId": "hb-00027"
+  },
+  {
+   "name": "Milo Fairbourne",
+   "team": "EMB",
+   "otherName": "Milo Fairbourne",
+   "otherTeam": "EMB",
+   "canonicalPlayerId": "hb-00155"
+  },
+  {
+   "name": "Milo Marlow",
+   "team": "BOL",
+   "otherName": "Milo Marlow",
+   "otherTeam": "BOL",
+   "canonicalPlayerId": "hb-00238"
+  },
+  {
+   "name": "Milo Northcott",
+   "team": "PHN",
+   "otherName": "Milo Northcott",
+   "otherTeam": "PHN",
+   "canonicalPlayerId": "hb-00046"
+  },
+  {
+   "name": "Milo Pembrook",
+   "team": "ZEP",
+   "otherName": "Milo Pembrook",
+   "otherTeam": "ZEP",
+   "canonicalPlayerId": "hb-00146"
+  },
+  {
+   "name": "Milo Stroud",
+   "team": "PHN",
+   "otherName": "Milo Stroud",
+   "otherTeam": "PHN",
+   "canonicalPlayerId": "hb-00256"
+  },
+  {
+   "name": "Milo Zeller",
+   "team": "HVN",
+   "otherName": "Milo Zeller",
+   "otherTeam": "HVN",
+   "canonicalPlayerId": "hb-00008"
+  },
+  {
+   "name": "Niall Abernet",
+   "team": "XEN",
+   "otherName": "Niall Abernet",
+   "otherTeam": "XEN",
+   "canonicalPlayerId": "hb-00084"
+  },
+  {
+   "name": "Niall Corvell",
+   "team": "MTR",
+   "otherName": "Niall Corvell",
+   "otherTeam": "MTR",
+   "canonicalPlayerId": "hb-00133"
+  },
+  {
+   "name": "Niall Draven",
+   "team": "EMB",
+   "otherName": "Niall Draven",
+   "otherTeam": "EMB",
+   "canonicalPlayerId": "hb-00215"
+  },
+  {
+   "name": "Niall Dunmore",
+   "team": "LYX",
+   "otherName": "Niall Dunmore",
+   "otherTeam": "LYX",
+   "canonicalPlayerId": "hb-00282"
+  },
+  {
+   "name": "Niall Jessop",
+   "team": "BOL",
+   "otherName": "Niall Jessop",
+   "otherTeam": "BOL",
+   "canonicalPlayerId": "hb-00178"
+  },
+  {
+   "name": "Niall Northcott",
+   "team": "VIP",
+   "otherName": "Niall Northcott",
+   "otherTeam": "VIP",
+   "canonicalPlayerId": "hb-00022"
+  },
+  {
+   "name": "Niall Pembrook",
+   "team": "XEN",
+   "otherName": "Niall Pembrook",
+   "otherTeam": "XEN",
+   "canonicalPlayerId": "hb-00174"
+  },
+  {
+   "name": "Nico Ashgrove",
+   "team": "BRV",
+   "otherName": "Nico Ashgrove",
+   "otherTeam": "BRV",
+   "canonicalPlayerId": "hb-00152"
+  },
+  {
+   "name": "Nico Dunmore",
+   "team": "KNG",
+   "otherName": "Nico Dunmore",
+   "otherTeam": "KNG",
+   "canonicalPlayerId": "hb-00101"
+  },
+  {
+   "name": "Nico Eastlake",
+   "team": "DUN",
+   "otherName": "Nico Eastlake",
+   "otherTeam": "DUN",
+   "canonicalPlayerId": "hb-00210"
+  },
+  {
+   "name": "Nico Fairbourne",
+   "team": "ALB",
+   "otherName": "Nico Fairbourne",
+   "otherTeam": "ALB",
+   "canonicalPlayerId": "hb-00271"
+  },
+  {
+   "name": "Nico Oakridge",
+   "team": "SUM",
+   "otherName": "Nico Oakridge",
+   "otherTeam": "SUM",
+   "canonicalPlayerId": "hb-00199"
+  },
+  {
+   "name": "Orin Abernet",
+   "team": "XEN",
+   "otherName": "Orin Abernet",
+   "otherTeam": "XEN",
+   "canonicalPlayerId": "hb-00114"
+  },
+  {
+   "name": "Orin Eastlake",
+   "team": "RVR",
+   "otherName": "Orin Eastlake",
+   "otherTeam": "RVR",
+   "canonicalPlayerId": "hb-00138"
+  },
+  {
+   "name": "Orin Everly",
+   "team": "ZEP",
+   "otherName": "Orin Everly",
+   "otherTeam": "ZEP",
+   "canonicalPlayerId": "hb-00296"
+  },
+  {
+   "name": "Orin Garrow",
+   "team": "BRV",
+   "otherName": "Orin Garrow",
+   "otherTeam": "BRV",
+   "canonicalPlayerId": "hb-00242"
+  },
+  {
+   "name": "Orin Hartwell",
+   "team": "KNG",
+   "otherName": "Orin Hartwell",
+   "otherTeam": "KNG",
+   "canonicalPlayerId": "hb-00041"
+  },
+  {
+   "name": "Orin Jessop",
+   "team": "CDR",
+   "otherName": "Orin Jessop",
+   "otherTeam": "CDR",
+   "canonicalPlayerId": "hb-00123"
+  },
+  {
+   "name": "Orin Northcott",
+   "team": "BOL",
+   "otherName": "Orin Northcott",
+   "otherTeam": "BOL",
+   "canonicalPlayerId": "hb-00118"
+  },
+  {
+   "name": "Orin Ravensworth",
+   "team": "YTI",
+   "otherName": "Orin Ravensworth",
+   "otherTeam": "YTI",
+   "canonicalPlayerId": "hb-00055"
+  },
+  {
+   "name": "Orin Underhill",
+   "team": "BOL",
+   "otherName": "Orin Underhill",
+   "otherTeam": "BOL",
+   "canonicalPlayerId": "hb-00298"
+  },
+  {
+   "name": "Orin Wolcott",
+   "team": "SUM",
+   "otherName": "Orin Wolcott",
+   "otherTeam": "SUM",
+   "canonicalPlayerId": "hb-00049"
+  },
+  {
+   "name": "Pax Jessop",
+   "team": "ORC",
+   "otherName": "Pax Jessop",
+   "otherTeam": "ORC",
+   "canonicalPlayerId": "hb-00225"
+  },
+  {
+   "name": "Pax Northcott",
+   "team": "XEN",
+   "otherName": "Pax Northcott",
+   "otherTeam": "XEN",
+   "canonicalPlayerId": "hb-00294"
+  },
+  {
+   "name": "Pax Underhill",
+   "team": "DLT",
+   "otherName": "Pax Underhill",
+   "otherTeam": "DLT",
+   "canonicalPlayerId": "hb-00094"
+  },
+  {
+   "name": "Pax Wolcott",
+   "team": "UMB",
+   "otherName": "Pax Wolcott",
+   "otherTeam": "UMB",
+   "canonicalPlayerId": "hb-00201"
+  },
+  {
+   "name": "Pax Zeller",
+   "team": "XEN",
+   "otherName": "Pax Zeller",
+   "otherTeam": "XEN",
+   "canonicalPlayerId": "hb-00144"
+  },
+  {
+   "name": "Quincy Calloway",
+   "team": "WLD",
+   "otherName": "Quincy Calloway",
+   "otherTeam": "WLD",
+   "canonicalPlayerId": "hb-00023"
+  },
+  {
+   "name": "Quincy Corvell",
+   "team": "ARC",
+   "otherName": "Quincy Corvell",
+   "otherTeam": "ARC",
+   "canonicalPlayerId": "hb-00087"
+  },
+  {
+   "name": "Quincy Eastlake",
+   "team": "JAD",
+   "otherName": "Quincy Eastlake",
+   "otherTeam": "JAD",
+   "canonicalPlayerId": "hb-00100"
+  },
+  {
+   "name": "Quincy Fairbourne",
+   "team": "MTR",
+   "otherName": "Quincy Fairbourne",
+   "otherTeam": "MTR",
+   "canonicalPlayerId": "hb-00043"
+  },
+  {
+   "name": "Quincy Kestrel",
+   "team": "JAD",
+   "otherName": "Quincy Kestrel",
+   "otherTeam": "JAD",
+   "canonicalPlayerId": "hb-00250"
+  },
+  {
+   "name": "Quincy Lockhart",
+   "team": "QST",
+   "otherName": "Quincy Lockhart",
+   "otherTeam": "QST",
+   "canonicalPlayerId": "hb-00257"
+  },
+  {
+   "name": "Quincy Marlow",
+   "team": "QST",
+   "otherName": "Quincy Marlow",
+   "otherTeam": "QST",
+   "canonicalPlayerId": "hb-00077"
+  },
+  {
+   "name": "Quincy Yarrow",
+   "team": "KNG",
+   "otherName": "Quincy Yarrow",
+   "otherTeam": "KNG",
+   "canonicalPlayerId": "hb-00011"
+  },
+  {
+   "name": "Quincy Zeller",
+   "team": "JAD",
+   "otherName": "Quincy Zeller",
+   "otherTeam": "JAD",
+   "canonicalPlayerId": "hb-00070"
+  },
+  {
+   "name": "Rowan Calloway",
+   "team": "ORC",
+   "otherName": "Rowan Calloway",
+   "otherTeam": "ORC",
+   "canonicalPlayerId": "hb-00075"
+  },
+  {
+   "name": "Rowan Eastlake",
+   "team": "CDR",
+   "otherName": "Rowan Eastlake",
+   "otherTeam": "CDR",
+   "canonicalPlayerId": "hb-00093"
+  },
+  {
+   "name": "Rowan Garrow",
+   "team": "UMB",
+   "otherName": "Rowan Garrow",
+   "otherTeam": "UMB",
+   "canonicalPlayerId": "hb-00021"
+  },
+  {
+   "name": "Rowan Hartwell",
+   "team": "TID",
+   "otherName": "Rowan Hartwell",
+   "otherTeam": "TID",
+   "canonicalPlayerId": "hb-00200"
+  },
+  {
+   "name": "Rowan Marlow",
+   "team": "FRG",
+   "otherName": "Rowan Marlow",
+   "otherTeam": "FRG",
+   "canonicalPlayerId": "hb-00186"
+  },
+  {
+   "name": "Rowan Northcott",
+   "team": "ZEP",
+   "otherName": "Rowan Northcott",
+   "otherTeam": "ZEP",
+   "canonicalPlayerId": "hb-00116"
+  },
+  {
+   "name": "Rowan Oakridge",
+   "team": "BOL",
+   "otherName": "Rowan Oakridge",
+   "otherTeam": "BOL",
+   "canonicalPlayerId": "hb-00268"
+  },
+  {
+   "name": "Soren Blackwood",
+   "team": "VIP",
+   "otherName": "Soren Blackwood",
+   "otherTeam": "VIP",
+   "canonicalPlayerId": "hb-00052"
+  },
+  {
+   "name": "Soren Draven",
+   "team": "PHN",
+   "otherName": "Soren Draven",
+   "otherTeam": "PHN",
+   "canonicalPlayerId": "hb-00226"
+  },
+  {
+   "name": "Soren Fairbourne",
+   "team": "BOL",
+   "otherName": "Soren Fairbourne",
+   "otherTeam": "BOL",
+   "canonicalPlayerId": "hb-00088"
+  },
+  {
+   "name": "Soren Marlow",
+   "team": "BRV",
+   "otherName": "Soren Marlow",
+   "otherTeam": "BRV",
+   "canonicalPlayerId": "hb-00062"
+  },
+  {
+   "name": "Soren Northcott",
+   "team": "ORC",
+   "otherName": "Soren Northcott",
+   "otherTeam": "ORC",
+   "canonicalPlayerId": "hb-00045"
+  },
+  {
+   "name": "Soren Wolcott",
+   "team": "FRG",
+   "otherName": "Soren Wolcott",
+   "otherTeam": "FRG",
+   "canonicalPlayerId": "hb-00066"
+  },
+  {
+   "name": "Soren Yarrow",
+   "team": "GLN",
+   "otherName": "Soren Yarrow",
+   "otherTeam": "GLN",
+   "canonicalPlayerId": "hb-00037"
+  },
+  {
+   "name": "Tate Dunmore",
+   "team": "JAD",
+   "otherName": "Tate Dunmore",
+   "otherTeam": "JAD",
+   "canonicalPlayerId": "hb-00010"
+  },
+  {
+   "name": "Tate Fairbourne",
+   "team": "BRV",
+   "otherName": "Tate Fairbourne",
+   "otherTeam": "BRV",
+   "canonicalPlayerId": "hb-00272"
+  },
+  {
+   "name": "Tate Marlow",
+   "team": "HVN",
+   "otherName": "Tate Marlow",
+   "otherTeam": "HVN",
+   "canonicalPlayerId": "hb-00068"
+  },
+  {
+   "name": "Tate Northcott",
+   "team": "VIP",
+   "otherName": "Tate Northcott",
+   "otherTeam": "VIP",
+   "canonicalPlayerId": "hb-00232"
+  },
+  {
+   "name": "Tate Oakridge",
+   "team": "EMB",
+   "otherName": "Tate Oakridge",
+   "otherTeam": "EMB",
+   "canonicalPlayerId": "hb-00005"
+  },
+  {
+   "name": "Tate Quill",
+   "team": "LYX",
+   "otherName": "Tate Quill",
+   "otherTeam": "LYX",
+   "canonicalPlayerId": "hb-00222"
+  },
+  {
+   "name": "Tate Yarrow",
+   "team": "NOV",
+   "otherName": "Tate Yarrow",
+   "otherTeam": "NOV",
+   "canonicalPlayerId": "hb-00164"
+  },
+  {
+   "name": "Ulises Birchwell",
+   "team": "YTI",
+   "otherName": "Ulises Birchwell",
+   "otherTeam": "YTI",
+   "canonicalPlayerId": "hb-00025"
+  },
+  {
+   "name": "Ulises Corvell",
+   "team": "DUN",
+   "otherName": "Ulises Corvell",
+   "otherTeam": "DUN",
+   "canonicalPlayerId": "hb-00270"
+  },
+  {
+   "name": "Ulises Eastlake",
+   "team": "DUN",
+   "otherName": "Ulises Eastlake",
+   "otherTeam": "DUN",
+   "canonicalPlayerId": "hb-00300"
+  },
+  {
+   "name": "Ulises Ingram",
+   "team": "CDR",
+   "otherName": "Ulises Ingram",
+   "otherTeam": "CDR",
+   "canonicalPlayerId": "hb-00243"
+  },
+  {
+   "name": "Ulises Marlow",
+   "team": "FRG",
+   "otherName": "Ulises Marlow",
+   "otherTeam": "FRG",
+   "canonicalPlayerId": "hb-00126"
+  },
+  {
+   "name": "Ulises Pembrook",
+   "team": "DUN",
+   "otherName": "Ulises Pembrook",
+   "otherTeam": "DUN",
+   "canonicalPlayerId": "hb-00030"
+  },
+  {
+   "name": "Ulises Thorne",
+   "team": "ZEP",
+   "otherName": "Ulises Thorne",
+   "otherTeam": "ZEP",
+   "canonicalPlayerId": "hb-00056"
+  },
+  {
+   "name": "Ulises Vexley",
+   "team": "NOV",
+   "otherName": "Ulises Vexley",
+   "otherTeam": "NOV",
+   "canonicalPlayerId": "hb-00254"
+  },
+  {
+   "name": "Ulises Zeller",
+   "team": "CDR",
+   "otherName": "Ulises Zeller",
+   "otherTeam": "CDR",
+   "canonicalPlayerId": "hb-00003"
+  },
+  {
+   "name": "Vance Ashgrove",
+   "team": "YTI",
+   "otherName": "Vance Ashgrove",
+   "otherTeam": "YTI",
+   "canonicalPlayerId": "hb-00295"
+  },
+  {
+   "name": "Vance Calloway",
+   "team": "LYX",
+   "otherName": "Vance Calloway",
+   "otherTeam": "LYX",
+   "canonicalPlayerId": "hb-00132"
+  },
+  {
+   "name": "Vance Everly",
+   "team": "IRN",
+   "otherName": "Vance Everly",
+   "otherTeam": "IRN",
+   "canonicalPlayerId": "hb-00189"
+  },
+  {
+   "name": "Vance Fairbourne",
+   "team": "QST",
+   "otherName": "Vance Fairbourne",
+   "otherTeam": "QST",
+   "canonicalPlayerId": "hb-00227"
+  },
+  {
+   "name": "Vance Ingram",
+   "team": "PHN",
+   "otherName": "Vance Ingram",
+   "otherTeam": "PHN",
+   "canonicalPlayerId": "hb-00196"
+  },
+  {
+   "name": "Vance Jessop",
+   "team": "ORC",
+   "otherName": "Vance Jessop",
+   "otherTeam": "ORC",
+   "canonicalPlayerId": "hb-00285"
+  },
+  {
+   "name": "Vance Yarrow",
+   "team": "BRV",
+   "otherName": "Vance Yarrow",
+   "otherTeam": "BRV",
+   "canonicalPlayerId": "hb-00002"
+  },
+  {
+   "name": "Wes Birchwell",
+   "team": "ALB",
+   "otherName": "Wes Birchwell",
+   "otherTeam": "ALB",
+   "canonicalPlayerId": "hb-00061"
+  },
+  {
+   "name": "Wes Calloway",
+   "team": "RVR",
+   "otherName": "Wes Calloway",
+   "otherTeam": "RVR",
+   "canonicalPlayerId": "hb-00078"
+  },
+  {
+   "name": "Wes Garrow",
+   "team": "EMB",
+   "otherName": "Wes Garrow",
+   "otherTeam": "EMB",
+   "canonicalPlayerId": "hb-00185"
+  },
+  {
+   "name": "Wes Ingram",
+   "team": "HVN",
+   "otherName": "Wes Ingram",
+   "otherTeam": "HVN",
+   "canonicalPlayerId": "hb-00098"
+  },
+  {
+   "name": "Wes Kestrel",
+   "team": "YTI",
+   "otherName": "Wes Kestrel",
+   "otherTeam": "YTI",
+   "canonicalPlayerId": "hb-00205"
+  },
+  {
+   "name": "Wes Marlow",
+   "team": "QST",
+   "otherName": "Wes Marlow",
+   "otherTeam": "QST",
+   "canonicalPlayerId": "hb-00287"
+  },
+  {
+   "name": "Wes Oakridge",
+   "team": "DUN",
+   "otherName": "Wes Oakridge",
+   "otherTeam": "DUN",
+   "canonicalPlayerId": "hb-00240"
+  },
+  {
+   "name": "Wes Quill",
+   "team": "MTR",
+   "otherName": "Wes Quill",
+   "otherTeam": "MTR",
+   "canonicalPlayerId": "hb-00013"
+  },
+  {
+   "name": "Wes Ravensworth",
+   "team": "YTI",
+   "otherName": "Wes Ravensworth",
+   "otherTeam": "YTI",
+   "canonicalPlayerId": "hb-00145"
+  },
+  {
+   "name": "Wes Stroud",
+   "team": "ORC",
+   "otherName": "Wes Stroud",
+   "otherTeam": "ORC",
+   "canonicalPlayerId": "hb-00135"
+  },
+  {
+   "name": "Wes Vexley",
+   "team": "YTI",
+   "otherName": "Wes Vexley",
+   "otherTeam": "YTI",
+   "canonicalPlayerId": "hb-00235"
+  },
+  {
+   "name": "Xander Blackwood",
+   "team": "SUM",
+   "otherName": "Xander Blackwood",
+   "otherTeam": "SUM",
+   "canonicalPlayerId": "hb-00079"
+  },
+  {
+   "name": "Xander Eastlake",
+   "team": "ORC",
+   "otherName": "Xander Eastlake",
+   "otherTeam": "ORC",
+   "canonicalPlayerId": "hb-00255"
+  },
+  {
+   "name": "Xander Jessop",
+   "team": "WLD",
+   "otherName": "Xander Jessop",
+   "otherTeam": "WLD",
+   "canonicalPlayerId": "hb-00263"
+  },
+  {
+   "name": "Xander Stroud",
+   "team": "CRS",
+   "otherName": "Xander Stroud",
+   "otherTeam": "CRS",
+   "canonicalPlayerId": "hb-00119"
+  },
+  {
+   "name": "Yuri Abernet",
+   "team": "YTI",
+   "otherName": "Yuri Abernet",
+   "otherTeam": "YTI",
+   "canonicalPlayerId": "hb-00265"
+  },
+  {
+   "name": "Yuri Calloway",
+   "team": "HVN",
+   "otherName": "Yuri Calloway",
+   "otherTeam": "HVN",
+   "canonicalPlayerId": "hb-00038"
+  },
+  {
+   "name": "Yuri Dunmore",
+   "team": "UMB",
+   "otherName": "Yuri Dunmore",
+   "otherTeam": "UMB",
+   "canonicalPlayerId": "hb-00231"
+  },
+  {
+   "name": "Yuri Eastlake",
+   "team": "GLN",
+   "otherName": "Yuri Eastlake",
+   "otherTeam": "GLN",
+   "canonicalPlayerId": "hb-00067"
+  },
+  {
+   "name": "Yuri Fairbourne",
+   "team": "VIP",
+   "otherName": "Yuri Fairbourne",
+   "otherTeam": "VIP",
+   "canonicalPlayerId": "hb-00202"
+  },
+  {
+   "name": "Yuri Ingram",
+   "team": "IRN",
+   "otherName": "Yuri Ingram",
+   "otherTeam": "IRN",
+   "canonicalPlayerId": "hb-00129"
+  },
+  {
+   "name": "Yuri Lockhart",
+   "team": "ARC",
+   "otherName": "Yuri Lockhart",
+   "otherTeam": "ARC",
+   "canonicalPlayerId": "hb-00207"
+  },
+  {
+   "name": "Yuri Marlow",
+   "team": "MTR",
+   "otherName": "Yuri Marlow",
+   "otherTeam": "MTR",
+   "canonicalPlayerId": "hb-00223"
+  },
+  {
+   "name": "Yuri Oakridge",
+   "team": "WLD",
+   "otherName": "Yuri Oakridge",
+   "otherTeam": "WLD",
+   "canonicalPlayerId": "hb-00143"
+  },
+  {
+   "name": "Yuri Ravensworth",
+   "team": "TID",
+   "otherName": "Yuri Ravensworth",
+   "otherTeam": "TID",
+   "canonicalPlayerId": "hb-00050"
+  },
+  {
+   "name": "Zane Blackwood",
+   "team": "CRS",
+   "otherName": "Zane Blackwood",
+   "otherTeam": "CRS",
+   "canonicalPlayerId": "hb-00029"
+  },
+  {
+   "name": "Zane Calloway",
+   "team": "KNG",
+   "otherName": "Zane Calloway",
+   "otherTeam": "KNG",
+   "canonicalPlayerId": "hb-00251"
+  },
+  {
+   "name": "Zane Fairbourne",
+   "team": "VIP",
+   "otherName": "Zane Fairbourne",
+   "otherTeam": "VIP",
+   "canonicalPlayerId": "hb-00172"
+  },
+  {
+   "name": "Zane Ingram",
+   "team": "LYX",
+   "otherName": "Zane Ingram",
+   "otherTeam": "LYX",
+   "canonicalPlayerId": "hb-00162"
+  },
+  {
+   "name": "Zane Jessop",
+   "team": "QST",
+   "otherName": "Zane Jessop",
+   "otherTeam": "QST",
+   "canonicalPlayerId": "hb-00107"
+  },
+  {
+   "name": "Zane Pembrook",
+   "team": "RVR",
+   "otherName": "Zane Pembrook",
+   "otherTeam": "RVR",
+   "canonicalPlayerId": "hb-00228"
+  },
+  {
+   "name": "Zane Ravensworth",
+   "team": "LYX",
+   "otherName": "Zane Ravensworth",
+   "otherTeam": "LYX",
+   "canonicalPlayerId": "hb-00252"
+  },
+  {
+   "name": "Zane Stroud",
+   "team": "RVR",
+   "otherName": "Zane Stroud",
+   "otherTeam": "RVR",
+   "canonicalPlayerId": "hb-00198"
+  },
+  {
+   "name": "Zane Wolcott",
+   "team": "DLT",
+   "otherName": "Zane Wolcott",
+   "otherTeam": "DLT",
+   "canonicalPlayerId": "hb-00124"
+  }
+ ],
+ "yahooOnly": [],
+ "hashtagOnly": [],
+ "ambiguous": [],
+ "teamMismatch": [],
+ "rejected": [],
+ "duplicates": [],
+ "aliasProblems": [],
+ "matchedVia": {
+  "NAME_TEAM": 300
+ }
+}

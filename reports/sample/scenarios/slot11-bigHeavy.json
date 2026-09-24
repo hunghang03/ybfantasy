@@ -1,0 +1,1160 @@
+{
+ "slot": 11,
+ "foundation": "bigHeavy",
+ "overrides": {},
+ "snapshots": [
+  {
+   "afterRound": 1,
+   "currentPick": 18,
+   "nextPick": 18,
+   "roster": [
+    {
+     "pick": 11,
+     "name": "Linus Eastlake",
+     "pos": "C",
+     "reason": "big-heavy: first PF/C in priority"
+    }
+   ],
+   "build": "Build: balanced — no punt yet.",
+   "priority": "Priority: AST > FT% > 3PM",
+   "reason": "FT% is your weakest competitive category. FG%, REB, BLK are already strong.",
+   "categories": [
+    {
+     "cat": "FG%",
+     "state": "ELITE",
+     "d": 2.13,
+     "need": 0,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "FT%",
+     "state": "CRITICAL",
+     "d": -3.55,
+     "need": 1.04,
+     "pi": 0.06,
+     "punt": "NONE"
+    },
+    {
+     "cat": "3PM",
+     "state": "CRITICAL",
+     "d": -2.39,
+     "need": 1.04,
+     "pi": 0.03,
+     "punt": "NONE"
+    },
+    {
+     "cat": "PTS",
+     "state": "WEAK",
+     "d": -1.02,
+     "need": 0.93,
+     "pi": 0.01,
+     "punt": "NONE"
+    },
+    {
+     "cat": "REB",
+     "state": "ELITE",
+     "d": 2.68,
+     "need": 0,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "AST",
+     "state": "CRITICAL",
+     "d": -1.49,
+     "need": 1.04,
+     "pi": 0.01,
+     "punt": "NONE"
+    },
+    {
+     "cat": "STL",
+     "state": "WEAK",
+     "d": -0.82,
+     "need": 0.82,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "BLK",
+     "state": "ELITE",
+     "d": 2.57,
+     "need": 0,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "TO",
+     "state": "COMPETITIVE",
+     "d": 0.62,
+     "need": 0.06,
+     "pi": 0,
+     "punt": "NONE"
+    }
+   ],
+   "warnings": [],
+   "recommended": {
+    "name": "Cyrus Ingram",
+    "label": "DRAFT_NOW",
+    "why": "Adds FT%, PTS, 3PM (costs TO); fills category needs and adds positional flexibility. Yahoo L7 ADP makes waiting a toss-up."
+   },
+   "top5": [
+    {
+     "name": "Cyrus Ingram",
+     "pos": "SG/SF",
+     "ddp": 100,
+     "ddpRaw": 11.67,
+     "label": "DRAFT_NOW",
+     "rule": "D2",
+     "band": "TOSSUP",
+     "adp": 38.6,
+     "fitTags": "FT% PTS 3PM"
+    },
+    {
+     "name": "Hugo Corvell",
+     "pos": "PG",
+     "ddp": 89,
+     "ddpRaw": 10.82,
+     "label": "DRAFT_NOW",
+     "rule": "D1",
+     "band": "UNLIKELY",
+     "adp": 24.6,
+     "fitTags": "AST STL 3PM"
+    },
+    {
+     "name": "Tate Dunmore",
+     "pos": "PG",
+     "ddp": 90,
+     "ddpRaw": 10.92,
+     "label": "DRAFT_NOW",
+     "rule": "D1",
+     "band": "UNLIKELY",
+     "adp": 24.9,
+     "fitTags": "AST PTS FT%"
+    },
+    {
+     "name": "Kellan Lockhart",
+     "pos": "PG",
+     "ddp": 56,
+     "ddpRaw": 8.36,
+     "label": "WAIT",
+     "rule": "W1",
+     "band": "TOSSUP",
+     "adp": 37.7,
+     "fitTags": "AST 3PM STL"
+    },
+    {
+     "name": "Avery Fairbourne",
+     "pos": "SF/PF",
+     "ddp": 50,
+     "ddpRaw": 7.9,
+     "label": "WAIT",
+     "rule": "W1",
+     "band": "UNLIKELY",
+     "adp": 18.5,
+     "fitTags": "PTS 3PM STL"
+    }
+   ]
+  },
+  {
+   "afterRound": 2,
+   "currentPick": 39,
+   "nextPick": 39,
+   "roster": [
+    {
+     "pick": 11,
+     "name": "Linus Eastlake",
+     "pos": "C",
+     "reason": "big-heavy: first PF/C in priority"
+    },
+    {
+     "pick": 18,
+     "name": "Avery Fairbourne",
+     "pos": "SF/PF",
+     "reason": "big-heavy: first PF/C in priority"
+    }
+   ],
+   "build": "Build: balanced — no punt yet.",
+   "priority": "Priority: AST > FT% > 3PM",
+   "reason": "FT% is your weakest competitive category and FT% supply is declining. FG%, REB, BLK are already strong.",
+   "categories": [
+    {
+     "cat": "FG%",
+     "state": "ELITE",
+     "d": 1.69,
+     "need": 0,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "FT%",
+     "state": "CRITICAL",
+     "d": -2.76,
+     "need": 1.03,
+     "pi": 0.12,
+     "punt": "NONE"
+    },
+    {
+     "cat": "3PM",
+     "state": "WEAK",
+     "d": -1.06,
+     "need": 0.93,
+     "pi": 0.02,
+     "punt": "NONE"
+    },
+    {
+     "cat": "PTS",
+     "state": "COMPETITIVE",
+     "d": -0.23,
+     "need": 0.52,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "REB",
+     "state": "ELITE",
+     "d": 2.12,
+     "need": 0,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "AST",
+     "state": "CRITICAL",
+     "d": -1.45,
+     "need": 1.03,
+     "pi": 0.04,
+     "punt": "NONE"
+    },
+    {
+     "cat": "STL",
+     "state": "WEAK",
+     "d": -0.66,
+     "need": 0.74,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "BLK",
+     "state": "ELITE",
+     "d": 1.55,
+     "need": 0,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "TO",
+     "state": "COMPETITIVE",
+     "d": 0.22,
+     "need": 0.27,
+     "pi": 0,
+     "punt": "NONE"
+    }
+   ],
+   "warnings": [],
+   "recommended": {
+    "name": "Yuri Ravensworth",
+    "label": "DRAFT_NOW",
+    "why": "Adds FT%, PTS, 3PM; fills category needs and adds scarce categories. Yahoo L7 ADP makes waiting a toss-up."
+   },
+   "top5": [
+    {
+     "name": "Yuri Ravensworth",
+     "pos": "SG/SF",
+     "ddp": 100,
+     "ddpRaw": 7.96,
+     "label": "DRAFT_NOW",
+     "rule": "D2",
+     "band": "TOSSUP",
+     "adp": 52.2,
+     "fitTags": "FT% PTS 3PM"
+    },
+    {
+     "name": "Orin Wolcott",
+     "pos": "SG/SF",
+     "ddp": 87,
+     "ddpRaw": 7.41,
+     "label": "LEAN_DRAFT",
+     "rule": "L1",
+     "band": "TOSSUP",
+     "adp": 46,
+     "fitTags": "STL 3PM FT%"
+    },
+    {
+     "name": "Quincy Fairbourne",
+     "pos": "PG",
+     "ddp": 93,
+     "ddpRaw": 7.66,
+     "label": "DRAFT_NOW",
+     "rule": "D1",
+     "band": "UNLIKELY",
+     "adp": 40.3,
+     "fitTags": "AST FT% 3PM"
+    },
+    {
+     "name": "Milo Northcott",
+     "pos": "PF",
+     "ddp": 46,
+     "ddpRaw": 5.6,
+     "label": "PASS",
+     "rule": "P1",
+     "band": "SAFE",
+     "adp": 68.1,
+     "fitTags": "FT% BLK REB"
+    },
+    {
+     "name": "Marek Birchwell",
+     "pos": "PG",
+     "ddp": 98,
+     "ddpRaw": 7.87,
+     "label": "LEAN_DRAFT",
+     "rule": "L2",
+     "band": "LIKELY",
+     "adp": 52.6,
+     "fitTags": "AST FT% STL"
+    }
+   ]
+  },
+  {
+   "afterRound": 4,
+   "currentPick": 67,
+   "nextPick": 67,
+   "roster": [
+    {
+     "pick": 11,
+     "name": "Linus Eastlake",
+     "pos": "C",
+     "reason": "big-heavy: first PF/C in priority"
+    },
+    {
+     "pick": 18,
+     "name": "Avery Fairbourne",
+     "pos": "SF/PF",
+     "reason": "big-heavy: first PF/C in priority"
+    },
+    {
+     "pick": 39,
+     "name": "Milo Northcott",
+     "pos": "PF",
+     "reason": "big-heavy: first PF/C in priority"
+    },
+    {
+     "pick": 46,
+     "name": "Florian Ravensworth",
+     "pos": "SF/PF",
+     "reason": "big-heavy: first PF/C in priority"
+    }
+   ],
+   "build": "Build: balanced — no punt yet.",
+   "priority": "Priority: 3PM > AST > FT%",
+   "reason": "AST is your weakest competitive category and AST supply is declining. FG%, REB, BLK are already strong.",
+   "categories": [
+    {
+     "cat": "FG%",
+     "state": "STRONG",
+     "d": 1.43,
+     "need": 0,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "FT%",
+     "state": "CRITICAL",
+     "d": -1.56,
+     "need": 1.01,
+     "pi": 0.1,
+     "punt": "NONE"
+    },
+    {
+     "cat": "3PM",
+     "state": "WEAK",
+     "d": -1.24,
+     "need": 1,
+     "pi": 0.04,
+     "punt": "NONE"
+    },
+    {
+     "cat": "PTS",
+     "state": "WEAK",
+     "d": -0.58,
+     "need": 0.68,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "REB",
+     "state": "ELITE",
+     "d": 1.51,
+     "need": 0,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "AST",
+     "state": "CRITICAL",
+     "d": -1.61,
+     "need": 1.01,
+     "pi": 0.17,
+     "punt": "NONE"
+    },
+    {
+     "cat": "STL",
+     "state": "COMPETITIVE",
+     "d": 0.15,
+     "need": 0.31,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "BLK",
+     "state": "STRONG",
+     "d": 1.38,
+     "need": 0,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "TO",
+     "state": "COMPETITIVE",
+     "d": 0.73,
+     "need": 0.01,
+     "pi": 0,
+     "punt": "NONE"
+    }
+   ],
+   "warnings": [],
+   "recommended": {
+    "name": "Florian Yarrow",
+    "label": "LEAN_DRAFT",
+    "why": "Adds FT%, AST (costs REB, BLK); fills category needs and adds scarce categories. Yahoo L7 ADP suggests he will likely last."
+   },
+   "top5": [
+    {
+     "name": "Florian Yarrow",
+     "pos": "PG/SG",
+     "ddp": 100,
+     "ddpRaw": 5.85,
+     "label": "LEAN_DRAFT",
+     "rule": "R0",
+     "band": "LIKELY",
+     "adp": 86.5,
+     "fitTags": "FT% AST"
+    },
+    {
+     "name": "Hugo Kestrel",
+     "pos": "PG",
+     "ddp": 96,
+     "ddpRaw": 5.7,
+     "label": "SAFE_WAIT",
+     "rule": "S1",
+     "band": "SAFE",
+     "adp": 120.9,
+     "fitTags": "AST FT% 3PM"
+    },
+    {
+     "name": "Eli Birchwell",
+     "pos": "PG",
+     "ddp": 85,
+     "ddpRaw": 5.3,
+     "label": "WAIT",
+     "rule": "W1",
+     "band": "LIKELY",
+     "adp": 89.2,
+     "fitTags": "AST FT% 3PM"
+    },
+    {
+     "name": "Idris Pembrook",
+     "pos": "SG",
+     "ddp": 77,
+     "ddpRaw": 5,
+     "label": "SAFE_WAIT",
+     "rule": "S1",
+     "band": "SAFE",
+     "adp": 97,
+     "fitTags": "FT% 3PM STL"
+    },
+    {
+     "name": "Eli Zeller",
+     "pos": "PG/SG",
+     "ddp": 80,
+     "ddpRaw": 5.12,
+     "label": "SAFE_WAIT",
+     "rule": "S1",
+     "band": "SAFE",
+     "adp": 169,
+     "fitTags": "FT% AST"
+    }
+   ]
+  },
+  {
+   "afterRound": 6,
+   "currentPick": 95,
+   "nextPick": 95,
+   "roster": [
+    {
+     "pick": 11,
+     "name": "Linus Eastlake",
+     "pos": "C",
+     "reason": "big-heavy: first PF/C in priority"
+    },
+    {
+     "pick": 18,
+     "name": "Avery Fairbourne",
+     "pos": "SF/PF",
+     "reason": "big-heavy: first PF/C in priority"
+    },
+    {
+     "pick": 39,
+     "name": "Milo Northcott",
+     "pos": "PF",
+     "reason": "big-heavy: first PF/C in priority"
+    },
+    {
+     "pick": 46,
+     "name": "Florian Ravensworth",
+     "pos": "SF/PF",
+     "reason": "big-heavy: first PF/C in priority"
+    },
+    {
+     "pick": 67,
+     "name": "Orin Ravensworth",
+     "pos": "SF/PF",
+     "reason": "big-heavy: first PF/C in priority"
+    },
+    {
+     "pick": 74,
+     "name": "Florian Yarrow",
+     "pos": "PG/SG",
+     "reason": "recommended (no candidate matched the foundation)"
+    }
+   ],
+   "build": "Build: balanced — no punt yet.",
+   "priority": "Priority: 3PM > AST > PTS",
+   "reason": "3PM is your weakest competitive category and 3PM supply is declining. FG%, STL are already strong.",
+   "categories": [
+    {
+     "cat": "FG%",
+     "state": "STRONG",
+     "d": 0.84,
+     "need": 0,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "FT%",
+     "state": "COMPETITIVE",
+     "d": -0.44,
+     "need": 0.59,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "3PM",
+     "state": "WEAK",
+     "d": -0.88,
+     "need": 0.81,
+     "pi": 0.06,
+     "punt": "NONE"
+    },
+    {
+     "cat": "PTS",
+     "state": "COMPETITIVE",
+     "d": -0.45,
+     "need": 0.6,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "REB",
+     "state": "COMPETITIVE",
+     "d": 0.66,
+     "need": 0.04,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "AST",
+     "state": "WEAK",
+     "d": -0.85,
+     "need": 0.8,
+     "pi": 0.03,
+     "punt": "NONE"
+    },
+    {
+     "cat": "STL",
+     "state": "STRONG",
+     "d": 0.77,
+     "need": 0,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "BLK",
+     "state": "COMPETITIVE",
+     "d": 0.5,
+     "need": 0.13,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "TO",
+     "state": "COMPETITIVE",
+     "d": 0.5,
+     "need": 0.12,
+     "pi": 0,
+     "punt": "NONE"
+    }
+   ],
+   "warnings": [],
+   "recommended": {
+    "name": "Idris Pembrook",
+    "label": "LEAN_DRAFT",
+    "why": "Adds 3PM, FT%, STL (costs FG%); fills category needs and adds scarce categories. Yahoo L7 ADP makes waiting a toss-up."
+   },
+   "top5": [
+    {
+     "name": "Idris Pembrook",
+     "pos": "SG",
+     "ddp": 82,
+     "ddpRaw": 4.65,
+     "label": "LEAN_DRAFT",
+     "rule": "L1",
+     "band": "TOSSUP",
+     "adp": 97,
+     "fitTags": "3PM FT% STL"
+    },
+    {
+     "name": "Hugo Kestrel",
+     "pos": "PG",
+     "ddp": 100,
+     "ddpRaw": 5.34,
+     "label": "WAIT",
+     "rule": "W1",
+     "band": "LIKELY",
+     "adp": 120.9,
+     "fitTags": "AST FT% 3PM"
+    },
+    {
+     "name": "Eli Zeller",
+     "pos": "PG/SG",
+     "ddp": 87,
+     "ddpRaw": 4.82,
+     "label": "SAFE_WAIT",
+     "rule": "S1",
+     "band": "SAFE",
+     "adp": 169,
+     "fitTags": "AST FT%"
+    },
+    {
+     "name": "Emeka Corvell",
+     "pos": "SG",
+     "ddp": 70,
+     "ddpRaw": 4.18,
+     "label": "WAIT",
+     "rule": "W1",
+     "band": "TOSSUP",
+     "adp": 97.4,
+     "fitTags": "3PM STL"
+    },
+    {
+     "name": "Idris Thorne",
+     "pos": "PG",
+     "ddp": 68,
+     "ddpRaw": 4.11,
+     "label": "SAFE_WAIT",
+     "rule": "S1",
+     "band": "SAFE",
+     "adp": 127.1,
+     "fitTags": "AST FT%"
+    }
+   ]
+  },
+  {
+   "afterRound": 9,
+   "currentPick": 130,
+   "nextPick": 130,
+   "roster": [
+    {
+     "pick": 11,
+     "name": "Linus Eastlake",
+     "pos": "C",
+     "reason": "big-heavy: first PF/C in priority"
+    },
+    {
+     "pick": 18,
+     "name": "Avery Fairbourne",
+     "pos": "SF/PF",
+     "reason": "big-heavy: first PF/C in priority"
+    },
+    {
+     "pick": 39,
+     "name": "Milo Northcott",
+     "pos": "PF",
+     "reason": "big-heavy: first PF/C in priority"
+    },
+    {
+     "pick": 46,
+     "name": "Florian Ravensworth",
+     "pos": "SF/PF",
+     "reason": "big-heavy: first PF/C in priority"
+    },
+    {
+     "pick": 67,
+     "name": "Orin Ravensworth",
+     "pos": "SF/PF",
+     "reason": "big-heavy: first PF/C in priority"
+    },
+    {
+     "pick": 74,
+     "name": "Florian Yarrow",
+     "pos": "PG/SG",
+     "reason": "recommended (no candidate matched the foundation)"
+    },
+    {
+     "pick": 95,
+     "name": "Idris Pembrook",
+     "pos": "SG",
+     "reason": "recommended (no candidate matched the foundation)"
+    },
+    {
+     "pick": 102,
+     "name": "Eli Fairbourne",
+     "pos": "C",
+     "reason": "big-heavy: first PF/C in priority"
+    },
+    {
+     "pick": 123,
+     "name": "Idris Thorne",
+     "pos": "PG",
+     "reason": "recommended"
+    }
+   ],
+   "build": "Build: balanced — no punt yet.",
+   "priority": "Priority: 3PM > PTS > AST",
+   "reason": "3PM is your weakest competitive category and 3PM supply is declining. STL is already strong.",
+   "categories": [
+    {
+     "cat": "FG%",
+     "state": "COMPETITIVE",
+     "d": 0.31,
+     "need": 0.22,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "FT%",
+     "state": "COMPETITIVE",
+     "d": 0.36,
+     "need": 0.2,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "3PM",
+     "state": "WEAK",
+     "d": -0.54,
+     "need": 0.65,
+     "pi": 0.01,
+     "punt": "NONE"
+    },
+    {
+     "cat": "PTS",
+     "state": "COMPETITIVE",
+     "d": -0.35,
+     "need": 0.55,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "REB",
+     "state": "COMPETITIVE",
+     "d": 0.4,
+     "need": 0.17,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "AST",
+     "state": "COMPETITIVE",
+     "d": -0.15,
+     "need": 0.45,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "STL",
+     "state": "STRONG",
+     "d": 0.96,
+     "need": 0,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "BLK",
+     "state": "COMPETITIVE",
+     "d": 0.47,
+     "need": 0.14,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "TO",
+     "state": "COMPETITIVE",
+     "d": 0.34,
+     "need": 0.2,
+     "pi": 0,
+     "punt": "NONE"
+    }
+   ],
+   "warnings": [],
+   "recommended": {
+    "name": "Eli Zeller",
+    "label": "LEAN_DRAFT",
+    "why": "Adds AST, FT% (costs REB); adds scarce categories and fills category needs. Yahoo L7 ADP suggests he will likely last."
+   },
+   "top5": [
+    {
+     "name": "Eli Zeller",
+     "pos": "PG/SG",
+     "ddp": 100,
+     "ddpRaw": 4.27,
+     "label": "LEAN_DRAFT",
+     "rule": "L2",
+     "band": "LIKELY",
+     "adp": 169,
+     "fitTags": "AST FT%"
+    },
+    {
+     "name": "Orin Northcott",
+     "pos": "SG/SF",
+     "ddp": 55,
+     "ddpRaw": 2.66,
+     "label": "WAIT",
+     "rule": "W1",
+     "band": "UNLIKELY",
+     "adp": 137.4,
+     "fitTags": "3PM FT%"
+    },
+    {
+     "name": "Hollis Quill",
+     "pos": "SG",
+     "ddp": 51,
+     "ddpRaw": 2.49,
+     "label": "WAIT",
+     "rule": "W1",
+     "band": "UNLIKELY",
+     "adp": 137.8,
+     "fitTags": "3PM"
+    },
+    {
+     "name": "Eli Ravensworth",
+     "pos": "C",
+     "ddp": 42,
+     "ddpRaw": 2.18,
+     "label": "PASS",
+     "rule": "P1",
+     "band": "LIKELY",
+     "adp": 161.2,
+     "fitTags": "BLK REB FG%"
+    },
+    {
+     "name": "Ulises Vexley",
+     "pos": "PG",
+     "ddp": 54,
+     "ddpRaw": 2.61,
+     "label": "WAIT",
+     "rule": "W1",
+     "band": "TOSSUP",
+     "adp": 143.7,
+     "fitTags": "AST FT% STL"
+    }
+   ]
+  },
+  {
+   "afterRound": 12,
+   "currentPick": 179,
+   "nextPick": 179,
+   "roster": [
+    {
+     "pick": 11,
+     "name": "Linus Eastlake",
+     "pos": "C",
+     "reason": "big-heavy: first PF/C in priority"
+    },
+    {
+     "pick": 18,
+     "name": "Avery Fairbourne",
+     "pos": "SF/PF",
+     "reason": "big-heavy: first PF/C in priority"
+    },
+    {
+     "pick": 39,
+     "name": "Milo Northcott",
+     "pos": "PF",
+     "reason": "big-heavy: first PF/C in priority"
+    },
+    {
+     "pick": 46,
+     "name": "Florian Ravensworth",
+     "pos": "SF/PF",
+     "reason": "big-heavy: first PF/C in priority"
+    },
+    {
+     "pick": 67,
+     "name": "Orin Ravensworth",
+     "pos": "SF/PF",
+     "reason": "big-heavy: first PF/C in priority"
+    },
+    {
+     "pick": 74,
+     "name": "Florian Yarrow",
+     "pos": "PG/SG",
+     "reason": "recommended (no candidate matched the foundation)"
+    },
+    {
+     "pick": 95,
+     "name": "Idris Pembrook",
+     "pos": "SG",
+     "reason": "recommended (no candidate matched the foundation)"
+    },
+    {
+     "pick": 102,
+     "name": "Eli Fairbourne",
+     "pos": "C",
+     "reason": "big-heavy: first PF/C in priority"
+    },
+    {
+     "pick": 123,
+     "name": "Idris Thorne",
+     "pos": "PG",
+     "reason": "recommended"
+    },
+    {
+     "pick": 130,
+     "name": "Eli Zeller",
+     "pos": "PG/SG",
+     "reason": "recommended"
+    },
+    {
+     "pick": 151,
+     "name": "Blake Hartwell",
+     "pos": "PF",
+     "reason": "recommended"
+    },
+    {
+     "pick": 158,
+     "name": "Eli Ravensworth",
+     "pos": "C",
+     "reason": "recommended"
+    }
+   ],
+   "build": "Build: balanced — no punt yet.",
+   "priority": "Priority: 3PM > PTS > AST",
+   "reason": "3PM is your weakest competitive category and 3PM supply is declining. REB, BLK are already strong.",
+   "categories": [
+    {
+     "cat": "FG%",
+     "state": "COMPETITIVE",
+     "d": 0.45,
+     "need": 0.15,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "FT%",
+     "state": "COMPETITIVE",
+     "d": 0.38,
+     "need": 0.18,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "3PM",
+     "state": "COMPETITIVE",
+     "d": -0.36,
+     "need": 0.55,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "PTS",
+     "state": "COMPETITIVE",
+     "d": -0.14,
+     "need": 0.45,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "REB",
+     "state": "STRONG",
+     "d": 0.79,
+     "need": 0,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "AST",
+     "state": "COMPETITIVE",
+     "d": 0.18,
+     "need": 0.29,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "STL",
+     "state": "COMPETITIVE",
+     "d": 0.64,
+     "need": 0.06,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "BLK",
+     "state": "STRONG",
+     "d": 1.1,
+     "need": 0,
+     "pi": 0,
+     "punt": "NONE"
+    },
+    {
+     "cat": "TO",
+     "state": "COMPETITIVE",
+     "d": -0.02,
+     "need": 0.38,
+     "pi": 0,
+     "punt": "NONE"
+    }
+   ],
+   "warnings": [],
+   "recommended": {
+    "name": "Rowan Hartwell",
+    "label": "DRAFT_NOW",
+    "why": "Adds TO, REB, FG% (costs 3PM, PTS). Yahoo L7 ADP says he is unlikely to last to your next pick."
+   },
+   "top5": [
+    {
+     "name": "Rowan Hartwell",
+     "pos": "C",
+     "ddp": 100,
+     "ddpRaw": 1.98,
+     "label": "DRAFT_NOW",
+     "rule": "D1",
+     "band": "UNLIKELY",
+     "adp": 188.4,
+     "fitTags": "TO REB FG%"
+    },
+    {
+     "name": "Wes Garrow",
+     "pos": "SG",
+     "ddp": 95,
+     "ddpRaw": 1.89,
+     "label": "DRAFT_NOW",
+     "rule": "D1",
+     "band": "UNLIKELY",
+     "adp": 182.1,
+     "fitTags": "TO FT% STL"
+    },
+    {
+     "name": "Nico Fairbourne",
+     "pos": "C",
+     "ddp": 90,
+     "ddpRaw": 1.8,
+     "label": "DRAFT_NOW",
+     "rule": "D1",
+     "band": "UNLIKELY",
+     "adp": null,
+     "fitTags": "TO BLK FG%"
+    },
+    {
+     "name": "Ansel Stroud",
+     "pos": "C",
+     "ddp": 87,
+     "ddpRaw": 1.73,
+     "label": "DRAFT_NOW",
+     "rule": "D1",
+     "band": "UNLIKELY",
+     "adp": null,
+     "fitTags": "FG% TO REB"
+    },
+    {
+     "name": "Kade Ingram",
+     "pos": "C",
+     "ddp": 74,
+     "ddpRaw": 1.49,
+     "label": "WAIT",
+     "rule": "W1",
+     "band": "UNLIKELY",
+     "adp": null,
+     "fitTags": "TO REB FG%"
+    }
+   ]
+  }
+ ],
+ "finalRoster": [
+  {
+   "pick": 11,
+   "name": "Linus Eastlake",
+   "pos": "C"
+  },
+  {
+   "pick": 18,
+   "name": "Avery Fairbourne",
+   "pos": "SF/PF"
+  },
+  {
+   "pick": 39,
+   "name": "Milo Northcott",
+   "pos": "PF"
+  },
+  {
+   "pick": 46,
+   "name": "Florian Ravensworth",
+   "pos": "SF/PF"
+  },
+  {
+   "pick": 67,
+   "name": "Orin Ravensworth",
+   "pos": "SF/PF"
+  },
+  {
+   "pick": 74,
+   "name": "Florian Yarrow",
+   "pos": "PG/SG"
+  },
+  {
+   "pick": 95,
+   "name": "Idris Pembrook",
+   "pos": "SG"
+  },
+  {
+   "pick": 102,
+   "name": "Eli Fairbourne",
+   "pos": "C"
+  },
+  {
+   "pick": 123,
+   "name": "Idris Thorne",
+   "pos": "PG"
+  },
+  {
+   "pick": 130,
+   "name": "Eli Zeller",
+   "pos": "PG/SG"
+  },
+  {
+   "pick": 151,
+   "name": "Blake Hartwell",
+   "pos": "PF"
+  },
+  {
+   "pick": 158,
+   "name": "Eli Ravensworth",
+   "pos": "C"
+  },
+  {
+   "pick": 179,
+   "name": "Rowan Hartwell",
+   "pos": "C"
+  }
+ ]
+}

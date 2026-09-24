@@ -1,6 +1,6 @@
 import type { StrategyConfig } from '../config/strategyConfig';
 import type { InjuryStatus, Position, RoleTag } from '../types/core';
-import type { Absence, ImportKind } from '../types/data';
+import type { Absence, ImportKind, SourceConfidence, SourceMeta } from '../types/data';
 import { parseNumber, parsePctCell, parsePositions, parseRoleTags, parseStatus, sanitizeText } from './parse';
 
 /** Validated, typed row values (before identity reconciliation). */
@@ -26,12 +26,18 @@ export interface ProjectionRow extends IdentityFields {
   to: number;
   sourcePct: { fg: number | null; ft: number | null };
   upside: number | null;
+  providerRank: number | null;
+  providerAdp: number | null;
+  weekGames: Record<number, number>;
+  raw: Record<string, string>;
 }
 export interface MarketRow extends IdentityFields {
   xrank: number | null;
   rank: number | null;
   adp: number | null;
   status: InjuryStatus | null;
+  meta: SourceMeta;
+  raw: Record<string, string>;
 }
 export interface AvailabilityRow extends IdentityFields {
   season: string;
@@ -60,6 +66,34 @@ export type RowValue = ProjectionRow | MarketRow | AvailabilityRow | ContextRow 
 export type RowResult<T> = { ok: true; value: T; warnings: string[] } | { ok: false; errors: string[] };
 
 type Cells = (key: string) => string | undefined;
+
+/** Raw source cells for the mapped fields (and detected week columns), preserved verbatim. */
+function rawCells(
+  row: Record<string, string>,
+  map: Record<string, string | null>,
+  weekColumns: Record<string, number>,
+): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const h of Object.values(map)) if (h && row[h] !== undefined) out[h] = sanitizeText(row[h], 120);
+  for (const h of Object.keys(weekColumns)) if (row[h] !== undefined) out[h] = sanitizeText(row[h], 20);
+  return out;
+}
+
+/** Yahoo field keys that a screenshot transcription may flag as unreadable. */
+export const YAHOO_REVIEWABLE_FIELDS = ['xrank', 'rank', 'adp', 'status', 'positions', 'team'] as const;
+const REVIEW_ALIASES: Record<string, string> = {
+  xrank: 'xrank',
+  'x rank': 'xrank',
+  rank: 'rank',
+  adp: 'adp',
+  l7: 'adp',
+  'l7 adp': 'adp',
+  'last 7 days adp': 'adp',
+  status: 'status',
+  pos: 'positions',
+  positions: 'positions',
+  team: 'team',
+};
 
 function cellsFor(row: Record<string, string>, map: Record<string, string | null>): Cells {
   return (key) => {
@@ -168,6 +202,15 @@ export function validateRow(
         to: c.num(cells, 'to', 'TO', { required: true, min: 0 }) ?? 0,
       };
       const upside = c.num(cells, 'upside', 'Upside', { min: 0, max: 1 });
+      const providerRank = c.num(cells, 'providerRank', 'Provider rank', { min: 1 });
+      const providerAdp = c.num(cells, 'providerAdp', 'Provider ADP', { min: 1 });
+      const weekGames: Record<number, number> = {};
+      for (const [header, week] of Object.entries(weekColumns)) {
+        const v = parseNumber(row[header]);
+        if (v === null) continue;
+        if (Number.isNaN(v) || v < 0 || v > 7) c.errors.push(`Week ${week} games must be 0–7.`);
+        else weekGames[week] = v;
+      }
       const div = basis === 'TOTAL' ? gp : 1;
       if (basis === 'TOTAL' && gp <= 0) c.errors.push('TOTAL stats need GP > 0 to convert to per game.');
       const pg = (x: number) => (div > 0 ? x / div : 0);
@@ -193,14 +236,49 @@ export function validateRow(
         ...perGame,
         sourcePct: { fg: fg.pct, ft: ft.pct },
         upside,
+        providerRank,
+        providerAdp,
+        weekGames,
+        raw: rawCells(row, columnMap, weekColumns),
       });
     }
     case 'YAHOO_MARKET': {
       const id = identityFields(c, cells);
-      const xrank = c.num(cells, 'xrank', 'XRank', { min: 1 });
-      const rank = c.num(cells, 'rank', 'Rank', { min: 1 });
-      const adp = c.num(cells, 'adp', 'ADP', { min: 1 });
-      const rawStatus = cells('status');
+      // Screenshot transcription metadata: fields marked unreadable are forced to null (never inferred).
+      const reviewFields: string[] = [];
+      for (const part of (cells('reviewFields') ?? '').split(/[;,|]+/)) {
+        const key = REVIEW_ALIASES[part.trim().toLowerCase()];
+        if (key && !reviewFields.includes(key)) reviewFields.push(key);
+        else if (part.trim() && !key) c.warnings.push(`Unknown review field "${sanitizeText(part, 20)}".`);
+      }
+      const flagged = (k: string) => reviewFields.includes(k);
+      const readNum = (k: string, label: string) => {
+        if (flagged(k)) {
+          if ((cells(k) ?? '').trim() !== '')
+            c.warnings.push(`${label} is flagged unreadable; its value was ignored (null).`);
+          return null;
+        }
+        return c.num(cells, k, label, { min: 1 });
+      };
+      const xrank = readNum('xrank', 'XRank');
+      const rank = readNum('rank', 'Rank');
+      const adp = readNum('adp', 'ADP');
+      if (flagged('positions')) id.positions = [];
+      if (flagged('team')) id.team = null;
+      const confRaw = sanitizeText(cells('confidence'), 10).toUpperCase();
+      let confidence: SourceConfidence | null = null;
+      if (confRaw) {
+        if (confRaw === 'HIGH' || confRaw === 'MEDIUM' || confRaw === 'LOW') confidence = confRaw;
+        else c.errors.push('Confidence must be HIGH, MEDIUM or LOW.');
+      }
+      if (reviewFields.length) c.warnings.push(`Needs review: ${reviewFields.join(', ')}.`);
+      const meta: SourceMeta = {
+        source: sanitizeText(cells('source'), 40) || null,
+        capturedAt: sanitizeText(cells('capturedAt'), 40) || null,
+        confidence,
+        reviewFields,
+      };
+      const rawStatus = flagged('status') ? undefined : cells('status');
       let status: InjuryStatus | null = null;
       if (rawStatus !== undefined && rawStatus.trim() !== '') {
         const s = parseStatus(rawStatus);
@@ -209,7 +287,7 @@ export function validateRow(
       }
       if (xrank === null && rank === null && adp === null)
         c.warnings.push('No market values (ADP/XRank/Rank) on this row.');
-      return done<MarketRow>({ ...id, xrank, rank, adp, status });
+      return done<MarketRow>({ ...id, xrank, rank, adp, status, meta, raw: rawCells(row, columnMap, {}) });
     }
     case 'AVAILABILITY': {
       const id = identityFields(c, cells);

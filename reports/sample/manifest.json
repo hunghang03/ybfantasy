@@ -1,0 +1,42 @@
+{
+ "label": "FICTIONAL SAMPLE DATA (pipeline validation only — not real players)",
+ "season": "2026-27",
+ "configVersion": 3,
+ "inputs": {
+  "source": "generateSample(20260923)"
+ },
+ "notes": [
+  "PROJECTION/bbm: 0 unmatched, 0 rejected",
+  "AVAILABILITY/manual: 0 unmatched, 0 rejected",
+  "CONTEXT/manual: 0 unmatched, 0 rejected",
+  "Playoff schedule derived from Hashtag week columns: 30 teams, 0 within-team conflicts"
+ ],
+ "counts": {
+  "hashtagRows": 300,
+  "yahooRows": 300,
+  "matched": 300,
+  "yahooOnly": 0,
+  "hashtagOnly": 0,
+  "ambiguous": 0,
+  "teamMismatch": 0,
+  "hashtagRejected": 0,
+  "yahooRejected": 0,
+  "duplicates": 0
+ },
+ "calibration": {
+  "rows": 234,
+  "disagree": 51,
+  "major": 139,
+  "byClass": {
+   "SOURCE_DATA_MISMATCH": 54,
+   "PERCENTAGE_VOLUME_DIFFERENCE": 23,
+   "LIKELY_ENGINE_DEFECT": 63,
+   "GP_DURABILITY_ADJUSTMENT": 43,
+   "INTENTIONAL_ENGINE_BEHAVIOR": 7
+  },
+  "medianAbsDeltaHashtag": 36,
+  "medianAbsDeltaXRank": 31,
+  "medianAbsDeltaAdp": 2.4000000000000057
+ },
+ "scenarios": 30
+}

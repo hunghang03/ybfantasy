@@ -75,7 +75,7 @@ export const FIELD_SPECS: Record<ImportKind, FieldSpec[]> = {
       synonyms: ['3pm', '3ptm', '3p', 'threes', '3pt', 'tpm', '3-pt'],
     },
     { key: 'pts', label: 'PTS', required: true, synonyms: ['pts', 'points'] },
-    { key: 'reb', label: 'REB', required: true, synonyms: ['reb', 'rebounds', 'trb'] },
+    { key: 'reb', label: 'REB', required: true, synonyms: ['reb', 'rebounds', 'trb', 'treb'] },
     { key: 'ast', label: 'AST', required: true, synonyms: ['ast', 'assists'] },
     { key: 'stl', label: 'STL', required: true, synonyms: ['stl', 'steals', 'st'] },
     { key: 'blk', label: 'BLK', required: true, synonyms: ['blk', 'blocks', 'bk'] },
@@ -87,6 +87,20 @@ export const FIELD_SPECS: Record<ImportKind, FieldSpec[]> = {
       synonyms: ['basis', 'stat basis'],
     },
     { key: 'upside', label: 'Provider upside (0–1)', required: false, synonyms: ['upside', 'upside score'] },
+    {
+      key: 'providerRank',
+      label: 'Provider rank (report only)',
+      required: false,
+      synonyms: ['r#', 'rank', 'rk', 'hashtag rank', 'proj rank', 'provider rank'],
+    },
+    {
+      key: 'providerAdp',
+      label: 'Provider-published ADP (report only)',
+      required: false,
+      synonyms: ['adp', 'yahoo adp', 'hashtag adp', 'provider adp'],
+      help: 'Kept on the projection line for comparison; never used as Yahoo market data',
+    },
+    // W18, W19, … per-player week-game columns are detected dynamically.
   ],
   YAHOO_MARKET: [
     NAME,
@@ -107,6 +121,26 @@ export const FIELD_SPECS: Record<ImportKind, FieldSpec[]> = {
       synonyms: ['adp', 'l7 adp', 'last 7 days adp', 'adp7', 'adp (l7)', 'avg pick', 'last 7 days'],
     },
     { key: 'status', label: 'Status / injury', required: false, synonyms: ['status', 'inj', 'injury'] },
+    { key: 'source', label: 'Source tag', required: false, synonyms: ['source'] },
+    {
+      key: 'capturedAt',
+      label: 'Captured at',
+      required: false,
+      synonyms: ['capturedat', 'captured at', 'captured'],
+    },
+    {
+      key: 'confidence',
+      label: 'Transcription confidence (HIGH/MEDIUM/LOW)',
+      required: false,
+      synonyms: ['confidence'],
+    },
+    {
+      key: 'reviewFields',
+      label: 'Unreadable fields (; separated)',
+      required: false,
+      synonyms: ['reviewfields', 'review fields', 'needs review', 'unreadable'],
+      help: 'e.g. adp;xrank — these values are forced to null and flagged',
+    },
   ],
   AVAILABILITY: [
     NAME,

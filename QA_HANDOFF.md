@@ -87,3 +87,21 @@ The `PW_CHROMIUM_PATH` variable is only needed where Playwright's own browser is
 | Recoverability cohort indexing (blocker) | Audited: **no off-by-one existed**. `cohortMean[0]` is a zero pad, `cohortMean[j]` is round j, and the loop index was 0-based, so rescue pick 1 was already compared with cohort k+1. Made explicit via `rescueCohortIndex(k, pickNumber)`. | `tests/unit/punts.test.ts` › recoverability cohort indexing (k = 0, 3, 11, 13)                                                                                   |
 | Catch-up accounting (blocker)            | `appendPick(advance=false)` is rejected unless `unrecordedPicks > 0`. `appendResync` is rejected if it would move behind the recorded picks. The UI surfaces the rejection message.                                                         | `tests/unit/replay.test.ts` › catch-up accounting (6 tests, including a randomized property test); `e2e/draft.spec.ts` resync scenario (third catch-up rejected) |
 | Pick-pair discount                       | `pickPair.nextDiscount` 1.0 → 0.90. The gate, tolerance and tiebreak are unchanged.                                                                                                                                                         | `tests/integration/planning.test.ts`                                                                                                                             |
+
+## Real-data calibration phase
+
+`docs/CALIBRATION.md` holds the workflow, report definitions, classification rubric, scenario design, run status and findings.
+
+**Code:**
+
+- `src/calibration/*`
+- `scripts/calibrate.ts`
+
+**Tests:** `tests/unit/calibration.test.ts`. It covers screenshot metadata, Hashtag columns, the rule that Hashtag ADP never becomes Yahoo data, reconciliation buckets and their invariant, report delta signs and severities, and scenario fixture determinism.
+
+**Status:** the real Yahoo screenshots and Hashtag file were not available to the build environment, so the real-data reports are pending. Fictional pipeline outputs are in `reports/sample/`.
+
+**Observations for review** (no engine change made):
+
+- **O1:** category state labels at k = 1 can read CRITICAL.
+- **O2:** C-heavy final rosters in the sample scenarios.

@@ -87,3 +87,26 @@ Missing values are never treated as average:
 ## Copyright
 
 Do not commit proprietary datasets. The repository contains only fictional, seeded sample data (`src/lib/sample/generator.ts`). Regenerate it with `npm run sample-data`.
+
+## Production data (2026-27) and screenshot metadata
+
+See `docs/DATA_SOURCES.md` and `data/README.md`.
+
+**Yahoo imports** accept four additional columns:
+
+- `Source`
+- `Captured At`
+- `Confidence` (`HIGH`/`MEDIUM`/`LOW`)
+- `Review Fields` (`;`-separated: `xrank`, `rank`, `adp`, `status`, `positions`, `team`)
+
+Flagged fields are forced to `null`, even if a value was typed, and the player shows a review warning.
+
+**Projection imports** accept three additional kinds of column:
+
+- `R#`: the provider's rank
+- `ADP`: the provider-published ADP
+- per-player `W18`…`W21` games
+
+The first two are comparison-only fields. They are never used as Yahoo market data. The week columns can be turned into the team playoff schedule (Data page → "Derive from hashtag", or automatically in `npm run calibrate`).
+
+Raw cell values of mapped columns are preserved on Yahoo and projection records (`raw`).

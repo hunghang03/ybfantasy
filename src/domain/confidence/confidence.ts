@@ -49,6 +49,8 @@ export function dataConfidence(
   if (!player.proj) warnings.push('No primary projection — not ranked.');
   if (!player.market) warnings.push('No Yahoo market data.');
   else if (player.market.yahooAdp7d === null) warnings.push('No Yahoo L7 ADP.');
+  if (player.market?.meta?.reviewFields.length)
+    warnings.push(`Yahoo field(s) need review: ${player.market.meta.reviewFields.join(', ')}.`);
   if (player.history.length === 0) warnings.push('No availability history (default risk applied).');
   if (player.positions.length === 0) warnings.push('No position eligibility.');
   if (player.positionsSource === 'PROVIDER') warnings.push('Positions from projection provider, not Yahoo.');

@@ -444,6 +444,33 @@ export function generateSample(seed = 20260923, count = 300): SampleFiles {
       3 + Math.floor(rnd() * 2),
     ]);
 
+  // --- Production-workflow columns (added with a SEPARATE PRNG so all earlier values stay identical) ---
+  const rnd2 = mulberry32(seed + 1);
+  const gauss2 = () => {
+    const u = Math.max(rnd2(), 1e-9);
+    return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * rnd2());
+  };
+  // Yahoo screenshot transcription metadata; blank ADP cells are explicitly flagged as unreadable.
+  market[0]!.push('Source', 'Captured At', 'Confidence', 'Review Fields');
+  for (let i = 1; i < market.length; i++) {
+    const row = market[i]!;
+    const adpBlank = row[6] === '';
+    row.push('yahoo_screenshot', '2026-09-20T18:00:00Z', adpBlank ? 'MEDIUM' : 'HIGH', adpBlank ? 'adp' : '');
+  }
+  // Hashtag-style own rank (R#), public Yahoo ADP and per-player W18–W21 games from the team schedule.
+  const weeksByTeam = new Map(po.slice(1).map((r) => [String(r[0]), r.slice(1)]));
+  const hbOrder = byValue.map((p, i) => ({ p, s: i + 1 + 7 * gauss2() })).sort((a, b) => a.s - b.s);
+  const hbRank = new Map(hbOrder.map((x, i) => [x.p.id, i + 1]));
+  hashtag[0]!.unshift('R#', 'ADP');
+  hashtag[0]!.push('W18', 'W19', 'W20', 'W21');
+  players.forEach((p, i) => {
+    const row = hashtag[i + 1]!;
+    const a = adp.get(p.id)!;
+    const pubAdp = Number.isNaN(a) ? '' : r1(Math.max(1, a + 4 * gauss2()));
+    row.unshift(hbRank.get(p.id)!, pubAdp);
+    row.push(...(weeksByTeam.get(p.team) ?? ['', '', '', '']));
+  });
+
   return {
     'yahoo-market.sample.csv': csv(market),
     'projections-hashtag.sample.csv': csv(hashtag),

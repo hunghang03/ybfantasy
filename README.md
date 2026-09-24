@@ -45,6 +45,7 @@ Keyboard: `↑↓`/`j k` select · `M` mine · `D` taken · `F` favorite · `A` 
 - [TESTING.md](TESTING.md): test map and commands
 - [DEPLOYMENT.md](DEPLOYMENT.md): Vercel / static hosting
 - [QA_HANDOFF.md](QA_HANDOFF.md): what to challenge first
+- [docs/DATA_SOURCES.md](docs/DATA_SOURCES.md) · [docs/CALIBRATION.md](docs/CALIBRATION.md) · [data/README.md](data/README.md): real-data workflow
 - [docs/DESIGN.md](docs/DESIGN.md): the reviewed technical design (rev 3)
 
 ## Data and licensing

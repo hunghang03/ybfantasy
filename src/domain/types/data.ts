@@ -24,6 +24,20 @@ export interface YahooMarket {
   yahooRank: number | null;
   yahooAdp7d: number | null;
   status: InjuryStatus | null;
+  /** Capture metadata (e.g. manual screenshot transcription). Never used by the engine's math. */
+  meta?: SourceMeta;
+  /** Raw source cells exactly as imported (mapped fields only). */
+  raw?: Record<string, string>;
+}
+
+export type SourceConfidence = 'HIGH' | 'MEDIUM' | 'LOW';
+
+export interface SourceMeta {
+  source: string | null;
+  capturedAt: string | null;
+  confidence: SourceConfidence | null;
+  /** Field keys that could not be read confidently; their values are null and need review. */
+  reviewFields: string[];
 }
 
 /** Always stored PER GAME. */
@@ -48,6 +62,14 @@ export interface ProjectionLine {
   sourcePct: { fg: number | null; ft: number | null };
   /** Optional provider upside tag, 0..1. */
   providerUpside?: number | null;
+  /** Provider's own overall rank (report/comparison only; never used by the engine). */
+  providerRank?: number | null;
+  /** Provider-published ADP, e.g. Hashtag's public Yahoo ADP (report only; NEVER written to YahooMarket). */
+  providerAdp?: number | null;
+  /** Per-player games in specific weeks (e.g. W18–W21), as published by the provider. */
+  weekGames?: Record<number, number>;
+  /** Raw source cells exactly as imported (mapped fields only). */
+  raw?: Record<string, string>;
 }
 
 export interface Absence {

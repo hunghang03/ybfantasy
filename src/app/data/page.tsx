@@ -8,6 +8,9 @@ import type { ImportPlan } from '@/domain/import/plan';
 import { buildIdentityIndex, suggestCandidates } from '@/domain/identity/matcher';
 import { IMPORT_KINDS, type ImportKind } from '@/domain/types/data';
 import { buildPlan, parseFileText, SAMPLE_IMPORTS, type ImportSpec } from '@/lib/importRunner';
+import { derivePlayoffSchedule } from '@/calibration/playoffFromProjections';
+import { emptyRecords } from '@/domain/import/plan';
+import { newId, nowIso } from '@/lib/ids';
 import { useApp } from '@/state/store';
 import { Button, Field, Input, Panel, Select, cx } from '@/components/ui/primitives';
 
@@ -30,6 +33,7 @@ export default function DataPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-3 p-3">
       <ImportWizard />
+      <DerivePlayoff />
       <UnmatchedReview />
       <BatchHistory />
     </div>
@@ -117,7 +121,8 @@ function ImportWizard() {
   };
 
   const specs = FIELD_SPECS[spec.kind];
-  const weekCols = table && spec.kind === 'PLAYOFF' ? detectWeekColumns(table.headers) : {};
+  const weekCols =
+    table && (spec.kind === 'PLAYOFF' || spec.kind === 'PROJECTION') ? detectWeekColumns(table.headers) : {};
   const previewRows = table?.rows.slice(0, 8) ?? [];
 
   return (
@@ -543,6 +548,66 @@ function BatchHistory() {
           ))}
         </tbody>
       </table>
+    </Panel>
+  );
+}
+
+/** Build a team-level playoff schedule from the primary provider's per-player W18–W21 columns. */
+function DerivePlayoff() {
+  const dataset = useApp((s) => s.dataset);
+  const commitImport = useApp((s) => s.commitImport);
+  const notify = useApp((s) => s.notify);
+  const providers = [
+    ...new Set(dataset.projections.filter((p) => p.weekGames).map((p) => p.provider)),
+  ].sort();
+  if (providers.length === 0) return null;
+  const run = async (provider: string) => {
+    const batchId = newId();
+    const d = derivePlayoffSchedule(dataset.projections, dataset.identities, provider, '2026-27', batchId);
+    const records = emptyRecords();
+    records.playoff = d.schedule;
+    await commitImport({
+      batch: {
+        id: batchId,
+        kind: 'PLAYOFF',
+        provider: `derived:${provider}`,
+        season: '2026-27',
+        importedAt: nowIso(),
+        description: `Derived from ${provider} week columns (mode per team)`,
+        counts: {
+          rows: d.schedule.length,
+          matched: d.schedule.length,
+          created: 0,
+          unmatched: 0,
+          rejected: 0,
+        },
+        status: 'ACTIVE',
+      },
+      records,
+      newIdentities: [],
+      identityUpdates: [],
+      unmatched: [],
+      rejected: [],
+      duplicates: [],
+      rowWarnings: [],
+      matchedVia: {},
+      missingRequiredColumns: [],
+    });
+    notify(
+      `Playoff schedule derived for ${d.schedule.length} teams (${d.conflicts.length} within-team conflicts resolved by mode).`,
+    );
+  };
+  return (
+    <Panel title="Playoff schedule from projection week columns">
+      <p className="mb-2 text-xs text-slate-600 dark:text-slate-400">
+        Your projections include per-player W18–W21 games. Derive the team schedule used by the playoff
+        tiebreaker.
+      </p>
+      {providers.map((p) => (
+        <Button key={p} size="sm" onClick={() => void run(p)}>
+          Derive from {p}
+        </Button>
+      ))}
     </Panel>
   );
 }
