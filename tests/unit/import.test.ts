@@ -57,7 +57,10 @@ describe('cell parsing', () => {
     expect(parsePositions('G/F').positions).toEqual(['PG', 'SG', 'SF', 'PF']);
     expect(parsePositions('PG,XX').invalid).toEqual(['XX']);
     expect(parseStatus('GTD')).toBe('DTD');
-    expect(parseStatus('INJ')).toBe('OUT_SHORT');
+    // Yahoo INJ gives no duration: it keeps its own state and is never read as OUT_SHORT/OUT_LONG.
+    expect(parseStatus('INJ')).toBe('INJ');
+    expect(parseStatus('injured')).toBe('INJ');
+    expect(parseStatus('O')).toBe('OUT_SHORT');
     expect(parseStatus('weird')).toBe('INVALID');
   });
   it('sanitizes free text', () => {

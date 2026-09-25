@@ -120,7 +120,7 @@ export const COUNTING_POSITIVE = ['THREES','PTS','REB','AST','STL','BLK'] as con
 export type Position = 'PG' | 'SG' | 'SF' | 'PF' | 'C';
 export type ActiveSlot = 'PG' | 'SG' | 'G' | 'SF' | 'PF' | 'F' | 'C' | 'UTIL';
 export type ProviderId = string;
-export type InjuryStatus = 'HEALTHY' | 'DTD' | 'OUT_SHORT' | 'OUT_LONG' | 'OUT_SEASON' | 'SUSPENDED';
+export type InjuryStatus = 'HEALTHY' | 'DTD' | 'INJ' | 'OUT_SHORT' | 'OUT_LONG' | 'OUT_SEASON' | 'SUSPENDED';
 export type Recurrence = 'LOW' | 'MODERATE' | 'HIGH' | 'UNCLASSIFIED';
 
 // ---------- IDENTITY ----------

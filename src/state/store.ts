@@ -1,7 +1,7 @@
 'use client';
 
 import { create } from 'zustand';
-import { defaultConfig } from '@/domain/config/defaults';
+import { defaultConfig, upgradeStoredConfig } from '@/domain/config/defaults';
 import type { StrategyConfig } from '@/domain/config/strategyConfig';
 import { appendPick, appendResync, appendVoid, undoLast } from '@/domain/draft/replay';
 import type { ImportPlan } from '@/domain/import/plan';
@@ -178,7 +178,7 @@ export const useApp = create<AppState>((set, get) => {
           leagues,
           drafts,
           settings: { ...settings, activeLeagueId },
-          config: config ?? defaultConfig(),
+          config: config ? upgradeStoredConfig(config) : defaultConfig(),
           storage,
         });
         await get().reloadData();

@@ -39,6 +39,8 @@ export type ProviderId = string;
 export const INJURY_STATUSES = [
   'HEALTHY',
   'DTD',
+  /** Injured, duration not stated by the source (Yahoo "INJ"). Never read as short- or long-term. */
+  'INJ',
   'OUT_SHORT',
   'OUT_LONG',
   'OUT_SEASON',

@@ -103,6 +103,8 @@ export const StrategyConfigSchema = z.object({
   statusRisk: z.object({
     HEALTHY: unit,
     DTD: unit,
+    // Added in config v4; older saved configs and backups lack it, so it defaults to the shipped value.
+    INJ: unit.default(0.08),
     OUT_SHORT: unit,
     OUT_LONG: unit,
     OUT_SEASON: unit,

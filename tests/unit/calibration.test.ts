@@ -97,8 +97,8 @@ describe('Yahoo screenshot import', () => {
     expect(m.map((r) => r.yahooRank)).toEqual([1, 52, 26, 269, 251, 304, 260, 484]);
     // Blank L7 ADP stays null: never filled from XRank, Rank or anything else.
     expect(m.map((r) => r.yahooAdp7d)).toEqual([1.6, 6.9, null, null, 117.2, null, null, null]);
-    // Blank status stays unknown (null); GTD/INJ map to the engine enum, raw cell kept verbatim.
-    expect(m.map((r) => r.status)).toEqual([null, 'DTD', null, 'OUT_SHORT', null, null, null, 'DTD']);
+    // Blank status stays unknown (null); GTD → DTD; INJ stays INJ (no duration inferred); raw cell kept verbatim.
+    expect(m.map((r) => r.status)).toEqual([null, 'DTD', null, 'INJ', null, null, null, 'DTD']);
     expect(m[1]!.raw?.Status).toBe('GTD');
     expect(m[3]!.raw?.Status).toBe('INJ');
     expect(m[2]!.meta).toEqual({

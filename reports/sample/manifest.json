@@ -1,7 +1,7 @@
 {
  "label": "FICTIONAL SAMPLE DATA (pipeline validation only — not real players)",
  "season": "2026-27",
- "configVersion": 3,
+ "configVersion": 4,
  "inputs": {
   "source": "generateSample(20260923)"
  },

@@ -2,7 +2,7 @@ import { StrategyConfigSchema, type StrategyConfig } from './strategyConfig';
 
 /** Default strategy configuration. Mirrors docs/DESIGN.md §4 (revision 3). */
 export const DEFAULT_STRATEGY_CONFIG: StrategyConfig = {
-  version: 3,
+  version: 4,
   seasonGames: 82,
 
   numeric: { eps: 1e-9, minPopulationSize: 30, minSdSamples: 2 },
@@ -70,7 +70,16 @@ export const DEFAULT_STRATEGY_CONFIG: StrategyConfig = {
   chronicPatternPenalty: 0.05,
   ageRiskStart: 30,
   ageRiskPerYear: 0.01,
-  statusRisk: { HEALTHY: 0, DTD: 0.03, OUT_SHORT: 0.08, OUT_LONG: 0.2, SUSPENDED: 0.02, OUT_SEASON: 1.0 },
+  // INJ (duration unknown) carries the value INJ rows received before v4, when they were read as OUT_SHORT.
+  statusRisk: {
+    HEALTHY: 0,
+    DTD: 0.03,
+    INJ: 0.08,
+    OUT_SHORT: 0.08,
+    OUT_LONG: 0.2,
+    SUSPENDED: 0.02,
+    OUT_SEASON: 1.0,
+  },
   unknownHistoryRisk: 0.1,
   riskBands: { low: 85, moderate: 70, high: 50 },
   riskWeightsByRound: [
@@ -131,6 +140,15 @@ export const DEFAULT_STRATEGY_CONFIG: StrategyConfig = {
 
 export function defaultConfig(): StrategyConfig {
   return structuredClone(DEFAULT_STRATEGY_CONFIG);
+}
+
+/**
+ * Bring a config saved by an older version up to the current shape without touching values the user set.
+ * v3 → v4: adds statusRisk.INJ (default value).
+ */
+export function upgradeStoredConfig(stored: StrategyConfig): StrategyConfig {
+  const statusRisk = { ...DEFAULT_STRATEGY_CONFIG.statusRisk, ...stored.statusRisk };
+  return { ...stored, statusRisk, version: Math.max(stored.version, DEFAULT_STRATEGY_CONFIG.version) };
 }
 
 export type ConfigParseResult = { ok: true; config: StrategyConfig } | { ok: false; errors: string[] };

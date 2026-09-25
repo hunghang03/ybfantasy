@@ -87,7 +87,7 @@ wMiss_s = Σ_absence games·recurrenceWeight / teamGames       LOW .25 · MODERA
           (no absence detail → (1 − GP/teamGames)·0.75)
 H       = Σ w_s·wMiss_s / Σ w_s    over up to 3 seasons, w = 0.5/0.3/0.2 (renormalized); none → 0.10 (flagged)
 ρ_hist  = H + chronicPatternPenalty(0.05 if HIGH absences in ≥ 2 seasons) + 0.01·max(0, age − 30)
-ρ_now   = statusRisk[status] + manualRiskDelta   (HEALTHY 0 · DTD .03 · OUT_SHORT .08 · OUT_LONG .20 · SUSPENDED .02 · OUT_SEASON 1.0)
+ρ_now   = statusRisk[status] + manualRiskDelta   (HEALTHY 0 · DTD .03 · INJ .08 · OUT_SHORT .08 · OUT_LONG .20 · SUSPENDED .02 · OUT_SEASON 1.0)
 ρ       = clamp(ρ_hist + ρ_now)            → Availability Score = round(100(1 − ρ)); ≥85 LOW, ≥70 MODERATE, ≥50 HIGH, else VERY HIGH
 ρ_eff   = clamp(durabilityResidualWeight(0.5)·ρ_hist + ρ_now)
 RiskAdj = −riskWeight(round)·ρ_eff·U      round 1–3 .60 · 4–6 .35 · 7–10 .15 · 11+ .05     (never positive)
@@ -341,3 +341,4 @@ These were found while running the engine on realistic data. Each has a regressi
 - **Recoverability cohort indexing** (Codex blocker 1). The audit found the original `cohortMean[k + j + 1]` was correct, because the loop index `j` was 0-based and `cohortMean` is 1-indexed by round. The code now uses an explicit `rescueCohortIndex(k, pickNumber)` with 1-based pick numbers. Tests pin rescue pick 1 → cohort k+1, pick 2 → cohort k+2, and so on, for k = 0, k = 3 and late draft (k = 11 of 13).
 - **Catch-up accounting** (Codex blocker 2). Non-advancing picks without an unrecorded slot are now rejected, as is a RESYNC behind the recorded picks. A randomized 400-step property test asserts `unrecorded ≥ 0` and exact undo.
 - **Pick-pair discount.** Changed to 0.90 (see §12.1).
+- **Yahoo `INJ` status** (Codex, config v4). `INJ` was read as `OUT_SHORT`, which asserted a duration Yahoo never states. It is now its own `INJ` state (blank → null, `GTD` → DTD, `INJ` → INJ; raw cell kept). `statusRisk.INJ = 0.08` is the value INJ rows already received, so no engine output changes; it is a new key, not a re-weighting. Stored v3 configs and backups are upgraded by adding the default `INJ` value and keeping every user-set value.

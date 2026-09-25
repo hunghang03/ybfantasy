@@ -129,7 +129,9 @@ const STATUS_ALIASES: Record<string, InjuryStatus> = {
   PROBABLE: 'DTD',
   O: 'OUT_SHORT',
   OUT: 'OUT_SHORT',
-  INJ: 'OUT_SHORT',
+  // Yahoo "INJ" says only "injured": the duration is unknown, so it keeps its own state.
+  INJ: 'INJ',
+  INJURED: 'INJ',
   OUT_SHORT: 'OUT_SHORT',
   IL: 'OUT_LONG',
   'OUT-LONG': 'OUT_LONG',
