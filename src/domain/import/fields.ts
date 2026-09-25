@@ -141,6 +141,12 @@ export const FIELD_SPECS: Record<ImportKind, FieldSpec[]> = {
       synonyms: ['reviewfields', 'review fields', 'needs review', 'unreadable'],
       help: 'e.g. adp;xrank — these values are forced to null and flagged',
     },
+    {
+      key: 'qaNote',
+      label: 'QA / transcription note',
+      required: false,
+      synonyms: ['qa note', 'qa notes', 'transcription note', 'note', 'notes'],
+    },
   ],
   AVAILABILITY: [
     NAME,

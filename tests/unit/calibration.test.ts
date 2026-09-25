@@ -48,9 +48,68 @@ describe('Yahoo screenshot import', () => {
       capturedAt: '2026-09-20T18:00Z',
       confidence: 'MEDIUM',
       reviewFields: ['adp', 'xrank'],
+      note: null,
     });
     expect(m.raw?.['Last 7 Days ADP']).toBe('7.5');
     expect(p.rowWarnings[0]!.warnings.join(' ')).toMatch(/flagged unreadable/);
+  });
+  it('accepts the real QA-v4 input patterns unchanged (fictional names)', () => {
+    // Patterns from the real 2026-27 screenshot file: decimal and tied XRank, blank L7 ADP, blank status,
+    // GTD/INJ, 1–3 position eligibility, suffixes, apostrophes, hyphens, initials, and a QA Note column.
+    const csv = [
+      `${Y},QA Note`,
+      'Zed Alpha,DEN,C,1.3,1,1.6,,yahoo_screenshot,2026-09-25,HIGH,,',
+      'Yul Beta-Gamma,SAS,"PG,SG",5.5,52,6.9,GTD,yahoo_screenshot,2026-09-25,HIGH,,',
+      'Kel\'ix Delta,MIL,"SG,SF,PF",5.5,26,,,yahoo_screenshot,2026-09-25,HIGH,,User-verified against Yahoo screenshot.',
+      'Rho Epsilon Jr.,UTA,"PF,C",148.5,269,,INJ,yahoo_screenshot,2026-09-25,HIGH,,',
+      'Tau Zeta III,GSW,"SF,PF",190.7,251,117.2,,yahoo_screenshot,2026-09-25,HIGH,,',
+      'A. Eta,TOR,PF,190.7,304,,,yahoo_screenshot,2026-09-25,HIGH,,',
+      'M Theta,BKN,C,220.3,260,,,yahoo_screenshot,2026-09-25,HIGH,,',
+      'P.J. Iota,DAL,"PG,SG,SF",250,484,,GTD,yahoo_screenshot,2026-09-25,HIGH,,',
+    ].join('\n');
+    const p = plan(csv);
+    expect(p.rejected).toEqual([]);
+    expect(p.duplicates).toEqual([]);
+    expect(p.unmatched).toEqual([]);
+    expect(p.rowWarnings).toEqual([]);
+    expect(p.newIdentities.map((i) => i.canonicalName)).toEqual([
+      'Zed Alpha',
+      'Yul Beta-Gamma',
+      "Kel'ix Delta",
+      'Rho Epsilon Jr.',
+      'Tau Zeta III',
+      'A. Eta',
+      'M Theta',
+      'P.J. Iota',
+    ]);
+    expect(p.newIdentities.map((i) => i.positions.join(','))).toEqual([
+      'C',
+      'PG,SG',
+      'SG,SF,PF',
+      'PF,C',
+      'SF,PF',
+      'PF',
+      'C',
+      'PG,SG,SF',
+    ]);
+    const m = p.records.market;
+    expect(m.map((r) => r.yahooXRank)).toEqual([1.3, 5.5, 5.5, 148.5, 190.7, 190.7, 220.3, 250]);
+    expect(m.map((r) => r.yahooRank)).toEqual([1, 52, 26, 269, 251, 304, 260, 484]);
+    // Blank L7 ADP stays null: never filled from XRank, Rank or anything else.
+    expect(m.map((r) => r.yahooAdp7d)).toEqual([1.6, 6.9, null, null, 117.2, null, null, null]);
+    // Blank status stays unknown (null); GTD/INJ map to the engine enum, raw cell kept verbatim.
+    expect(m.map((r) => r.status)).toEqual([null, 'DTD', null, 'OUT_SHORT', null, null, null, 'DTD']);
+    expect(m[1]!.raw?.Status).toBe('GTD');
+    expect(m[3]!.raw?.Status).toBe('INJ');
+    expect(m[2]!.meta).toEqual({
+      source: 'yahoo_screenshot',
+      capturedAt: '2026-09-25',
+      confidence: 'HIGH',
+      reviewFields: [],
+      note: 'User-verified against Yahoo screenshot.',
+    });
+    expect(m[2]!.raw?.['QA Note']).toBe('User-verified against Yahoo screenshot.');
+    expect(m[0]!.meta?.note).toBeNull();
   });
   it('rejects an invalid confidence value', () => {
     expect(plan(`${Y}\nAl Pha,AAA,PG,5,9,7.5,,yahoo_screenshot,x,MAYBE,\n`).rejected).toHaveLength(1);

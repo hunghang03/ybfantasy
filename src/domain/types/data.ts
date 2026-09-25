@@ -38,6 +38,8 @@ export interface SourceMeta {
   confidence: SourceConfidence | null;
   /** Field keys that could not be read confidently; their values are null and need review. */
   reviewFields: string[];
+  /** Free-text QA / transcription note from the source file (provenance only; absent on older records). */
+  note?: string | null;
 }
 
 /** Always stored PER GAME. */

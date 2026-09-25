@@ -323,6 +323,7 @@ export function validateRow(
         capturedAt: sanitizeText(cells('capturedAt'), 40) || null,
         confidence,
         reviewFields,
+        note: sanitizeText(cells('qaNote'), 300) || null,
       };
       const rawStatus = flagged('status') ? undefined : cells('status');
       let status: InjuryStatus | null = null;
