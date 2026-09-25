@@ -17,7 +17,8 @@
     "sample-data": "tsx sample-data/generate.ts",
     "check": "npm run typecheck && npm run lint && npm run test",
     "calibrate": "tsx scripts/calibrate.ts",
-    "calibrate:sample": "tsx scripts/calibrate.ts --sample"
+    "calibrate:sample": "tsx scripts/calibrate.ts --sample",
+    "yahoo:spike": "tsx scripts/yahoo-spike.ts"
   },
   "dependencies": {
     "dexie": "^4.4.6",

@@ -46,6 +46,7 @@ Keyboard: `↑↓`/`j k` select · `M` mine · `D` taken · `F` favorite · `A` 
 - [DEPLOYMENT.md](DEPLOYMENT.md): Vercel / static hosting
 - [QA_HANDOFF.md](QA_HANDOFF.md): what to challenge first
 - [docs/DATA_SOURCES.md](docs/DATA_SOURCES.md) · [docs/CALIBRATION.md](docs/CALIBRATION.md) · [data/README.md](data/README.md): real-data workflow
+- [docs/YAHOO_API.md](docs/YAHOO_API.md): Yahoo Fantasy API / OAuth feasibility spike (server-side OAuth, field matrix, live-draft sync)
 - [docs/DESIGN.md](docs/DESIGN.md): the reviewed technical design (rev 3)
 
 ## Data and licensing
