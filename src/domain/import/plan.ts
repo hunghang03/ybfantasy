@@ -3,6 +3,7 @@ import {
   addToIndex,
   buildIdentityIndex,
   matchPlayer,
+  sameTeamNearMatches,
   providerKeyFor,
   type MatchResult,
 } from '../identity/matcher';
@@ -279,6 +280,11 @@ export function planImport(req: ImportRequest): ImportPlan {
   // Otherwise (mixed providers) unmatched rows go to the review queue: a spelling variant must not silently
   // become a second player.
   const allYahoo = req.identities.every((i) => i.origin === 'yahoo');
+  // The Yahoo rule creates into an existing identity table, so guard it: a NO_MATCH row with a same-team player
+  // of a similar name (a likely transcription/spelling variant) goes to review with those candidates instead of
+  // silently becoming a second player. (Not applied to an empty table or to an explicit CREATE_UNMATCHED.)
+  const nearGuard = req.createPolicy === 'AUTO' && req.identities.length > 0;
+  let near: string[] = [];
   const allowCreate =
     req.createPolicy === 'CREATE_UNMATCHED' ||
     (req.createPolicy === 'AUTO' &&
@@ -288,6 +294,7 @@ export function planImport(req: ImportRequest): ImportPlan {
   const createdIds = new Set<string>();
   const claimedIds = new Set<string>();
   const seenTeams = new Set<string>();
+  const claimedOrCreated = () => new Set([...claimedIds, ...createdIds]);
 
   if (missingRequiredColumns.length === 0) {
     table.rows.forEach((row, i) => {
@@ -322,6 +329,7 @@ export function planImport(req: ImportRequest): ImportPlan {
       const v = res.value as RowValue & IdentityFields;
       const input = { provider, providerPlayerId: v.providerPlayerId, name: v.name, team: v.team };
       let m: MatchResult = matchPlayer(idx, input);
+      near = [];
       // A weak (name/alias-only) match onto an identity that THIS import already created or claimed
       // means two different rows want one player — never merge them silently.
       if (kind !== 'AVAILABILITY' && m.kind === 'MATCHED' && (m.via === 'NAME' || m.via === 'ALIAS')) {
@@ -337,7 +345,13 @@ export function planImport(req: ImportRequest): ImportPlan {
       if (m.kind === 'MATCHED') {
         canonicalId = m.canonicalPlayerId;
         matchedVia[m.via] = (matchedVia[m.via] ?? 0) + 1;
-      } else if (m.kind === 'NO_MATCH' && allowCreate) {
+      } else if (
+        m.kind === 'NO_MATCH' &&
+        allowCreate &&
+        (nearGuard
+          ? (near = sameTeamNearMatches(idx, v.name, v.team, claimedOrCreated())).length === 0
+          : true)
+      ) {
         const identity = newIdentityFromRow(kind, provider, v, req.newId());
         newIdentities.push(identity);
         createdIds.add(identity.canonicalPlayerId);
@@ -354,7 +368,7 @@ export function planImport(req: ImportRequest): ImportPlan {
           rawName: v.name,
           rawTeam: v.team,
           reason: m.kind === 'AMBIGUOUS' ? 'AMBIGUOUS' : 'NO_MATCH',
-          candidateIds: m.kind === 'AMBIGUOUS' ? m.candidateIds : [],
+          candidateIds: m.kind === 'AMBIGUOUS' ? m.candidateIds : near,
           payload: v,
         });
         return;

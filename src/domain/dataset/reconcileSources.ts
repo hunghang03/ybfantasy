@@ -16,11 +16,14 @@ export interface SourceReconciliation {
     marketOnly: number;
     projectionOnly: number;
     ambiguous: number;
+    /** Unmatched projection rows waiting in review (e.g. a same-team spelling variant); not imported yet. */
+    needsReview: number;
     teamMismatch: number;
   };
   marketOnly: { id: string; name: string; team: string | null }[];
   projectionOnly: { id: string; name: string; team: string | null }[];
   ambiguous: { name: string; team: string | null; candidates: string[] }[];
+  needsReview: { name: string; team: string | null; candidates: string[] }[];
   teamMismatch: { id: string; name: string; marketTeam: string | null; projectionTeam: string | null }[];
 }
 
@@ -60,22 +63,25 @@ export function reconcileMarketAndProjections(
     }))
     .filter((r) => r.marketTeam && r.projectionTeam && r.marketTeam !== r.projectionTeam)
     .sort(byName);
-  const ambiguous = unmatched
-    .filter(
-      (u) =>
-        u.kind === 'PROJECTION' &&
-        u.provider === provider &&
-        u.reason === 'AMBIGUOUS' &&
-        activeBatchIds.has(u.batchId),
-    )
-    .map((u) => ({
-      name: u.rawName,
-      team: u.rawTeam,
-      candidates: u.candidateIds.map(
-        (c) => `${byId.get(c)?.canonicalName ?? c} (${byId.get(c)?.nbaTeam ?? '—'})`,
-      ),
-    }))
-    .sort(byName);
+  const queued = (reason: UnmatchedRow['reason']) =>
+    unmatched
+      .filter(
+        (u) =>
+          u.kind === 'PROJECTION' &&
+          u.provider === provider &&
+          u.reason === reason &&
+          activeBatchIds.has(u.batchId),
+      )
+      .map((u) => ({
+        name: u.rawName,
+        team: u.rawTeam,
+        candidates: u.candidateIds.map(
+          (c) => `${byId.get(c)?.canonicalName ?? c} (${byId.get(c)?.nbaTeam ?? '—'})`,
+        ),
+      }))
+      .sort(byName);
+  const ambiguous = queued('AMBIGUOUS');
+  const needsReview = queued('NO_MATCH');
   return {
     provider,
     counts: {
@@ -85,11 +91,13 @@ export function reconcileMarketAndProjections(
       marketOnly: marketOnly.length,
       projectionOnly: projectionOnly.length,
       ambiguous: ambiguous.length,
+      needsReview: needsReview.length,
       teamMismatch: teamMismatch.length,
     },
     marketOnly,
     projectionOnly,
     ambiguous,
+    needsReview,
     teamMismatch,
   };
 }

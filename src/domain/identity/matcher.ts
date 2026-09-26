@@ -124,3 +124,28 @@ export function suggestCandidates(
   scored.sort((a, b) => b.score - a.score || (a.canonicalPlayerId < b.canonicalPlayerId ? -1 : 1));
   return scored.slice(0, limit);
 }
+
+/**
+ * Same-team players whose name is close enough to be a spelling variant of `name` (for example "Herb Jones" /
+ * "Herbert Jones", "M Wagner" / "Moritz Wagner", "Mike" / "Mikel Brown Jr."): Jaro-Winkler ≥ 0.8, the same surname,
+ * or the same first name. Used to stop an automatic identity creation and send the row to review instead.
+ */
+export function sameTeamNearMatches(
+  idx: IdentityIndex,
+  name: string,
+  team: string | null,
+  exclude: ReadonlySet<string>,
+): string[] {
+  const t = normalizeTeam(team);
+  if (!t) return [];
+  const n = normalizeName(name);
+  const tok = n.split(' ');
+  const out: string[] = [];
+  for (const p of idx.byId.values()) {
+    if (p.nbaTeam !== t || exclude.has(p.canonicalPlayerId)) continue;
+    const pt = p.normalizedName.split(' ');
+    if (jaroWinkler(n, p.normalizedName) >= 0.8 || pt.at(-1) === tok.at(-1) || pt[0] === tok[0])
+      out.push(p.canonicalPlayerId);
+  }
+  return out.sort();
+}

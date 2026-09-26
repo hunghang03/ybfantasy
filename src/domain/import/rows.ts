@@ -127,7 +127,8 @@ const PROJECTION_REVIEW_ALIASES: Record<string, string> = {
 function readReviewFields(c: Collector, cells: Cells, aliases: Record<string, string>): string[] {
   const out: string[] = [];
   for (const part of (cells('reviewFields') ?? '').split(/[;,|]+/)) {
-    const key = aliases[part.trim().toLowerCase()];
+    // Tokens may be written like the headers, e.g. "GP*" or "FGM/A*".
+    const key = aliases[part.replace(/\*+/g, '').trim().toLowerCase()];
     if (key && !out.includes(key)) out.push(key);
     else if (part.trim() && !key) c.warnings.push(`Unknown review field "${sanitizeText(part, 20)}".`);
   }

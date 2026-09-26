@@ -314,6 +314,7 @@ describe('market ↔ projection reconciliation', () => {
       marketOnly: 3,
       projectionOnly: 1,
       ambiguous: 1,
+      needsReview: 0,
       teamMismatch: 1,
     });
     expect(r.projectionOnly.map((x) => x.name)).toEqual(['De Novo']);
@@ -340,6 +341,43 @@ describe('identity creation policy (AUTO)', () => {
     const p = plan(`${HEADER}\n${yrow({ Player: 'Rook Ie', Team: 'NEW' })}`, ds.identities);
     expect(p.newIdentities.map((i) => i.canonicalName)).toEqual(['Rook Ie']);
     expect(p.unmatched).toEqual([]);
+  });
+  it('same-team spelling variants go to review with candidates, never become a second player', () => {
+    // Patterns found in the real 2026-27 files (fictional names here): shortened first name, initial,
+    // one-letter spelling change, first name shared.
+    const market = [
+      'Player,Team,Pos,XRank',
+      'Herb Stone,NOP,SF,1',
+      'M Kowal,BKN,C,2',
+      'Jaylin Brook,MEM,SG,3',
+      'Kobe Lane,LAC,SG,4',
+      'Sam Quill,DAL,PF,5',
+    ].join('\n');
+    const ds = importInto(EMPTY, 'YAHOO_MARKET', 'yahoo', market);
+    const p = plan(
+      [
+        HEADER,
+        yrow({ Player: 'Herbert Stone', Team: 'NOP' }),
+        yrow({ Player: 'Marek Kowal', Team: 'BKN' }),
+        yrow({ Player: 'Jaylen Brook', Team: 'MEM' }),
+        yrow({ Player: 'Kobe Sands', Team: 'LAC' }),
+        yrow({ Player: 'Tom Quill', Team: 'HOU' }), // same surname, other team → genuinely new
+        yrow({ Player: 'Ade Novo', Team: 'NEW' }),
+        yrow({ Player: 'Bo Novo', Team: 'NEW' }), // two new same-team players in one file → both created
+      ].join('\n'),
+      ds.identities,
+    );
+    expect(p.unmatched.map((u) => [u.rawName, u.reason, u.candidateIds.length])).toEqual([
+      ['Herbert Stone', 'NO_MATCH', 1],
+      ['Marek Kowal', 'NO_MATCH', 1],
+      ['Jaylen Brook', 'NO_MATCH', 1],
+      ['Kobe Sands', 'NO_MATCH', 1],
+    ]);
+    expect(p.newIdentities.map((i) => i.canonicalName)).toEqual(['Tom Quill', 'Ade Novo', 'Bo Novo']);
+  });
+  it('review tokens may carry the header asterisk ("GP*", "FGM/A*")', () => {
+    const p = plan(`${HEADER}\n${yrow({ 'Review Fields': 'GP*; FGM/A*' })}`);
+    expect(p.rejected[0]!.errors.join(' ')).toMatch(/Flagged unreadable in the source: gp, fg\./);
   });
   it('identities from another provider: unmatched rows go to review, never auto-created', () => {
     const ds = importInto(EMPTY, 'PROJECTION', 'hashtag', `${HEADER}\n${yrow({ Player: 'Alex Stone' })}`);

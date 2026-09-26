@@ -540,7 +540,8 @@ function SourceReconciliationPanel() {
       <p className="text-xs" data-testid="source-reconciliation">
         Market players <b>{c.marketPlayers}</b> · projected players <b>{c.projectionPlayers}</b> · matched{' '}
         <b>{c.matched}</b> · market-only <b>{c.marketOnly}</b> · projection-only <b>{c.projectionOnly}</b> ·
-        ambiguous <b>{c.ambiguous}</b> · team mismatch <b>{c.teamMismatch}</b>
+        ambiguous <b>{c.ambiguous}</b> · needs review <b>{c.needsReview}</b> · team mismatch{' '}
+        <b>{c.teamMismatch}</b>
       </p>
       <div className="text-xs">
         {list('Market-only (no projection: shown as unranked, can still be marked taken)', r.marketOnly)}
@@ -549,6 +550,11 @@ function SourceReconciliationPanel() {
           'Ambiguous (never merged — resolve under Review unmatched)',
           r.ambiguous,
           (i) => `candidates: ${r.ambiguous[i]!.candidates.join('; ')}`,
+        )}
+        {list(
+          'Needs review (possible spelling variant of a same-team player — not imported until resolved)',
+          r.needsReview,
+          (i) => `candidates: ${r.needsReview[i]!.candidates.join('; ') || 'none'}`,
         )}
         {list(
           'Team mismatch (Yahoo market team kept)',
