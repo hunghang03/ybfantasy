@@ -67,6 +67,16 @@ describe('punt confidence with recoverability (R2-3)', () => {
     expect(r.entries.AST.pi).toBeLessThanOrEqual(0.3);
   });
 
+  it('picks 3–4 allow an emerging punt (SOFT at most, never HARD); pick 5+ may reach a meaningful soft punt', () => {
+    for (const k of [3, 4]) {
+      const r = computePunts(inputs({ d: { AST: -3 }, k, supplyAST: 0 }), cfg);
+      expect(r.entries.AST.pi).toBeLessThanOrEqual(0.7);
+      expect(r.entries.AST.level).not.toBe('HARD');
+    }
+    const r5 = computePunts(inputs({ d: { AST: -3 }, k: 5, supplyAST: 0 }), cfg);
+    expect(r5.entries.AST.pi).toBeGreaterThanOrEqual(cfg.puntThresholds.soft);
+  });
+
   it('T-PUNT-REC-1: weak but fully recoverable category never becomes a punt, even with coherence', () => {
     const r = computePunts(
       inputs({ d: { AST: -2.5, PTS: 2, THREES: 2 }, k: 7, supplyAST: 3, corr: coherent }),

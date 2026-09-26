@@ -105,3 +105,12 @@ The `PW_CHROMIUM_PATH` variable is only needed where Playwright's own browser is
 
 - **O1:** category state labels at k = 1 can read CRITICAL.
 - **O2:** C-heavy final rosters in the sample scenarios.
+
+## Yahoo primary projections + draft-day workflow (2026-09-26)
+
+- **Source change:** Yahoo projections are the default primary source (`primaryProjectionProvider: 'yahoo'`); Hashtag/BBM are optional validation. No weight changed.
+- **Importer:** combined `FGM/A`, `FTM/A` cells (decimals, exact split), `Stat Basis`, provenance on projection rows, flagged stats reject the row, snapshot capture tracking, `Use this snapshot`, market ↔ projection reconciliation (Data page and `npm run yahoo:projections`).
+- **Draft day:** search → Enter = MARK TAKEN, Shift+Enter = DRAFT TO MY TEAM, market-only players findable, extended status bar, decision record on every user pick (Review → Draft decision log, JSON export).
+- **Tests:** `tests/unit/yahoo-primary.test.ts` (schema, decimals, TOTAL basis, never-derived attempts, flags, mixed captures, Yahoo-only engine run, market never in BPV, volume-weighted FG%, reconciliation buckets, identity policy, snapshots, mark taken/undo, decision record, resync/catch-up/undo, 14-team snake slots 1/4/7/11/14), punt picks 3–5 case, E2E draft-day test.
+- **Fixture change:** `reports/sample/` was regenerated because the sample's primary source is now the Yahoo-format file (totals ÷ GP differ from the Hashtag-format per-game rounding by < 0.05). See docs/CALIBRATION.md.
+- Details: [docs/DRAFT_DAY.md](docs/DRAFT_DAY.md).

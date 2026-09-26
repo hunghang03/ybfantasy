@@ -19,6 +19,7 @@ import {
   rosterSize,
   type LeagueDraft,
   type LeagueProfile,
+  type DecisionRecord,
   type PickSnapshot,
   type PlayerFlags,
   type PuntOverride,
@@ -70,7 +71,7 @@ export interface AppState {
   draftPick(
     playerId: string,
     by: 'ME' | 'OTHER',
-    opts?: { advance?: boolean; snapshot?: PickSnapshot },
+    opts?: { advance?: boolean; snapshot?: PickSnapshot; decision?: DecisionRecord },
   ): string | null;
   undo(): void;
   resync(overall: number): string | null;
@@ -81,6 +82,7 @@ export interface AppState {
 
   commitImport(plan: ImportPlan): Promise<void>;
   revertBatch(batchId: string): Promise<void>;
+  activateBatch(batchId: string): Promise<void>;
   resolveUnmatched(rowId: string, resolution: UnmatchedResolution): Promise<void>;
 
   setConfig(config: StrategyConfig): void;
@@ -215,7 +217,7 @@ export const useApp = create<AppState>((set, get) => {
         roster: structuredClone(DEFAULT_ROSTER),
         acquisitionsPerWeek: 4,
         playoffWeeks: [18, 19, 20, 21],
-        primaryProjectionProvider: 'hashtag',
+        primaryProjectionProvider: 'yahoo',
         validationProviders: [],
         createdAt: now,
         updatedAt: now,
@@ -256,7 +258,7 @@ export const useApp = create<AppState>((set, get) => {
       if (!league || !draft) return 'No active league.';
       const r = appendPick(
         draft.events,
-        { playerId, by, advance: opts.advance, snapshot: opts.snapshot },
+        { playerId, by, advance: opts.advance, snapshot: opts.snapshot, decision: opts.decision },
         league.teamCount,
         rosterSize(league.roster),
       );
@@ -325,6 +327,11 @@ export const useApp = create<AppState>((set, get) => {
 
     async revertBatch(batchId) {
       await getRepository().revertBatch(batchId);
+      await get().reloadData();
+    },
+
+    async activateBatch(batchId) {
+      await getRepository().activateBatch(batchId);
       await get().reloadData();
     },
 

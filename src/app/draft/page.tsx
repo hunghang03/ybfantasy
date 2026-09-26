@@ -1,8 +1,17 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent as ReactKeyboardEvent,
+} from 'react';
 import { replay } from '@/domain/draft/replay';
+import { slotOwningPick } from '@/domain/draft/snake';
+import { buildDecisionRecord } from '@/domain/telemetry/decision';
 import type { PlayerFlags } from '@/domain/types/league';
 import { useActiveDraft, useActiveLeague, useApp } from '@/state/store';
 import { useEngine } from '@/state/useEngine';
@@ -12,6 +21,7 @@ import { LockedTargets, MyTeam } from '@/components/draft/MyTeam';
 import {
   DEFAULT_FILTERS,
   filterAndSort,
+  matchesSearch,
   PlayerTable,
   type SortKey,
   type TableFilters,
@@ -37,6 +47,9 @@ export default function DraftPage() {
   const setPuntOverride = useApp((s) => s.setPuntOverride);
   const notify = useApp((s) => s.notify);
   const compactSetting = useApp((s) => s.settings.compactMode);
+  const dataset = useApp((s) => s.dataset);
+  const batches = useApp((s) => s.batches);
+  const config = useApp((s) => s.config);
   const updateSettings = useApp((s) => s.updateSettings);
 
   const [filters, setFiltersState] = useState<TableFilters>({ ...DEFAULT_FILTERS, compact: compactSetting });
@@ -53,7 +66,34 @@ export default function DraftPage() {
   };
 
   const rows = useMemo(() => (ev ? filterAndSort(ev.players, filters, sort) : []), [ev, filters, sort]);
-  const selected = selectedId && ev?.byId.has(selectedId) ? selectedId : (rows[0]?.playerId ?? null);
+  const drafted = useMemo(() => replay(draft?.events ?? []).drafted, [draft]);
+  // Players without a projection (market-only) are not ranked, but must still be findable and markable on draft day.
+  const unprojected = useMemo(() => {
+    if (!ctx) return [];
+    const market = new Map(dataset.market.map((m) => [m.canonicalPlayerId, m]));
+    return ctx.unranked
+      .filter((u) => !drafted.has(u.id))
+      .map((u) => ({
+        id: u.id,
+        name: u.name,
+        team: u.team,
+        positions: u.positions,
+        market: market.get(u.id) ?? null,
+      }));
+  }, [ctx, drafted, dataset.market]);
+  const unprojectedMatches = useMemo(
+    () =>
+      filters.search.trim()
+        ? unprojected.filter((u) => matchesSearch(u.name, u.team, filters.search)).slice(0, 12)
+        : [],
+    [unprojected, filters.search],
+  );
+  // Keyboard/search result order: ranked rows first, then unprojected matches.
+  const resultIds = useMemo(
+    () => [...rows.map((r) => r.playerId), ...unprojectedMatches.map((u) => u.id)],
+    [rows, unprojectedMatches],
+  );
+  const selected = selectedId && resultIds.includes(selectedId) ? selectedId : (resultIds[0] ?? null);
 
   const lastEvent = draft?.events[draft.events.length - 1];
   const lastLabel = useMemo(() => {
@@ -75,9 +115,24 @@ export default function DraftPage() {
         const snapshot = p
           ? { ddpRaw: p.ddpRaw, baseValue: p.value.basePlayerValue, teamFit: p.fit.teamFit, label: p.label }
           : undefined;
+        const decision =
+          action === 'MINE' && ctx && league && draft
+            ? buildDecisionRecord({
+                ctx,
+                league,
+                input: { events: draft.events, flags: draft.flags, puntOverrides: draft.puntOverrides },
+                before: ev,
+                playerId: id,
+                unprojectedAvailable: unprojected.length,
+                activeBatchIds: batches.filter((b) => b.status === 'ACTIVE').map((b) => b.id),
+                configVersion: config.version,
+                now: new Date().toISOString(),
+              })
+            : undefined;
         const err = draftPick(id, action === 'MINE' ? 'ME' : 'OTHER', {
           advance: action === 'MINE' ? true : !catchUp,
           snapshot,
+          decision,
         });
         if (err) notify(err);
         else if (action === 'MINE' && !ev.timing.onTheClock)
@@ -88,8 +143,28 @@ export default function DraftPage() {
       }
       toggleFlag(id, action);
     },
-    [ev, draftPick, toggleFlag, catchUp, notify],
+    [ev, ctx, league, draft, unprojected, batches, config, draftPick, toggleFlag, catchUp, notify],
   );
+
+  /** type → select → MARK TAKEN without leaving the search box. */
+  const onSearchKey = (e: ReactKeyboardEvent<HTMLInputElement>) => {
+    const idx = selected ? resultIds.indexOf(selected) : -1;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      const n =
+        resultIds[Math.max(0, Math.min(resultIds.length - 1, idx + (e.key === 'ArrowDown' ? 1 : -1)))];
+      if (n) setSelectedId(n);
+      e.preventDefault();
+    } else if (e.key === 'Enter' && selected) {
+      act(selected, e.shiftKey ? 'MINE' : 'OTHER');
+      setFilters({ ...filters, search: '' });
+      setSelectedId(null);
+      e.preventDefault();
+    } else if (e.key === 'Escape') {
+      if (filters.search) setFilters({ ...filters, search: '' });
+      else e.currentTarget.blur();
+      e.preventDefault();
+    }
+  };
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -98,15 +173,15 @@ export default function DraftPage() {
         if (e.key === 'Escape') (e.target as HTMLElement).blur();
         return;
       }
-      const idx = rows.findIndex((r) => r.playerId === selected);
+      const idx = selected ? resultIds.indexOf(selected) : -1;
       const k = e.key.toLowerCase();
       if (k === 'arrowdown' || k === 'j') {
-        const n = rows[Math.min(rows.length - 1, idx + 1)];
-        if (n) setSelectedId(n.playerId);
+        const n = resultIds[Math.min(resultIds.length - 1, idx + 1)];
+        if (n) setSelectedId(n);
         e.preventDefault();
       } else if (k === 'arrowup' || k === 'k') {
-        const n = rows[Math.max(0, idx - 1)];
-        if (n) setSelectedId(n.playerId);
+        const n = resultIds[Math.max(0, idx - 1)];
+        if (n) setSelectedId(n);
         e.preventDefault();
       } else if (k === '/') {
         searchRef.current?.focus();
@@ -123,7 +198,7 @@ export default function DraftPage() {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [rows, selected, act, undo]);
+  }, [resultIds, selected, act, undo]);
 
   if (!league || !draft)
     return (
@@ -165,7 +240,23 @@ export default function DraftPage() {
             <b className="num" data-testid="current-pick">
               {ev.draft.currentOverall}
             </b>{' '}
-            · Round <b className="num">{ev.timing.currentRound}</b>
+            · Round{' '}
+            <b className="num" data-testid="current-round">
+              {ev.timing.currentRound}
+            </b>
+          </span>
+          <span title="Snake order: the team in this draft slot is picking now">
+            On the clock: slot{' '}
+            <b className="num" data-testid="drafting-slot">
+              {ev.timing.draftComplete ? '—' : slotOwningPick(ev.draft.currentOverall, league.teamCount)}
+            </b>
+            /{league.teamCount}
+          </span>
+          <span>
+            My slot{' '}
+            <b className="num" data-testid="my-slot">
+              {league.draftPosition}
+            </b>
           </span>
           <span>
             Your next pick{' '}
@@ -179,8 +270,19 @@ export default function DraftPage() {
             <b className="num" data-testid="following-pick">
               {ev.timing.p1 ?? '—'}
             </b>{' '}
-            · {ev.gap.beforeNext} picks before your next
+            ·{' '}
+            <b className="num" data-testid="picks-until-mine">
+              {ev.gap.beforeNext}
+            </b>{' '}
+            picks before your next
             {ev.timing.gapType && <> · {ev.timing.gapType.toLowerCase()} gap</>}
+          </span>
+          <span title="Available players: with a projection + without one (market-only)">
+            Available{' '}
+            <b className="num" data-testid="available-count">
+              {ev.players.length}
+            </b>
+            {unprojected.length > 0 && <> + {unprojected.length} unprojected</>}
           </span>
           <Button
             size="sm"
@@ -248,20 +350,31 @@ export default function DraftPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-2 xl:grid-cols-[1fr_27rem]">
-        <PlayerTable
-          ev={ev}
-          rows={rows}
-          filters={filters}
-          setFilters={setFilters}
-          sort={sort}
-          setSort={setSort}
-          selectedId={selected}
-          onSelect={setSelectedId}
-          onOpen={setDetailId}
-          onAction={act}
-          searchRef={searchRef}
-          catchUp={catchUp}
-        />
+        <div className="min-w-0 space-y-2">
+          {unprojectedMatches.length > 0 && (
+            <UnprojectedResults
+              players={unprojectedMatches}
+              selectedId={selected}
+              catchUp={catchUp}
+              onAction={(id, a) => act(id, a)}
+            />
+          )}
+          <PlayerTable
+            ev={ev}
+            rows={rows}
+            filters={filters}
+            setFilters={setFilters}
+            sort={sort}
+            setSort={setSort}
+            selectedId={selected}
+            onSelect={setSelectedId}
+            onOpen={setDetailId}
+            onAction={act}
+            searchRef={searchRef}
+            catchUp={catchUp}
+            onSearchKey={onSearchKey}
+          />
+        </div>
         <div className="space-y-2">
           <CategoryDashboard ev={ev} overrides={draft.puntOverrides} onOverride={setPuntOverride} />
           <MyTeam
@@ -305,5 +418,71 @@ export default function DraftPage() {
         <Panel title="Engine">Non-finite values were repaired; see Review.</Panel>
       )}
     </div>
+  );
+}
+
+/** Search hits without a projection (market-only): not valued by the engine, but can be marked taken or drafted. */
+function UnprojectedResults({
+  players,
+  selectedId,
+  catchUp,
+  onAction,
+}: {
+  players: {
+    id: string;
+    name: string;
+    team: string | null;
+    positions: string[];
+    market: { yahooXRank: number | null; yahooAdp7d: number | null } | null;
+  }[];
+  selectedId: string | null;
+  catchUp: boolean;
+  onAction: (id: string, action: 'MINE' | 'OTHER') => void;
+}) {
+  return (
+    <section
+      className="rounded-md border border-amber-300 bg-amber-50 p-1.5 text-xs dark:border-amber-800 dark:bg-amber-950"
+      data-testid="unprojected-results"
+    >
+      <p className="mb-1 text-amber-900 dark:text-amber-100">
+        No projection loaded for these players (not ranked by the engine):
+      </p>
+      <table className="w-full">
+        <tbody>
+          {players.map((u) => (
+            <tr
+              key={u.id}
+              className={u.id === selectedId ? 'bg-amber-200 dark:bg-amber-900' : ''}
+              data-testid={`unprojected-${u.id}`}
+            >
+              <td className="px-1 font-medium">{u.name}</td>
+              <td className="px-1">{u.team ?? '—'}</td>
+              <td className="px-1">{u.positions.join('/')}</td>
+              <td className="px-1 text-slate-500">
+                XRank {u.market?.yahooXRank ?? '—'} · L7 ADP {u.market?.yahooAdp7d ?? '—'}
+              </td>
+              <td className="whitespace-nowrap px-1 text-right">
+                <Button
+                  size="xs"
+                  variant="success"
+                  data-testid={`mine-${u.id}`}
+                  onClick={() => onAction(u.id, 'MINE')}
+                >
+                  Draft to me
+                </Button>{' '}
+                <Button
+                  size="xs"
+                  variant="primary"
+                  data-testid={`taken-${u.id}`}
+                  onClick={() => onAction(u.id, 'OTHER')}
+                >
+                  {catchUp ? 'Mark taken*' : 'Mark taken'}
+                </Button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
   );
 }

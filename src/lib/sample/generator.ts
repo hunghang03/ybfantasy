@@ -154,6 +154,7 @@ const r3 = (x: number) => Math.round(x * 1000) / 1000;
 
 export interface SampleFiles {
   'yahoo-market.sample.csv': string;
+  'projections-yahoo.sample.csv': string;
   'projections-hashtag.sample.csv': string;
   'projections-bbm.sample.csv': string;
   'availability.sample.csv': string;
@@ -495,8 +496,70 @@ export function generateSample(seed = 20260923, count = 300): SampleFiles {
     row.push(...(weeksByTeam.get(p.team) ?? ['', '', '', '']));
   });
 
+  // Yahoo "Remaining Games (proj)" layout: season TOTALS, combined FGM/A and FTM/A cells (one decimal, so
+  // decimal makes/attempts are exercised), explicit stat basis and capture provenance. Derived deterministically
+  // from the same fictional per-game values, so no extra randomness is drawn.
+  const yahooProj: (string | number)[][] = [
+    [
+      'Player',
+      'Team',
+      'Pos',
+      'Pre-Season Rank',
+      'GP*',
+      'FGM/A*',
+      'FG%',
+      'FTM/A*',
+      'FT%',
+      '3PTM',
+      'PTS',
+      'REB',
+      'AST',
+      'ST',
+      'BLK',
+      'TO',
+      'Stat Basis',
+      'Source',
+      'Captured At',
+      'Confidence',
+      'Review Fields',
+      'QA Note',
+    ],
+  ];
+  const tot = (x: number, gp: number) => r1(x * gp);
+  for (const p of players) {
+    const fgm = tot(p.fgm, p.gp);
+    const fga = tot(p.fga, p.gp);
+    const ftm = tot(p.ftm, p.gp);
+    const fta = tot(p.fta, p.gp);
+    yahooProj.push([
+      p.name,
+      p.team,
+      p.positions,
+      hbRank.get(p.id)!,
+      p.gp,
+      `${fgm}/${fga}`,
+      r3(fgm / fga),
+      `${ftm}/${fta}`,
+      r3(ftm / fta),
+      tot(p.threes, p.gp),
+      tot(p.pts, p.gp),
+      tot(p.reb, p.gp),
+      tot(p.ast, p.gp),
+      tot(p.stl, p.gp),
+      tot(p.blk, p.gp),
+      tot(p.to, p.gp),
+      'TOTAL',
+      'yahoo_screenshot',
+      '2026-09-26T12:00:00Z',
+      'HIGH',
+      '',
+      '',
+    ]);
+  }
+
   return {
     'yahoo-market.sample.csv': csv(market),
+    'projections-yahoo.sample.csv': csv(yahooProj),
     'projections-hashtag.sample.csv': csv(hashtag),
     'projections-bbm.sample.csv': csv(bbm),
     'availability.sample.csv': csv(avail),

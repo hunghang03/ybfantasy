@@ -18,7 +18,8 @@
     "check": "npm run typecheck && npm run lint && npm run test",
     "calibrate": "tsx scripts/calibrate.ts",
     "calibrate:sample": "tsx scripts/calibrate.ts --sample",
-    "yahoo:spike": "tsx scripts/yahoo-spike.ts"
+    "yahoo:spike": "tsx scripts/yahoo-spike.ts",
+    "yahoo:projections": "tsx scripts/yahoo-projections.ts"
   },
   "dependencies": {
     "dexie": "^4.4.6",

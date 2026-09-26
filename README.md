@@ -15,7 +15,7 @@ npm run dev            # http://localhost:3000
 ```
 
 1. **Leagues.** Create a league, then open **Setup** to set teams, your draft position, roster, bench/IL, playoff weeks and the primary projection source.
-2. **Data.** Import your projections (Hashtag-style CSV) and the Yahoo market CSV (XRank, Rank, Last 7 Days ADP). Optionally add availability history, player context and the playoff schedule. Alternatively, click **Load fictional sample data** to try the app.
+2. **Data.** Import the Yahoo market CSV (XRank, Rank, Last 7 Days ADP, eligibility, status) and the Yahoo projection snapshot (the default primary source; see [docs/DRAFT_DAY.md](docs/DRAFT_DAY.md)). Hashtag/BBM files are optional validation sources. Optionally add availability history, player context and the playoff schedule. Alternatively, click **Load fictional sample data** to try the app.
 3. **Draft.** For each pick:
    - **Taken** (D): the player went to another team.
    - **Mine** (M): you drafted the player.
@@ -46,6 +46,7 @@ Keyboard: `↑↓`/`j k` select · `M` mine · `D` taken · `F` favorite · `A` 
 - [DEPLOYMENT.md](DEPLOYMENT.md): Vercel / static hosting
 - [QA_HANDOFF.md](QA_HANDOFF.md): what to challenge first
 - [docs/DATA_SOURCES.md](docs/DATA_SOURCES.md) · [docs/CALIBRATION.md](docs/CALIBRATION.md) · [data/README.md](data/README.md): real-data workflow
+- [docs/DRAFT_DAY.md](docs/DRAFT_DAY.md): Yahoo projection CSV schema, snapshots, manual draft sync (search → Enter = mark taken), decision log
 - [docs/YAHOO_API.md](docs/YAHOO_API.md): Yahoo Fantasy API / OAuth feasibility spike (server-side OAuth, field matrix, live-draft sync)
 - [docs/DESIGN.md](docs/DESIGN.md): the reviewed technical design (rev 3)
 

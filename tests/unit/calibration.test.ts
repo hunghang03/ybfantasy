@@ -192,7 +192,7 @@ describe('reconciliation', () => {
       ].join('\n'),
     );
     const { report, dataset } = reconcile({
-      hashtag: { table: hashtag, provider: 'hashtag', description: 'hb' },
+      projections: { table: hashtag, provider: 'hashtag', description: 'hb' },
       yahoo: { table: yahoo, provider: 'yahoo', description: 'y' },
       aliases: [
         { alias: 'Nic Claxon', canonicalName: 'Nicolas Claxon', team: 'EEE' },
@@ -206,7 +206,7 @@ describe('reconciliation', () => {
       yahooOnly: 1,
       ambiguous: 1,
       teamMismatch: 1,
-      hashtagOnly: 3,
+      projectionOnly: 3,
     });
     expect(report.teamMismatch[0]!.name).toBe('Traded Guy');
     expect(report.ambiguous[0]!.candidates).toHaveLength(2);
@@ -216,7 +216,7 @@ describe('reconciliation', () => {
     const c = report.counts;
     expect(c.matched + c.yahooOnly + c.ambiguous + c.yahooRejected + c.duplicates).toBe(c.yahooRows);
     // Hashtag identities: matched + hashtag-only = all projections.
-    expect(c.matched + c.hashtagOnly).toBe(dataset.projections.length);
+    expect(c.matched + c.projectionOnly).toBe(dataset.projections.length);
     // Yahoo-only player is kept (market-only, unranked).
     expect(dataset.identities.some((i) => i.canonicalName === 'Yahoo Only')).toBe(true);
     // Yahoo team is authoritative after matching.
@@ -227,7 +227,7 @@ describe('reconciliation', () => {
 describe('calibration report', () => {
   const f = generateSample();
   const { report: recon, dataset } = reconcile({
-    hashtag: {
+    projections: {
       table: parseTable(f['projections-hashtag.sample.csv']),
       provider: 'hashtag',
       description: 'hb',
@@ -243,10 +243,10 @@ describe('calibration report', () => {
     expect(recon.counts.matched).toBe(300);
     expect(r.rows.length).toBeGreaterThanOrEqual(200);
     for (const row of r.rows) {
-      if (row.hashtagRank !== null)
-        expect(row.deltaEngineVsHashtag).toBe(row.hashtagRank - row.engineBpvRank);
+      if (row.providerRank !== null)
+        expect(row.deltaEngineVsProvider).toBe(row.providerRank - row.engineBpvRank);
       if (row.yahooXRank !== null) expect(row.deltaEngineVsXRank).toBe(row.yahooXRank - row.engineBpvRank);
-      const worst = Math.max(Math.abs(row.deltaEngineVsHashtag ?? 0), Math.abs(row.deltaEngineVsXRank ?? 0));
+      const worst = Math.max(Math.abs(row.deltaEngineVsProvider ?? 0), Math.abs(row.deltaEngineVsXRank ?? 0));
       expect(row.severity).toBe(worst >= MAJOR ? 'MAJOR' : worst >= DISAGREE ? 'DISAGREE' : 'NONE');
       expect(row.tentativeClasses.length > 0).toBe(row.severity !== 'NONE');
     }
@@ -266,22 +266,26 @@ describe('calibration report', () => {
 describe('scenario QA fixtures (determinism)', () => {
   const f = generateSample();
   const { dataset } = reconcile({
-    hashtag: {
-      table: parseTable(f['projections-hashtag.sample.csv']),
-      provider: 'hashtag',
-      description: 'hb',
+    projections: {
+      table: parseTable(f['projections-yahoo.sample.csv']),
+      provider: 'yahoo',
+      description: 'yahoo projections (primary)',
     },
     yahoo: { table: parseTable(f['yahoo-market.sample.csv']), provider: 'yahoo', description: 'y' },
     season: '2026-27',
     config: cfg,
   });
   it('matches the committed sample fixtures exactly', () => {
-    // Fixtures were produced by `npm run calibrate:sample`, which also layers bbm/availability/context
+    // Fixtures were produced by `npm run calibrate:sample` (Yahoo primary), which also layers bbm/hashtag/availability/context
     // on top; this test re-creates that dataset through the CLI's documented steps.
     const withExtras = addExtras(dataset, f);
     const ctx = buildContext(
       withExtras,
-      league({ draftPosition: 1, primaryProjectionProvider: 'hashtag', validationProviders: ['bbm'] }),
+      league({
+        draftPosition: 1,
+        primaryProjectionProvider: 'yahoo',
+        validationProviders: ['bbm', 'hashtag'],
+      }),
       cfg,
     );
     for (const [slot, foundation] of [
@@ -303,6 +307,7 @@ function addExtras(ds: ReturnType<typeof reconcile>['dataset'], f: ReturnType<ty
   let out = ds;
   for (const [kind, provider, file] of [
     ['PROJECTION', 'bbm', 'projections-bbm.sample.csv'],
+    ['PROJECTION', 'hashtag', 'projections-hashtag.sample.csv'],
     ['AVAILABILITY', 'manual', 'availability.sample.csv'],
     ['CONTEXT', 'manual', 'context.sample.csv'],
   ] as const) {

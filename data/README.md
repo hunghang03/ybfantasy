@@ -1,19 +1,21 @@
 # data/
 
-Production-data workspace for the calibration workflow. **Real data never goes into git**: this repository is public, and Yahoo Fantasy Plus, Hashtag and BBM data are licensed or personal.
+Production-data workspace. **Real data never goes into git**: this repository is public, and Yahoo Fantasy Plus, Hashtag and BBM data are licensed or personal.
 
 ```
 data/
   README.md                 this file
   aliases.csv               alias table (alias,canonical,team): committed, names only
   templates/                header-only templates (committed)
-    yahoo-screenshot.template.csv
-    hashtag-projections.template.csv
+    yahoo-screenshot.template.csv      Yahoo market (XRank, Rank, L7 ADP, …)
+    yahoo-projections.template.csv     Yahoo projections (PRIMARY)
+    hashtag-projections.template.csv   optional validation source
     aliases.template.csv
   private/                  ← git-ignored: put your real files here
     yahoo-screenshot-2026-27.csv
-    hashtag-2026-27.csv
-    bbm-2026-27.csv         (optional, only if you legitimately have it)
+    yahoo-projections-2026-27.csv
+    hashtag-2026-27.csv     (optional validation)
+    bbm-2026-27.csv         (optional validation, only if you legitimately have it)
     availability.csv        (optional)
     context.csv             (optional)
 ```
@@ -26,7 +28,22 @@ Use `templates/yahoo-screenshot.template.csv`. Add one row per player, for rough
 - `Source` = `yahoo_screenshot`. `Captured At` = the screenshot time (ISO). `Confidence` = `HIGH`/`MEDIUM`/`LOW`.
 - If any value is unreadable, **leave it blank** and list its field in `Review Fields` (e.g. `adp;xrank`). **Never guess.**
 
-## 2. Hashtag projections → `data/private/hashtag-2026-27.csv`
+## 2. Yahoo projections (primary) → `data/private/yahoo-projections-2026-27.csv`
+
+Use `templates/yahoo-projections.template.csv`. Exact schema: see [docs/DRAFT_DAY.md §1](../docs/DRAFT_DAY.md#1-yahoo-projection-csv-schema).
+
+- Copy Yahoo's **Remaining Games (proj)** view exactly. `FGM/A*` and `FTM/A*` stay as `made/attempted` cells (decimals allowed, e.g. `567.7/1149.4`); they are split exactly and never derived.
+- Set `Stat Basis` to `TOTAL` if the view shows season totals, or `PER_GAME` for per-game values. Totals without `TOTAL` are rejected, not guessed.
+- One capture per file (`Captured At`). Mixing captures raises a warning.
+
+Validate against the market file before using it:
+
+```bash
+npm run yahoo:projections -- --market data/private/yahoo-screenshot-2026-27.csv \
+                             --projections data/private/yahoo-projections-2026-27.csv
+```
+
+## 2b. Hashtag projections (optional validation) → `data/private/hashtag-2026-27.csv`
 
 Use `templates/hashtag-projections.template.csv`. The headers follow Hashtag's projection table:
 
@@ -56,11 +73,11 @@ The reconciliation report lists every ambiguous or unmatched player that still n
 ## 4. Run
 
 ```bash
-npm run calibrate -- --hashtag data/private/hashtag-2026-27.csv \
+npm run calibrate -- --projections data/private/yahoo-projections-2026-27.csv \
                      --yahoo data/private/yahoo-screenshot-2026-27.csv \
                      --aliases data/aliases.csv \
                      --out reports/private/2026-27
-# optional: --bbm data/private/bbm-2026-27.csv --availability … --context … --playoff … --no-scenarios --top 200
+# optional: --hashtag data/private/hashtag-2026-27.csv --bbm data/private/bbm-2026-27.csv --availability … --context … --playoff … --no-scenarios --top 200
 ```
 
 **Outputs** in `reports/private/2026-27/`:

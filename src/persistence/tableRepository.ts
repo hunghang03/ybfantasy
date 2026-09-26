@@ -157,6 +157,18 @@ export class TableRepository implements Repository {
     });
   }
 
+  activateBatch(batchId: string): Promise<void> {
+    return this.db.transaction(async () => {
+      const b = await this.t.batches.get(batchId);
+      if (!b) throw new Error('Unknown import batch.');
+      if (b.status === 'ACTIVE') return;
+      for (const x of await this.t.batches.all())
+        if (x.status === 'ACTIVE' && x.kind === b.kind && x.provider === b.provider)
+          await this.t.batches.put(x.id, { ...x, status: 'SUPERSEDED' });
+      await this.t.batches.put(b.id, { ...b, status: 'ACTIVE' });
+    });
+  }
+
   listUnmatched() {
     return this.t.unmatched.all();
   }

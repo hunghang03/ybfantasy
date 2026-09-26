@@ -1,7 +1,8 @@
 'use client';
 
-import { useMemo, useState, type RefObject } from 'react';
+import { useMemo, useState, type KeyboardEvent, type RefObject } from 'react';
 import type { DraftEvaluation } from '@/domain/recommendations/engine';
+import { normalizeName } from '@/domain/identity/normalize';
 import { CATEGORY_LABEL, type Position } from '@/domain/types/core';
 import type { PlayerEvaluation, RiskLevel } from '@/domain/types/evaluation';
 import type { TimingLabel } from '@/domain/types/league';
@@ -34,12 +35,22 @@ export const DEFAULT_FILTERS: TableFilters = {
 
 const RISK_ORDER: Record<RiskLevel, number> = { LOW: 0, MODERATE: 1, HIGH: 2, VERY_HIGH: 3 };
 
+/**
+ * Draft-day search: accent-, case- and punctuation-insensitive substring match on the name ("jok" → Jokic,
+ * "gilgeous" → Shai Gilgeous-Alexander), or an exact NBA team code ("den").
+ */
+export function matchesSearch(name: string, team: string | null, query: string): boolean {
+  const q = normalizeName(query);
+  if (!q) return true;
+  return normalizeName(name).includes(q) || (team ?? '').toLowerCase() === query.trim().toLowerCase();
+}
+
 export function filterAndSort(
   players: PlayerEvaluation[],
   f: TableFilters,
   sort: SortKey,
 ): PlayerEvaluation[] {
-  const q = f.search.trim().toLowerCase();
+  const q = f.search;
   const posOk = (p: PlayerEvaluation) =>
     f.position === 'ALL' ||
     (f.position === 'G'
@@ -49,7 +60,7 @@ export function filterAndSort(
         : p.positions.includes(f.position));
   const out = players.filter(
     (p) =>
-      (!q || p.name.toLowerCase().includes(q) || (p.team ?? '').toLowerCase() === q) &&
+      matchesSearch(p.name, p.team, q) &&
       posOk(p) &&
       (f.label === 'ALL' || p.label === f.label) &&
       (f.risk === 'ALL' || p.availability.risk === f.risk) &&
@@ -95,6 +106,7 @@ export function PlayerTable({
   onAction,
   searchRef,
   catchUp,
+  onSearchKey,
 }: {
   ev: DraftEvaluation;
   rows: PlayerEvaluation[];
@@ -111,6 +123,8 @@ export function PlayerTable({
   ) => void;
   searchRef: RefObject<HTMLInputElement | null>;
   catchUp: boolean;
+  /** Keyboard handling inside the search box (↑/↓/Enter/Shift+Enter/Esc). */
+  onSearchKey?: (e: KeyboardEvent<HTMLInputElement>) => void;
 }) {
   const [limit, setLimit] = useState(150);
   const shown = useMemo(() => rows.slice(0, limit), [rows, limit]);
@@ -138,12 +152,15 @@ export function PlayerTable({
       <div className="flex flex-wrap items-center gap-1.5 border-b border-slate-200 p-1.5 text-xs dark:border-slate-800">
         <Input
           ref={searchRef}
-          placeholder="Search (/)…"
+          placeholder="Search player (/) · Enter = mark taken"
+          title="Type part of a name. ↑/↓ choose · Enter = MARK TAKEN · Shift+Enter = DRAFT TO MY TEAM · Esc clears"
           aria-label="Search players"
           data-testid="player-search"
           value={filters.search}
           onChange={(e) => set({ search: e.target.value })}
-          className="w-40 py-0.5 text-xs"
+          onKeyDown={onSearchKey}
+          autoComplete="off"
+          className="w-64 py-0.5 text-sm"
         />
         <Select
           aria-label="Position filter"
@@ -299,19 +316,24 @@ export function PlayerTable({
                     <Button
                       size="xs"
                       variant="success"
-                      title="Draft to my team (M)"
+                      title="DRAFT TO MY TEAM (M / Shift+Enter in search)"
                       data-testid={`mine-${p.playerId}`}
                       onClick={() => onAction(p.playerId, 'MINE')}
                     >
-                      Mine
+                      Draft to me
                     </Button>{' '}
                     <Button
                       size="xs"
-                      title={catchUp ? 'Mark taken without advancing (D)' : 'Drafted by others (D)'}
+                      variant="primary"
+                      title={
+                        catchUp
+                          ? 'MARK TAKEN without advancing the pick (catch-up) (D / Enter in search)'
+                          : 'MARK TAKEN by another team: advances exactly one pick (D / Enter in search)'
+                      }
                       data-testid={`taken-${p.playerId}`}
                       onClick={() => onAction(p.playerId, 'OTHER')}
                     >
-                      Taken
+                      {catchUp ? 'Mark taken*' : 'Mark taken'}
                     </Button>{' '}
                     <Button
                       size="xs"

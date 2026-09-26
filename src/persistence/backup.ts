@@ -51,6 +51,8 @@ const eventSchema = z.discriminatedUnion('type', [
     advance: z.boolean(),
     overallPick: z.number().int().nullable(),
     snapshot,
+    // Decision telemetry (DecisionRecord). Free-form audit data: kept verbatim, never read by the engine.
+    decision: z.record(z.string(), z.unknown()).optional(),
   }),
   z.object({
     seq: z.number().int(),

@@ -1,14 +1,14 @@
 {
  "season": "2026-27",
  "counts": {
-  "hashtagRows": 300,
+  "projectionRows": 300,
   "yahooRows": 300,
   "matched": 300,
   "yahooOnly": 0,
-  "hashtagOnly": 0,
+  "projectionOnly": 0,
   "ambiguous": 0,
   "teamMismatch": 0,
-  "hashtagRejected": 0,
+  "projectionRejected": 0,
   "yahooRejected": 0,
   "duplicates": 0
  },
@@ -2115,7 +2115,7 @@
   }
  ],
  "yahooOnly": [],
- "hashtagOnly": [],
+ "projectionOnly": [],
  "ambiguous": [],
  "teamMismatch": [],
  "rejected": [],

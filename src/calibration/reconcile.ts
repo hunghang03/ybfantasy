@@ -6,11 +6,12 @@ import { planImport, type ImportPlan } from '@/domain/import/plan';
 import type { Dataset, ImportKind, PlayerIdentity } from '@/domain/types/data';
 
 /**
- * Yahoo (market) ↔ Hashtag (primary projections) reconciliation for the production-data workflow.
+ * Yahoo (market) ↔ primary projection provider reconciliation for the calibration workflow (provider-generic;
+ * Yahoo projections are the default primary source, Hashtag/BBM are optional validation sources).
  *
  * Matching order is the app's normal import order (DATA_IMPORT.md): manual mapping → provider id →
  * normalized name + team → alias → unique normalized name → review. Aliases come from a user-maintained
- * alias table. Nothing is silently discarded: every Yahoo and Hashtag row lands in exactly one bucket.
+ * alias table. Nothing is silently discarded: every market and projection row lands in exactly one bucket.
  */
 
 export interface AliasEntry {
@@ -43,20 +44,20 @@ export interface ReconRow {
 export interface ReconciliationReport {
   season: string;
   counts: {
-    hashtagRows: number;
+    projectionRows: number;
     yahooRows: number;
     matched: number;
     yahooOnly: number;
-    hashtagOnly: number;
+    projectionOnly: number;
     ambiguous: number;
     teamMismatch: number;
-    hashtagRejected: number;
+    projectionRejected: number;
     yahooRejected: number;
     duplicates: number;
   };
   matched: ReconRow[];
   yahooOnly: ReconRow[];
-  hashtagOnly: ReconRow[];
+  projectionOnly: ReconRow[];
   ambiguous: ReconRow[];
   teamMismatch: ReconRow[];
   rejected: { source: string; rowNumber: number; name: string; errors: string[] }[];
@@ -119,15 +120,20 @@ export function applyAliases(
 }
 
 export function reconcile(args: {
-  hashtag: SourceInput;
+  /** Primary projection source (its `provider` is used in labels). */
+  projections: SourceInput;
   yahoo: SourceInput;
   aliases?: readonly AliasEntry[];
   season: string;
   config: StrategyConfig;
-}): { report: ReconciliationReport; dataset: Dataset; plans: { hashtag: ImportPlan; yahoo: ImportPlan } } {
+}): {
+  report: ReconciliationReport;
+  dataset: Dataset;
+  plans: { projections: ImportPlan; yahoo: ImportPlan };
+} {
   const { season, config } = args;
   // 1. Primary projections define identities.
-  const hb = plan('PROJECTION', args.hashtag, [], season, config, 'AUTO', 'hb');
+  const hb = plan('PROJECTION', args.projections, [], season, config, 'CREATE_UNMATCHED', 'hb');
   const aliased = applyAliases(hb.newIdentities, args.aliases ?? []);
   const identities = aliased.identities;
 
@@ -157,7 +163,7 @@ export function reconcile(args: {
     if (yTeam && id.nbaTeam && yTeam !== id.nbaTeam)
       teamMismatch.push({
         ...row,
-        note: `Hashtag ${id.nbaTeam} vs Yahoo ${yTeam} (Yahoo team is kept for identity)`,
+        note: `${args.projections.provider} ${id.nbaTeam} vs Yahoo ${yTeam} (Yahoo team is kept for identity)`,
       });
   }
   const yahooOnly: ReconRow[] = classify.unmatched
@@ -170,7 +176,7 @@ export function reconcile(args: {
       team: normalizeTeam(u.rawTeam),
       candidates: u.candidateIds.map((c) => `${byId.get(c)?.canonicalName} (${byId.get(c)?.nbaTeam ?? '—'})`),
     }));
-  const hashtagOnly: ReconRow[] = identities
+  const projectionOnly: ReconRow[] = identities
     .filter((i) => !matchedIds.has(i.canonicalPlayerId))
     .map((i) => ({ name: i.canonicalName, team: i.nbaTeam, canonicalPlayerId: i.canonicalPlayerId }))
     .sort((a, b) => a.name.localeCompare(b.name));
@@ -189,30 +195,34 @@ export function reconcile(args: {
   };
 
   const rejected = [
-    ...hb.rejected.map((r) => ({ source: 'hashtag', ...r })),
+    ...hb.rejected.map((r) => ({ source: args.projections.provider, ...r })),
     ...classify.rejected.map((r) => ({ source: 'yahoo', ...r })),
   ];
   const duplicates = [
-    ...hb.duplicates.map((d) => ({ source: 'hashtag', rowNumber: d.rowNumber, name: d.name })),
+    ...hb.duplicates.map((d) => ({
+      source: args.projections.provider,
+      rowNumber: d.rowNumber,
+      name: d.name,
+    })),
     ...classify.duplicates.map((d) => ({ source: 'yahoo', rowNumber: d.rowNumber, name: d.name })),
   ];
   const report: ReconciliationReport = {
     season,
     counts: {
-      hashtagRows: args.hashtag.table.rows.length,
+      projectionRows: args.projections.table.rows.length,
       yahooRows: args.yahoo.table.rows.length,
       matched: matched.length,
       yahooOnly: yahooOnly.length,
-      hashtagOnly: hashtagOnly.length,
+      projectionOnly: projectionOnly.length,
       ambiguous: ambiguous.length,
       teamMismatch: teamMismatch.length,
-      hashtagRejected: hb.rejected.length,
+      projectionRejected: hb.rejected.length,
       yahooRejected: classify.rejected.length,
       duplicates: duplicates.length,
     },
     matched: matched.sort((a, b) => a.name.localeCompare(b.name)),
     yahooOnly,
-    hashtagOnly,
+    projectionOnly,
     ambiguous,
     teamMismatch,
     rejected,
@@ -220,5 +230,5 @@ export function reconcile(args: {
     aliasProblems: aliased.problems,
     matchedVia: classify.matchedVia,
   };
-  return { report, dataset, plans: { hashtag: hb, yahoo } };
+  return { report, dataset, plans: { projections: hb, yahoo } };
 }

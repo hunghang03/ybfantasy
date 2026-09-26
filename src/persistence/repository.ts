@@ -43,6 +43,11 @@ export interface Repository {
   commitImport(plan: ImportPlan): Promise<void>;
   /** Mark a batch REVERTED and reactivate the most recent SUPERSEDED batch of the same kind/provider. */
   revertBatch(batchId: string): Promise<void>;
+  /**
+   * Explicitly select a previous snapshot: the batch becomes ACTIVE and the currently active batch of the same
+   * kind/provider becomes SUPERSEDED. Records of one batch are never mixed with another's.
+   */
+  activateBatch(batchId: string): Promise<void>;
   listUnmatched(): Promise<UnmatchedRow[]>;
   resolveUnmatched(rowId: string, resolution: UnmatchedResolution, newId: string, now: string): Promise<void>;
   listMappings(): Promise<ManualMapping[]>;

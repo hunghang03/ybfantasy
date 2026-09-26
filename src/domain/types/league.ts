@@ -28,6 +28,69 @@ export interface LeagueProfile {
   updatedAt: string;
 }
 
+/** One candidate as the engine saw it at decision time. */
+export interface DecisionCandidate {
+  playerId: string;
+  name: string;
+  positions: string[];
+  priorityRank: number;
+  ddpRank: number;
+  ddpRaw: number;
+  ddpScore: number;
+  basePlayerValue: number;
+  teamFit: number;
+  label: string;
+  labelRule: string;
+  band: string;
+  adp: number | null;
+  xrank: number | null;
+  risk: string;
+  fitTags: string[];
+}
+
+export interface DecisionProfileEntry {
+  category: Category;
+  state: string;
+  d: number;
+  need: number;
+  pi: number;
+  puntLevel: string;
+  override: string;
+}
+
+/** Everything needed to audit one of the user's picks against the players actually available at that moment. */
+export interface DecisionRecord {
+  version: 1;
+  overallPick: number;
+  round: number;
+  /** false when the pick was recorded off the user's snake schedule. */
+  onSchedule: boolean;
+  selected: DecisionCandidate | { playerId: string; unprojected: true };
+  recommended: DecisionCandidate | null;
+  followedRecommendation: boolean;
+  /** Top of the engine's priority order at decision time. */
+  alternatives: DecisionCandidate[];
+  profileBefore: DecisionProfileEntry[];
+  profileAfter: DecisionProfileEntry[] | null;
+  punt: {
+    buildBefore: string;
+    buildAfter: string | null;
+    before: { category: Category; pi: number; level: string }[];
+    after: { category: Category; pi: number; level: string }[] | null;
+    overrides: Partial<Record<Category, PuntOverride>>;
+  };
+  timing: {
+    label: string | null;
+    band: string | null;
+    nextPick: number | null;
+    picksBeforeNext: number;
+    gapType: string | null;
+  };
+  available: { projected: number; unprojected: number; order: string[] };
+  context: { activeBatchIds: string[]; configVersion: number; rosterSizeBefore: number };
+  recordedAt: string;
+}
+
 export type TimingLabel = 'DRAFT_NOW' | 'LEAN_DRAFT' | 'WAIT' | 'SAFE_WAIT' | 'PASS';
 
 export interface PickSnapshot {
@@ -47,6 +110,8 @@ export type PickEvent = {
   advance: boolean;
   overallPick: number | null;
   snapshot?: PickSnapshot;
+  /** Decision telemetry for the user's own picks (docs/DRAFT_DAY.md). Removed with the pick on Undo. */
+  decision?: DecisionRecord;
 };
 
 export type ResyncEvent = {

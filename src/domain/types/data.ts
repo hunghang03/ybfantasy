@@ -13,6 +13,8 @@ export interface PlayerIdentity {
   positions: Position[];
   /** Where the position list came from. Yahoo is authoritative (A7). */
   positionsSource: 'YAHOO' | 'PROVIDER' | 'MANUAL' | 'NONE';
+  /** Provider whose import created this identity (absent on identities created before this was recorded). */
+  origin?: ProviderId;
 }
 
 // ---------- SOURCE DATA ----------
@@ -62,6 +64,10 @@ export interface ProjectionLine {
   blk: number;
   to: number;
   sourcePct: { fg: number | null; ft: number | null };
+  /** Capture provenance (screenshot transcriptions). */
+  meta?: SourceMeta;
+  /** NBA team as written in this projection source (normalized). Identity team comes from Yahoo market. */
+  sourceTeam?: string | null;
   /** Optional provider upside tag, 0..1. */
   providerUpside?: number | null;
   /** Provider's own overall rank (report/comparison only; never used by the engine). */
@@ -122,6 +128,11 @@ export interface ImportBatch {
   description: string;
   counts: { rows: number; matched: number; created: number; unmatched: number; rejected: number };
   status: 'ACTIVE' | 'SUPERSEDED' | 'REVERTED';
+  /**
+   * Distinct "Captured At" values in the file (snapshot identity). A projection snapshot should have exactly one;
+   * more than one means columns/rows from different captures were mixed in one file.
+   */
+  capturedAt?: string[];
 }
 
 export interface ManualMapping {

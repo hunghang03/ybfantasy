@@ -7,36 +7,37 @@
  },
  "notes": [
   "PROJECTION/bbm: 0 unmatched, 0 rejected",
+  "PROJECTION/hashtag: 0 unmatched, 0 rejected",
   "AVAILABILITY/manual: 0 unmatched, 0 rejected",
   "CONTEXT/manual: 0 unmatched, 0 rejected",
-  "Playoff schedule derived from Hashtag week columns: 30 teams, 0 within-team conflicts"
+  "Playoff schedule derived from hashtag week columns: 30 teams, 0 within-team conflicts"
  ],
  "counts": {
-  "hashtagRows": 300,
+  "projectionRows": 300,
   "yahooRows": 300,
   "matched": 300,
   "yahooOnly": 0,
-  "hashtagOnly": 0,
+  "projectionOnly": 0,
   "ambiguous": 0,
   "teamMismatch": 0,
-  "hashtagRejected": 0,
+  "projectionRejected": 0,
   "yahooRejected": 0,
   "duplicates": 0
  },
  "calibration": {
-  "rows": 234,
-  "disagree": 51,
-  "major": 139,
+  "rows": 233,
+  "disagree": 52,
+  "major": 143,
   "byClass": {
-   "SOURCE_DATA_MISMATCH": 54,
-   "PERCENTAGE_VOLUME_DIFFERENCE": 23,
-   "LIKELY_ENGINE_DEFECT": 63,
-   "GP_DURABILITY_ADJUSTMENT": 43,
+   "SOURCE_DATA_MISMATCH": 52,
+   "PERCENTAGE_VOLUME_DIFFERENCE": 21,
+   "LIKELY_ENGINE_DEFECT": 62,
+   "GP_DURABILITY_ADJUSTMENT": 53,
    "INTENTIONAL_ENGINE_BEHAVIOR": 7
   },
-  "medianAbsDeltaHashtag": 36,
-  "medianAbsDeltaXRank": 31,
-  "medianAbsDeltaAdp": 2.4000000000000057
+  "medianAbsDeltaProvider": 36,
+  "medianAbsDeltaXRank": 32,
+  "medianAbsDeltaAdp": null
  },
  "scenarios": 30
 }

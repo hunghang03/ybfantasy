@@ -1,10 +1,12 @@
 /**
  * Production-data calibration pipeline (docs/CALIBRATION.md).
  *
- *   npx tsx scripts/calibrate.ts --hashtag data/private/hashtag-2026-27.csv \
- *        --yahoo data/private/yahoo-screenshot-2026-27.csv [--aliases data/aliases.csv] \
- *        [--bbm data/private/bbm.csv] [--availability f.csv] [--context f.csv] [--playoff f.csv] \
+ *   npx tsx scripts/calibrate.ts --projections data/private/yahoo-projections-2026-27.csv \
+ *        --yahoo data/private/yahoo-screenshot-2026-27.csv [--projection-provider yahoo] [--aliases data/aliases.csv] \
+ *        [--hashtag data/private/hashtag.csv] [--bbm data/private/bbm.csv] [--availability f.csv] [--context f.csv] [--playoff f.csv] \
  *        [--out reports/private/2026-27] [--label "2026-27 real data"] [--no-scenarios] [--top 200]
+ *
+ *   (--hashtag / --bbm are optional VALIDATION sources; they are compared, never averaged.)
  *
  *   npx tsx scripts/calibrate.ts --sample      # fictional sample → reports/sample/
  *
@@ -100,35 +102,38 @@ function main() {
   const config = defaultConfig();
   const inputs: Record<string, string> = {};
 
-  let hashtag: ParsedTable;
+  const projectionProvider = arg('projection-provider') ?? 'yahoo';
+  let primary: ParsedTable;
   let yahoo: ParsedTable;
   const extras: { kind: ImportKind; provider: string; table: ParsedTable }[] = [];
   if (sample) {
     const f = generateSample();
-    hashtag = parseTable(f['projections-hashtag.sample.csv']);
+    primary = parseTable(f['projections-yahoo.sample.csv']);
     yahoo = parseTable(f['yahoo-market.sample.csv']);
     extras.push(
       { kind: 'PROJECTION', provider: 'bbm', table: parseTable(f['projections-bbm.sample.csv']) },
+      { kind: 'PROJECTION', provider: 'hashtag', table: parseTable(f['projections-hashtag.sample.csv']) },
       { kind: 'AVAILABILITY', provider: 'manual', table: parseTable(f['availability.sample.csv']) },
       { kind: 'CONTEXT', provider: 'manual', table: parseTable(f['context.sample.csv']) },
     );
     inputs.source = 'generateSample(20260923)';
   } else {
-    const h = arg('hashtag');
+    const h = arg('projections');
     const y = arg('yahoo');
     if (!h || !y) {
       console.error(
-        'Usage: --hashtag <csv> --yahoo <csv> [--aliases] [--bbm] [--availability] [--context] [--playoff] [--out] | --sample',
+        'Usage: --projections <csv> --yahoo <csv> [--projection-provider yahoo] [--aliases] [--hashtag] [--bbm] [--availability] [--context] [--playoff] [--out] | --sample',
       );
       process.exit(2);
     }
     const hr = readTable(h);
     const yr = readTable(y);
-    hashtag = hr.table;
+    primary = hr.table;
     yahoo = yr.table;
     inputs[path.basename(h)] = hr.sha256;
     inputs[path.basename(y)] = yr.sha256;
     for (const [name, kind, provider] of [
+      ['hashtag', 'PROJECTION', 'hashtag'],
       ['bbm', 'PROJECTION', 'bbm'],
       ['availability', 'AVAILABILITY', 'manual'],
       ['context', 'CONTEXT', 'manual'],
@@ -143,7 +148,11 @@ function main() {
   }
 
   const { report: recon, dataset: base } = reconcile({
-    hashtag: { table: hashtag, provider: 'hashtag', description: 'Hashtag Basketball projections' },
+    projections: {
+      table: primary,
+      provider: projectionProvider,
+      description: `${projectionProvider} projections (primary)`,
+    },
     yahoo: { table: yahoo, provider: 'yahoo', description: 'Yahoo market (screenshot transcription)' },
     aliases: readAliases(arg('aliases')),
     season: SEASON,
@@ -157,21 +166,28 @@ function main() {
     ds = r.ds;
     extraNotes.push(`${e.kind}/${e.provider}: ${r.unmatched} unmatched, ${r.rejected} rejected`);
   }
-  if (ds.playoffSchedule.length === 0) {
+  // No explicit playoff file: derive from per-player week columns, preferring the primary provider, else the
+  // first validation provider that publishes them. None → PlayoffAdjustment stays neutral (never fabricated).
+  const weekSource = [projectionProvider, ...extras.map((e) => e.provider)].find((p) =>
+    ds.projections.some((x) => x.provider === p && x.weekGames && Object.keys(x.weekGames).length),
+  );
+  if (ds.playoffSchedule.length === 0 && weekSource) {
     const derived = derivePlayoffSchedule(
       ds.projections,
       ds.identities,
-      'hashtag',
+      weekSource,
       SEASON,
       'derived-playoff',
     );
     ds = { ...ds, playoffSchedule: derived.schedule };
     extraNotes.push(
-      `Playoff schedule derived from Hashtag week columns: ${derived.schedule.length} teams, ${derived.conflicts.length} within-team conflicts`,
+      `Playoff schedule derived from ${weekSource} week columns: ${derived.schedule.length} teams, ${derived.conflicts.length} within-team conflicts`,
     );
   }
 
-  const hasBbm = extras.some((e) => e.provider === 'bbm');
+  const validationProviders = [
+    ...new Set(extras.filter((e) => e.kind === 'PROJECTION').map((e) => e.provider)),
+  ].sort();
   const league: LeagueProfile = {
     id: 'calibration',
     name: 'Calibration 14-team H2H 9-cat',
@@ -182,8 +198,8 @@ function main() {
     roster: structuredClone(DEFAULT_ROSTER),
     acquisitionsPerWeek: 4,
     playoffWeeks: [18, 19, 20, 21],
-    primaryProjectionProvider: 'hashtag',
-    validationProviders: hasBbm ? ['bbm'] : [],
+    primaryProjectionProvider: projectionProvider,
+    validationProviders,
     createdAt: '1970-01-01T00:00:00.000Z',
     updatedAt: '1970-01-01T00:00:00.000Z',
   };

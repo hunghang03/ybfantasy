@@ -24,15 +24,15 @@
     {
      "cat": "FG%",
      "state": "COMPETITIVE",
-     "d": -0.25,
-     "need": 0.5,
+     "d": -0.31,
+     "need": 0.53,
      "pi": 0,
      "punt": "NONE"
     },
     {
      "cat": "FT%",
      "state": "PUNT",
-     "d": 0.33,
+     "d": 0.2,
      "need": 0.04,
      "pi": 1,
      "punt": "HARD"
@@ -40,31 +40,31 @@
     {
      "cat": "3PM",
      "state": "COMPETITIVE",
-     "d": 0.48,
-     "need": 0.18,
+     "d": 0.49,
+     "need": 0.17,
      "pi": 0,
      "punt": "NONE"
     },
     {
      "cat": "PTS",
      "state": "COMPETITIVE",
-     "d": 0.07,
-     "need": 0.38,
+     "d": 0.15,
+     "need": 0.34,
      "pi": 0,
      "punt": "NONE"
     },
     {
      "cat": "REB",
      "state": "WEAK",
-     "d": -1.13,
-     "need": 0.94,
+     "d": -1.19,
+     "need": 0.97,
      "pi": 0.01,
      "punt": "NONE"
     },
     {
      "cat": "AST",
      "state": "ELITE",
-     "d": 2.17,
+     "d": 2.16,
      "need": 0.04,
      "pi": 0,
      "punt": "NONE"
@@ -72,7 +72,7 @@
     {
      "cat": "STL",
      "state": "ELITE",
-     "d": 1.73,
+     "d": 1.77,
      "need": 0.04,
      "pi": 0,
      "punt": "NONE"
@@ -80,7 +80,7 @@
     {
      "cat": "BLK",
      "state": "CRITICAL",
-     "d": -1.34,
+     "d": -1.28,
      "need": 1,
      "pi": 0.03,
      "punt": "NONE"
@@ -88,8 +88,8 @@
     {
      "cat": "TO",
      "state": "COMPETITIVE",
-     "d": -0.36,
-     "need": 0.56,
+     "d": -0.47,
+     "need": 0.61,
      "pi": 0,
      "punt": "NONE"
     }
@@ -98,14 +98,14 @@
    "recommended": {
     "name": "Cyrus Ingram",
     "label": "LEAN_DRAFT",
-    "why": "Adds PTS, 3PM, STL (costs TO); adds positional flexibility. Yahoo L7 ADP gives a comfortable cushion."
+    "why": "Adds PTS, 3PM, STL (costs TO); adds positional flexibility and adds scarce categories. Yahoo L7 ADP gives a comfortable cushion."
    },
    "top5": [
     {
      "name": "Cyrus Ingram",
      "pos": "SG/SF",
      "ddp": 100,
-     "ddpRaw": 9.79,
+     "ddpRaw": 9.53,
      "label": "LEAN_DRAFT",
      "rule": "R0",
      "band": "SAFE",
@@ -115,8 +115,8 @@
     {
      "name": "Linus Eastlake",
      "pos": "C",
-     "ddp": 83,
-     "ddpRaw": 8.77,
+     "ddp": 84,
+     "ddpRaw": 8.64,
      "label": "SAFE_WAIT",
      "rule": "S1",
      "band": "SAFE",
@@ -126,8 +126,8 @@
     {
      "name": "Emeka Blackwood",
      "pos": "C",
-     "ddp": 73,
-     "ddpRaw": 8.16,
+     "ddp": 75,
+     "ddpRaw": 8.08,
      "label": "WAIT",
      "rule": "W1",
      "band": "LIKELY",
@@ -135,25 +135,25 @@
      "fitTags": "BLK FG% REB"
     },
     {
-     "name": "Soren Northcott",
-     "pos": "C",
-     "ddp": 56,
-     "ddpRaw": 7.16,
-     "label": "SAFE_WAIT",
-     "rule": "S1",
-     "band": "SAFE",
-     "adp": 54.3,
-     "fitTags": "BLK REB PTS"
-    },
-    {
      "name": "Milo Ashgrove",
      "pos": "C",
-     "ddp": 57,
-     "ddpRaw": 7.22,
+     "ddp": 65,
+     "ddpRaw": 7.53,
      "label": "WAIT",
      "rule": "W1",
      "band": "TOSSUP",
      "adp": 32.9,
+     "fitTags": "REB BLK FG%"
+    },
+    {
+     "name": "Soren Northcott",
+     "pos": "C",
+     "ddp": 59,
+     "ddpRaw": 7.17,
+     "label": "SAFE_WAIT",
+     "rule": "S1",
+     "band": "SAFE",
+     "adp": 54.3,
      "fitTags": "REB BLK FG%"
     }
    ]
@@ -183,7 +183,7 @@
     {
      "cat": "FG%",
      "state": "ELITE",
-     "d": 1.78,
+     "d": 1.55,
      "need": 0,
      "pi": 0,
      "punt": "NONE"
@@ -191,7 +191,7 @@
     {
      "cat": "FT%",
      "state": "PUNT",
-     "d": -2.33,
+     "d": -2.17,
      "need": 0.03,
      "pi": 1,
      "punt": "HARD"
@@ -199,23 +199,23 @@
     {
      "cat": "3PM",
      "state": "WEAK",
-     "d": -1,
-     "need": 0.91,
+     "d": -0.94,
+     "need": 0.87,
      "pi": 0.02,
      "punt": "NONE"
     },
     {
      "cat": "PTS",
      "state": "WEAK",
-     "d": -0.58,
-     "need": 0.69,
+     "d": -0.67,
+     "need": 0.74,
      "pi": 0,
      "punt": "NONE"
     },
     {
      "cat": "REB",
      "state": "STRONG",
-     "d": 0.98,
+     "d": 0.88,
      "need": 0,
      "pi": 0,
      "punt": "NONE"
@@ -223,7 +223,7 @@
     {
      "cat": "AST",
      "state": "STRONG",
-     "d": 0.99,
+     "d": 1.02,
      "need": 0.03,
      "pi": 0,
      "punt": "NONE"
@@ -239,7 +239,7 @@
     {
      "cat": "BLK",
      "state": "STRONG",
-     "d": 0.97,
+     "d": 0.86,
      "need": 0,
      "pi": 0,
      "punt": "NONE"
@@ -247,8 +247,8 @@
     {
      "cat": "TO",
      "state": "COMPETITIVE",
-     "d": -0.34,
-     "need": 0.54,
+     "d": -0.35,
+     "need": 0.55,
      "pi": 0,
      "punt": "NONE"
     }
@@ -257,14 +257,14 @@
    "recommended": {
     "name": "Cyrus Ingram",
     "label": "DRAFT_NOW",
-    "why": "Adds PTS, 3PM, STL (costs TO); fills category needs and adds positional flexibility. Yahoo L7 ADP says he is unlikely to last to your next pick."
+    "why": "Adds PTS, 3PM, STL (costs TO); fills category needs and adds scarce categories. Yahoo L7 ADP says he is unlikely to last to your next pick."
    },
    "top5": [
     {
      "name": "Cyrus Ingram",
      "pos": "SG/SF",
      "ddp": 100,
-     "ddpRaw": 10.07,
+     "ddpRaw": 9.92,
      "label": "DRAFT_NOW",
      "rule": "D1",
      "band": "UNLIKELY",
@@ -274,8 +274,8 @@
     {
      "name": "Kellan Lockhart",
      "pos": "PG",
-     "ddp": 66,
-     "ddpRaw": 7.89,
+     "ddp": 70,
+     "ddpRaw": 8.03,
      "label": "WAIT",
      "rule": "W1",
      "band": "UNLIKELY",
@@ -285,8 +285,8 @@
     {
      "name": "Orin Hartwell",
      "pos": "SG",
-     "ddp": 63,
-     "ddpRaw": 7.73,
+     "ddp": 66,
+     "ddpRaw": 7.82,
      "label": "WAIT",
      "rule": "W1",
      "band": "UNLIKELY",
@@ -296,8 +296,8 @@
     {
      "name": "Emeka Blackwood",
      "pos": "C",
-     "ddp": 60,
-     "ddpRaw": 7.48,
+     "ddp": 61,
+     "ddpRaw": 7.51,
      "label": "WAIT",
      "rule": "W1",
      "band": "UNLIKELY",
@@ -307,8 +307,8 @@
     {
      "name": "Niall Northcott",
      "pos": "PF/C",
-     "ddp": 54,
-     "ddpRaw": 7.16,
+     "ddp": 57,
+     "ddpRaw": 7.24,
      "label": "WAIT",
      "rule": "W1",
      "band": "UNLIKELY",
@@ -348,13 +348,13 @@
     }
    ],
    "build": "Build: Punt FT% — 100% confidence (still recoverable) [manual].",
-   "priority": "Priority: 3PM > TO > PTS",
+   "priority": "Priority: 3PM > PTS > TO",
    "reason": "3PM is your weakest competitive category and 3PM supply is declining. FG%, REB, STL, BLK are already strong.",
    "categories": [
     {
      "cat": "FG%",
      "state": "ELITE",
-     "d": 2.28,
+     "d": 2.19,
      "need": 0,
      "pi": 0,
      "punt": "NONE"
@@ -362,7 +362,7 @@
     {
      "cat": "FT%",
      "state": "PUNT",
-     "d": -1.62,
+     "d": -1.7,
      "need": 0.01,
      "pi": 1,
      "punt": "HARD"
@@ -370,23 +370,23 @@
     {
      "cat": "3PM",
      "state": "WEAK",
-     "d": -0.72,
-     "need": 0.75,
-     "pi": 0.02,
+     "d": -0.68,
+     "need": 0.72,
+     "pi": 0.01,
      "punt": "NONE"
     },
     {
      "cat": "PTS",
      "state": "COMPETITIVE",
-     "d": 0.16,
-     "need": 0.3,
+     "d": 0.21,
+     "need": 0.28,
      "pi": 0,
      "punt": "NONE"
     },
     {
      "cat": "REB",
      "state": "STRONG",
-     "d": 1.18,
+     "d": 1.19,
      "need": 0,
      "pi": 0,
      "punt": "NONE"
@@ -394,15 +394,15 @@
     {
      "cat": "AST",
      "state": "COMPETITIVE",
-     "d": 0.08,
-     "need": 0.35,
+     "d": 0.12,
+     "need": 0.32,
      "pi": 0,
      "punt": "NONE"
     },
     {
      "cat": "STL",
      "state": "STRONG",
-     "d": 1.09,
+     "d": 1.02,
      "need": 0.01,
      "pi": 0,
      "punt": "NONE"
@@ -410,7 +410,7 @@
     {
      "cat": "BLK",
      "state": "STRONG",
-     "d": 1.28,
+     "d": 1.21,
      "need": 0,
      "pi": 0,
      "punt": "NONE"
@@ -418,8 +418,8 @@
     {
      "cat": "TO",
      "state": "COMPETITIVE",
-     "d": -0.15,
-     "need": 0.45,
+     "d": -0.22,
+     "need": 0.49,
      "pi": 0,
      "punt": "NONE"
     }
@@ -435,7 +435,7 @@
      "name": "Milo Northcott",
      "pos": "PF",
      "ddp": 100,
-     "ddpRaw": 5.17,
+     "ddpRaw": 5.11,
      "label": "DRAFT_NOW",
      "rule": "D1",
      "band": "UNLIKELY",
@@ -445,8 +445,8 @@
     {
      "name": "Florian Ravensworth",
      "pos": "SF/PF",
-     "ddp": 86,
-     "ddpRaw": 4.81,
+     "ddp": 88,
+     "ddpRaw": 4.78,
      "label": "DRAFT_NOW",
      "rule": "D1",
      "band": "UNLIKELY",
@@ -456,8 +456,8 @@
     {
      "name": "Orin Ravensworth",
      "pos": "SF/PF",
-     "ddp": 75,
-     "ddpRaw": 4.55,
+     "ddp": 83,
+     "ddpRaw": 4.64,
      "label": "LEAN_DRAFT",
      "rule": "L1",
      "band": "UNLIKELY",
@@ -465,26 +465,26 @@
      "fitTags": "STL"
     },
     {
-     "name": "Galen Stroud",
-     "pos": "SF",
-     "ddp": 70,
-     "ddpRaw": 4.43,
-     "label": "WAIT",
-     "rule": "W1",
-     "band": "UNLIKELY",
-     "adp": 64.9,
-     "fitTags": "3PM PTS STL"
-    },
-    {
      "name": "Finn Wolcott",
      "pos": "PF/C",
-     "ddp": 57,
-     "ddpRaw": 4.1,
+     "ddp": 69,
+     "ddpRaw": 4.26,
      "label": "WAIT",
      "rule": "W1",
      "band": "UNLIKELY",
      "adp": 57,
      "fitTags": "3PM PTS REB"
+    },
+    {
+     "name": "Galen Stroud",
+     "pos": "SF",
+     "ddp": 70,
+     "ddpRaw": 4.3,
+     "label": "WAIT",
+     "rule": "W1",
+     "band": "UNLIKELY",
+     "adp": 64.9,
+     "fitTags": "3PM PTS STL"
     }
    ]
   },
@@ -531,13 +531,13 @@
     }
    ],
    "build": "Build: Punt FT% — 100% confidence (still recoverable) [manual].",
-   "priority": "Priority: 3PM > AST > PTS",
+   "priority": "Priority: 3PM > PTS > AST",
    "reason": "3PM is your weakest competitive category and 3PM supply is declining. FG%, REB, STL, BLK are already strong.",
    "categories": [
     {
      "cat": "FG%",
      "state": "ELITE",
-     "d": 2.05,
+     "d": 2.03,
      "need": 0,
      "pi": 0,
      "punt": "NONE"
@@ -545,7 +545,7 @@
     {
      "cat": "FT%",
      "state": "PUNT",
-     "d": -0.95,
+     "d": -1,
      "need": 0,
      "pi": 1,
      "punt": "HARD"
@@ -553,23 +553,23 @@
     {
      "cat": "3PM",
      "state": "WEAK",
-     "d": -0.55,
-     "need": 0.65,
-     "pi": 0,
+     "d": -0.61,
+     "need": 0.68,
+     "pi": 0.01,
      "punt": "NONE"
     },
     {
      "cat": "PTS",
      "state": "COMPETITIVE",
-     "d": 0.11,
-     "need": 0.32,
+     "d": 0.06,
+     "need": 0.34,
      "pi": 0,
      "punt": "NONE"
     },
     {
      "cat": "REB",
      "state": "STRONG",
-     "d": 1.24,
+     "d": 1.23,
      "need": 0,
      "pi": 0,
      "punt": "NONE"
@@ -577,15 +577,15 @@
     {
      "cat": "AST",
      "state": "COMPETITIVE",
-     "d": -0.27,
-     "need": 0.51,
+     "d": -0.25,
+     "need": 0.5,
      "pi": 0,
      "punt": "NONE"
     },
     {
      "cat": "STL",
      "state": "STRONG",
-     "d": 1.12,
+     "d": 1.21,
      "need": 0,
      "pi": 0,
      "punt": "NONE"
@@ -593,7 +593,7 @@
     {
      "cat": "BLK",
      "state": "STRONG",
-     "d": 1.41,
+     "d": 1.35,
      "need": 0,
      "pi": 0,
      "punt": "NONE"
@@ -601,8 +601,8 @@
     {
      "cat": "TO",
      "state": "COMPETITIVE",
-     "d": 0.1,
-     "need": 0.32,
+     "d": 0.14,
+     "need": 0.31,
      "pi": 0,
      "punt": "NONE"
     }
@@ -618,7 +618,7 @@
      "name": "Emeka Corvell",
      "pos": "SG",
      "ddp": 100,
-     "ddpRaw": 3.58,
+     "ddpRaw": 3.7,
      "label": "DRAFT_NOW",
      "rule": "D1",
      "band": "UNLIKELY",
@@ -626,10 +626,21 @@
      "fitTags": "3PM STL"
     },
     {
+     "name": "Hugo Kestrel",
+     "pos": "PG",
+     "ddp": 93,
+     "ddpRaw": 3.55,
+     "label": "DRAFT_NOW",
+     "rule": "D3",
+     "band": "TOSSUP",
+     "adp": 120.9,
+     "fitTags": "AST 3PM STL"
+    },
+    {
      "name": "Eli Birchwell",
      "pos": "PG",
-     "ddp": 84,
-     "ddpRaw": 3.29,
+     "ddp": 80,
+     "ddpRaw": 3.3,
      "label": "LEAN_DRAFT",
      "rule": "L1",
      "band": "UNLIKELY",
@@ -637,37 +648,26 @@
      "fitTags": "AST 3PM"
     },
     {
-     "name": "Hugo Kestrel",
-     "pos": "PG",
-     "ddp": 89,
-     "ddpRaw": 3.38,
-     "label": "LEAN_DRAFT",
-     "rule": "L1",
-     "band": "TOSSUP",
-     "adp": 120.9,
-     "fitTags": "AST 3PM STL"
-    },
-    {
-     "name": "Gage Abernet",
-     "pos": "PG/SG",
-     "ddp": 79,
-     "ddpRaw": 3.19,
-     "label": "LEAN_DRAFT",
-     "rule": "L1",
-     "band": "UNLIKELY",
-     "adp": 94,
-     "fitTags": "AST STL FG%"
-    },
-    {
      "name": "Idris Pembrook",
      "pos": "SG",
-     "ddp": 69,
-     "ddpRaw": 3.01,
+     "ddp": 70,
+     "ddpRaw": 3.1,
      "label": "WAIT",
      "rule": "W1",
      "band": "UNLIKELY",
      "adp": 97,
      "fitTags": "3PM STL"
+    },
+    {
+     "name": "Gage Abernet",
+     "pos": "PG/SG",
+     "ddp": 65,
+     "ddpRaw": 3.01,
+     "label": "WAIT",
+     "rule": "W1",
+     "band": "UNLIKELY",
+     "adp": 94,
+     "fitTags": "AST STL FG%"
     }
    ]
   },
@@ -738,7 +738,7 @@
     {
      "cat": "FG%",
      "state": "ELITE",
-     "d": 1.86,
+     "d": 1.83,
      "need": 0,
      "pi": 0,
      "punt": "NONE"
@@ -746,7 +746,7 @@
     {
      "cat": "FT%",
      "state": "PUNT",
-     "d": -0.28,
+     "d": -0.32,
      "need": 0,
      "pi": 1,
      "punt": "HARD"
@@ -754,15 +754,15 @@
     {
      "cat": "3PM",
      "state": "COMPETITIVE",
-     "d": -0.2,
-     "need": 0.48,
+     "d": -0.22,
+     "need": 0.49,
      "pi": 0,
      "punt": "NONE"
     },
     {
      "cat": "PTS",
      "state": "COMPETITIVE",
-     "d": -0.12,
+     "d": -0.11,
      "need": 0.43,
      "pi": 0,
      "punt": "NONE"
@@ -770,7 +770,7 @@
     {
      "cat": "REB",
      "state": "STRONG",
-     "d": 1.06,
+     "d": 1.04,
      "need": 0,
      "pi": 0,
      "punt": "NONE"
@@ -778,15 +778,15 @@
     {
      "cat": "AST",
      "state": "COMPETITIVE",
-     "d": 0.15,
-     "need": 0.3,
+     "d": 0.17,
+     "need": 0.29,
      "pi": 0,
      "punt": "NONE"
     },
     {
      "cat": "STL",
-     "state": "STRONG",
-     "d": 1.47,
+     "state": "ELITE",
+     "d": 1.55,
      "need": 0,
      "pi": 0,
      "punt": "NONE"
@@ -794,7 +794,7 @@
     {
      "cat": "BLK",
      "state": "STRONG",
-     "d": 1.22,
+     "d": 1.17,
      "need": 0,
      "pi": 0,
      "punt": "NONE"
@@ -802,7 +802,7 @@
     {
      "cat": "TO",
      "state": "COMPETITIVE",
-     "d": 0.01,
+     "d": 0.02,
      "need": 0.37,
      "pi": 0,
      "punt": "NONE"
@@ -818,8 +818,8 @@
     {
      "name": "Eli Ravensworth",
      "pos": "C",
-     "ddp": 86,
-     "ddpRaw": 3.11,
+     "ddp": 100,
+     "ddpRaw": 3.15,
      "label": "LEAN_DRAFT",
      "rule": "R0",
      "band": "LIKELY",
@@ -830,7 +830,7 @@
      "name": "Ansel Stroud",
      "pos": "C",
      "ddp": 100,
-     "ddpRaw": 3.47,
+     "ddpRaw": 3.16,
      "label": "SAFE_WAIT",
      "rule": "S1",
      "band": "SAFE",
@@ -840,8 +840,8 @@
     {
      "name": "Eli Zeller",
      "pos": "PG/SG",
-     "ddp": 57,
-     "ddpRaw": 2.36,
+     "ddp": 59,
+     "ddpRaw": 2.22,
      "label": "WAIT",
      "rule": "W1",
      "band": "LIKELY",
@@ -851,8 +851,8 @@
     {
      "name": "Lior Vexley",
      "pos": "C",
-     "ddp": 61,
-     "ddpRaw": 2.47,
+     "ddp": 72,
+     "ddpRaw": 2.52,
      "label": "SAFE_WAIT",
      "rule": "S1",
      "band": "SAFE",
@@ -862,8 +862,8 @@
     {
      "name": "Wes Ravensworth",
      "pos": "C",
-     "ddp": 57,
-     "ddpRaw": 2.37,
+     "ddp": 65,
+     "ddpRaw": 2.36,
      "label": "WAIT",
      "rule": "W1",
      "band": "TOSSUP",
@@ -939,25 +939,25 @@
     },
     {
      "pick": 141,
-     "name": "Ansel Stroud",
+     "name": "Lior Vexley",
      "pos": "C",
      "reason": "recommended"
     },
     {
      "pick": 168,
-     "name": "Lior Vexley",
-     "pos": "C",
+     "name": "Eli Zeller",
+     "pos": "PG/SG",
      "reason": "recommended"
     }
    ],
-   "build": "Build: Punt FT% — 100% confidence [manual].",
-   "priority": "Priority: 3PM > PTS > AST",
+   "build": "Build: Punt FT% — 100% confidence (still recoverable) [manual].",
+   "priority": "Priority: 3PM > PTS > TO",
    "reason": "3PM is your weakest competitive category and 3PM supply is declining. FG%, REB, STL, BLK are already strong.",
    "categories": [
     {
      "cat": "FG%",
      "state": "ELITE",
-     "d": 2.75,
+     "d": 2.2,
      "need": 0,
      "pi": 0,
      "punt": "NONE"
@@ -965,31 +965,31 @@
     {
      "cat": "FT%",
      "state": "PUNT",
-     "d": -1.6,
+     "d": -0.49,
      "need": 0,
      "pi": 1,
      "punt": "HARD"
     },
     {
      "cat": "3PM",
-     "state": "WEAK",
-     "d": -0.87,
-     "need": 0.81,
-     "pi": 0.07,
+     "state": "COMPETITIVE",
+     "d": -0.47,
+     "need": 0.61,
+     "pi": 0,
      "punt": "NONE"
     },
     {
      "cat": "PTS",
      "state": "COMPETITIVE",
-     "d": -0.26,
-     "need": 0.51,
+     "d": -0.16,
+     "need": 0.45,
      "pi": 0,
      "punt": "NONE"
     },
     {
      "cat": "REB",
      "state": "ELITE",
-     "d": 2.18,
+     "d": 1.53,
      "need": 0,
      "pi": 0,
      "punt": "NONE"
@@ -997,15 +997,15 @@
     {
      "cat": "AST",
      "state": "COMPETITIVE",
-     "d": -0.19,
-     "need": 0.47,
+     "d": 0.48,
+     "need": 0.14,
      "pi": 0,
      "punt": "NONE"
     },
     {
      "cat": "STL",
      "state": "STRONG",
-     "d": 1.08,
+     "d": 1.11,
      "need": 0,
      "pi": 0,
      "punt": "NONE"
@@ -1013,7 +1013,7 @@
     {
      "cat": "BLK",
      "state": "ELITE",
-     "d": 2.16,
+     "d": 1.89,
      "need": 0,
      "pi": 0,
      "punt": "NONE"
@@ -1021,35 +1021,35 @@
     {
      "cat": "TO",
      "state": "COMPETITIVE",
-     "d": 0.27,
-     "need": 0.24,
+     "d": -0.13,
+     "need": 0.44,
      "pi": 0,
      "punt": "NONE"
     }
    ],
    "warnings": [],
    "recommended": {
-    "name": "Eli Zeller",
+    "name": "Ansel Stroud",
     "label": "DRAFT_NOW",
-    "why": "Adds AST (costs REB); adds scarce categories and fills category needs. Yahoo L7 ADP says he is unlikely to last to your next pick."
+    "why": "Adds TO, FG%, REB (costs 3PM); fits the punt build and adds scarce categories. Yahoo L7 ADP says he is unlikely to last to your next pick."
    },
    "top5": [
     {
-     "name": "Eli Zeller",
-     "pos": "PG/SG",
+     "name": "Ansel Stroud",
+     "pos": "C",
      "ddp": 100,
-     "ddpRaw": 2.75,
+     "ddpRaw": 3.17,
      "label": "DRAFT_NOW",
      "rule": "D1",
      "band": "UNLIKELY",
-     "adp": 169,
-     "fitTags": "AST"
+     "adp": null,
+     "fitTags": "TO FG% REB"
     },
     {
      "name": "Jalen Yarrow",
      "pos": "C",
-     "ddp": 70,
-     "ddpRaw": 1.99,
+     "ddp": 71,
+     "ddpRaw": 2.34,
      "label": "WAIT",
      "rule": "W1",
      "band": "UNLIKELY",
@@ -1059,8 +1059,8 @@
     {
      "name": "Nico Fairbourne",
      "pos": "C",
-     "ddp": 65,
-     "ddpRaw": 1.86,
+     "ddp": 61,
+     "ddpRaw": 2.04,
      "label": "WAIT",
      "rule": "W1",
      "band": "UNLIKELY",
@@ -1068,25 +1068,25 @@
      "fitTags": "TO BLK REB"
     },
     {
-     "name": "Blake Calloway",
-     "pos": "SF/PF",
-     "ddp": 63,
-     "ddpRaw": 1.81,
+     "name": "Rowan Hartwell",
+     "pos": "C",
+     "ddp": 52,
+     "ddpRaw": 1.78,
      "label": "WAIT",
      "rule": "W1",
      "band": "UNLIKELY",
-     "adp": 178.6,
-     "fitTags": "TO"
+     "adp": 188.4,
+     "fitTags": "TO REB FG%"
     },
     {
-     "name": "Rowan Hartwell",
+     "name": "Kade Ingram",
      "pos": "C",
-     "ddp": 49,
-     "ddpRaw": 1.45,
-     "label": "PASS",
-     "rule": "P1",
+     "ddp": 51,
+     "ddpRaw": 1.76,
+     "label": "WAIT",
+     "rule": "W1",
      "band": "UNLIKELY",
-     "adp": 188.4,
+     "adp": null,
      "fitTags": "TO REB FG%"
     }
    ]
@@ -1145,18 +1145,18 @@
   },
   {
    "pick": 141,
-   "name": "Ansel Stroud",
-   "pos": "C"
-  },
-  {
-   "pick": 168,
    "name": "Lior Vexley",
    "pos": "C"
   },
   {
-   "pick": 169,
+   "pick": 168,
    "name": "Eli Zeller",
    "pos": "PG/SG"
+  },
+  {
+   "pick": 169,
+   "name": "Ansel Stroud",
+   "pos": "C"
   }
  ]
 }

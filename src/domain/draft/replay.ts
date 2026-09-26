@@ -1,4 +1,11 @@
-import type { DraftEvent, PickEvent, PickSnapshot, ResyncEvent, VoidEvent } from '../types/league';
+import type {
+  DecisionRecord,
+  DraftEvent,
+  PickEvent,
+  PickSnapshot,
+  ResyncEvent,
+  VoidEvent,
+} from '../types/league';
 import { totalPicks } from './snake';
 
 /**
@@ -70,6 +77,7 @@ export interface PickInput {
   by: 'ME' | 'OTHER';
   advance?: boolean;
   snapshot?: PickSnapshot;
+  decision?: DecisionRecord;
   at?: string;
 }
 
@@ -100,6 +108,7 @@ export function appendPick(
     advance,
     overallPick: advance ? state.currentOverall : null,
     ...(input.snapshot ? { snapshot: input.snapshot } : {}),
+    ...(input.decision ? { decision: input.decision } : {}),
   };
   return { ok: true, events: [...events, ev] };
 }

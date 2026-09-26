@@ -4,7 +4,7 @@ All data is imported manually as **CSV or JSON** (an array of objects), on the *
 
 ## Workflow
 
-1. **Choose the dataset type.** Then set the provider id (for example `hashtag`, `bbm`, `yahoo`), the season, and a source/version note.
+1. **Choose the dataset type.** Then set the provider id (`yahoo` for both Yahoo datasets; `hashtag`, `bbm` for optional validation sources), the season, and a source/version note. The Yahoo projection schema is in [docs/DRAFT_DAY.md](docs/DRAFT_DAY.md).
 2. **Drag and drop a file**, or choose one. The limits are 5 MB and 5,000 rows.
 3. **Column mapping.** Headers are auto-mapped by synonym (case-insensitive), and every field can be re-mapped. Required fields are marked `*`.
 4. **Preview.** The first rows are validated live, and a summary shows how many rows will be imported, new players, rows to review, rejected rows, duplicates and warnings.
@@ -65,7 +65,7 @@ Every decision is stored as a `ManualMapping` and applied first on all future im
 
 ## Projection sources
 
-- One provider per league is the **primary** source (Setup). It drives all statistical value.
+- One provider per league is the **primary** source (Setup; default `yahoo`). It drives all statistical value. No other provider is required.
 - Other providers listed as **validation sources** are scored with the primary population's μ/σ/p. A player is flagged with **PROJECTION DISAGREEMENT** when the neutral-value difference exceeds 0.75 population SD, or GP differs by more than 15.
 - Sources are never averaged.
 - Yahoo's own stat columns are not imported as projections in v1: Yahoo shows FG% and FT% without attempts, so volume-sensitive values would be impossible. To use them, import them as a separate projection provider with FGA and FTA.

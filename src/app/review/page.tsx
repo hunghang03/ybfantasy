@@ -5,8 +5,11 @@ import { useMemo, useState } from 'react';
 import { compareEvaluations } from '@/domain/recommendations/compare';
 import { CATEGORY_LABEL } from '@/domain/types/core';
 import { useEngine } from '@/state/useEngine';
+import { useActiveDraft, useActiveLeague, useApp } from '@/state/store';
+import { downloadText } from '@/lib/ids';
+import type { DecisionRecord, PickEvent } from '@/domain/types/league';
 import { PlayerDetail } from '@/components/review/PlayerDetail';
-import { fmt, Input, Panel, Select, signed } from '@/components/ui/primitives';
+import { Button, fmt, Input, Panel, Select, signed } from '@/components/ui/primitives';
 
 export default function ReviewPage() {
   const { ctx, evaluation: ev } = useEngine();
@@ -34,6 +37,7 @@ export default function ReviewPage() {
 
   return (
     <div className="space-y-3 p-3">
+      <DecisionLog />
       <Panel title="Why is A ranked above B?">
         <div className="mb-2 flex flex-wrap items-end gap-2 text-xs">
           <Input
@@ -230,5 +234,84 @@ export default function ReviewPage() {
         </ol>
       </Panel>
     </div>
+  );
+}
+
+/** Per-pick decision telemetry for the post-draft counterfactual audit. */
+function DecisionLog() {
+  const league = useActiveLeague();
+  const draft = useActiveDraft();
+  const config = useApp((s) => s.config);
+  const batches = useApp((s) => s.batches);
+  if (!league || !draft) return null;
+  const mine = draft.events.filter(
+    (e): e is PickEvent & { decision: DecisionRecord } => e.type === 'PICK' && e.by === 'ME' && !!e.decision,
+  );
+  if (mine.length === 0) return null;
+  const name = (c: DecisionRecord['selected'] | null) =>
+    !c ? '—' : 'name' in c ? c.name : `${c.playerId} (no projection)`;
+  return (
+    <Panel title={`Draft decision log (${mine.length} of your picks recorded)`}>
+      <div className="mb-2 flex gap-2">
+        <Button
+          size="sm"
+          data-testid="export-decisions"
+          onClick={() =>
+            downloadText(
+              `decision-log-${league.name.replace(/[^a-z0-9]+/gi, '-')}-${new Date().toISOString().slice(0, 19)}.json`,
+              JSON.stringify(
+                {
+                  app: 'ybfantasy-draft-engine',
+                  kind: 'decision-log',
+                  exportedAt: new Date().toISOString(),
+                  league,
+                  configVersion: config.version,
+                  activeBatches: batches.filter((b) => b.status === 'ACTIVE'),
+                  // The full event log (all teams' picks, resyncs, voids) reconstructs the pool at every pick.
+                  events: draft.events,
+                  decisions: mine.map((e) => ({ seq: e.seq, playerId: e.playerId, ...e.decision })),
+                },
+                null,
+                1,
+              ),
+            )
+          }
+        >
+          Download decision log (JSON)
+        </Button>
+      </div>
+      <table className="w-full text-xs" data-testid="decision-log">
+        <thead className="text-left text-slate-500">
+          <tr>
+            <th>Pick</th>
+            <th>Rd</th>
+            <th>Selected</th>
+            <th>Engine recommendation</th>
+            <th className="text-right">DDP sel / rec</th>
+            <th>Label</th>
+            <th>Build after</th>
+          </tr>
+        </thead>
+        <tbody>
+          {mine.map((e) => {
+            const d = e.decision;
+            const sel = 'ddpRaw' in d.selected ? d.selected : null;
+            return (
+              <tr key={e.seq} className="border-t border-slate-100 dark:border-slate-800">
+                <td className="num">{d.overallPick}</td>
+                <td className="num">{d.round}</td>
+                <td className={d.followedRecommendation ? '' : 'font-semibold'}>{name(d.selected)}</td>
+                <td>{d.followedRecommendation ? '✓ followed' : name(d.recommended)}</td>
+                <td className="num text-right">
+                  {sel ? fmt(sel.ddpRaw, 2) : '—'} / {d.recommended ? fmt(d.recommended.ddpRaw, 2) : '—'}
+                </td>
+                <td>{d.timing.label ?? '—'}</td>
+                <td>{d.punt.buildAfter ?? '—'}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </Panel>
   );
 }

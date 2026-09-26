@@ -38,18 +38,11 @@ export function buildPlan(
   });
 }
 
-/** Bundled fictional sample files, in dependency order (primary projections create identities). */
+/**
+ * Bundled fictional sample files, in dependency order. Yahoo market rows create the Yahoo identities; the Yahoo
+ * projection snapshot (primary projection source) matches onto them. BBM-style lines are a validation source only.
+ */
 export const SAMPLE_IMPORTS: { file: string; spec: ImportSpec }[] = [
-  {
-    file: 'projections-hashtag.sample.csv',
-    spec: {
-      kind: 'PROJECTION',
-      provider: 'hashtag',
-      season: '2026-27',
-      description: 'Sample Hashtag-style projections (fictional)',
-      createPolicy: 'AUTO',
-    },
-  },
   {
     file: 'yahoo-market.sample.csv',
     spec: {
@@ -57,6 +50,16 @@ export const SAMPLE_IMPORTS: { file: string; spec: ImportSpec }[] = [
       provider: 'yahoo',
       season: '2026-27',
       description: 'Sample Yahoo market (fictional)',
+      createPolicy: 'AUTO',
+    },
+  },
+  {
+    file: 'projections-yahoo.sample.csv',
+    spec: {
+      kind: 'PROJECTION',
+      provider: 'yahoo',
+      season: '2026-27',
+      description: 'Sample Yahoo projection snapshot (fictional)',
       createPolicy: 'AUTO',
     },
   },

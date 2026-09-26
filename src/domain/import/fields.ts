@@ -36,6 +36,35 @@ const PID: FieldSpec = {
   required: false,
   synonyms: ['id', 'player id', 'playerid', 'provider id', 'yahoo id', 'yahoo_id'],
 };
+/** Capture provenance (screenshot transcriptions): shared by Yahoo market and projection imports. */
+const PROVENANCE: FieldSpec[] = [
+  { key: 'source', label: 'Source tag', required: false, synonyms: ['source'] },
+  {
+    key: 'capturedAt',
+    label: 'Captured at',
+    required: false,
+    synonyms: ['capturedat', 'captured at', 'captured'],
+  },
+  {
+    key: 'confidence',
+    label: 'Transcription confidence (HIGH/MEDIUM/LOW)',
+    required: false,
+    synonyms: ['confidence'],
+  },
+  {
+    key: 'reviewFields',
+    label: 'Unreadable fields (; separated)',
+    required: false,
+    synonyms: ['reviewfields', 'review fields', 'needs review', 'unreadable'],
+    help: 'Market: these values are forced to null and flagged. Projections: a flagged stat rejects the row.',
+  },
+  {
+    key: 'qaNote',
+    label: 'QA / transcription note',
+    required: false,
+    synonyms: ['qa note', 'qa notes', 'transcription note', 'note', 'notes'],
+  },
+];
 
 export const FIELD_SPECS: Record<ImportKind, FieldSpec[]> = {
   PROJECTION: [
@@ -59,6 +88,13 @@ export const FIELD_SPECS: Record<ImportKind, FieldSpec[]> = {
       help: 'Required unless FG% cell contains (makes/attempts)',
     },
     { key: 'fgPct', label: 'FG%', required: false, synonyms: ['fg%', 'fg pct', 'fgpct', 'fg_pct', 'fg'] },
+    {
+      key: 'fgma',
+      label: 'FGM/A combined (e.g. 8.1/16.4)',
+      required: false,
+      synonyms: ['fgm/a', 'fgm/fga', 'fgm-fga', 'fgma', 'fgm/att'],
+      help: 'Yahoo shows makes/attempts in one column; split exactly, decimals allowed',
+    },
     { key: 'ftm', label: 'FTM', required: false, synonyms: ['ftm', 'ft made'] },
     {
       key: 'fta',
@@ -68,6 +104,13 @@ export const FIELD_SPECS: Record<ImportKind, FieldSpec[]> = {
       help: 'Required unless FT% cell contains (makes/attempts)',
     },
     { key: 'ftPct', label: 'FT%', required: false, synonyms: ['ft%', 'ft pct', 'ftpct', 'ft_pct', 'ft'] },
+    {
+      key: 'ftma',
+      label: 'FTM/A combined (e.g. 4.2/5.0)',
+      required: false,
+      synonyms: ['ftm/a', 'ftm/fta', 'ftm-fta', 'ftma', 'ftm/att'],
+      help: 'Yahoo shows makes/attempts in one column; split exactly, decimals allowed',
+    },
     {
       key: 'threes',
       label: '3PM',
@@ -91,7 +134,17 @@ export const FIELD_SPECS: Record<ImportKind, FieldSpec[]> = {
       key: 'providerRank',
       label: 'Provider rank (report only)',
       required: false,
-      synonyms: ['r#', 'rank', 'rk', 'hashtag rank', 'proj rank', 'provider rank'],
+      synonyms: [
+        'r#',
+        'rank',
+        'rk',
+        'hashtag rank',
+        'proj rank',
+        'provider rank',
+        'pre-season rank',
+        'preseason rank',
+        'pre season rank',
+      ],
     },
     {
       key: 'providerAdp',
@@ -100,6 +153,7 @@ export const FIELD_SPECS: Record<ImportKind, FieldSpec[]> = {
       synonyms: ['adp', 'yahoo adp', 'hashtag adp', 'provider adp'],
       help: 'Kept on the projection line for comparison; never used as Yahoo market data',
     },
+    ...PROVENANCE,
     // W18, W19, … per-player week-game columns are detected dynamically.
   ],
   YAHOO_MARKET: [
@@ -121,32 +175,7 @@ export const FIELD_SPECS: Record<ImportKind, FieldSpec[]> = {
       synonyms: ['adp', 'l7 adp', 'last 7 days adp', 'adp7', 'adp (l7)', 'avg pick', 'last 7 days'],
     },
     { key: 'status', label: 'Status / injury', required: false, synonyms: ['status', 'inj', 'injury'] },
-    { key: 'source', label: 'Source tag', required: false, synonyms: ['source'] },
-    {
-      key: 'capturedAt',
-      label: 'Captured at',
-      required: false,
-      synonyms: ['capturedat', 'captured at', 'captured'],
-    },
-    {
-      key: 'confidence',
-      label: 'Transcription confidence (HIGH/MEDIUM/LOW)',
-      required: false,
-      synonyms: ['confidence'],
-    },
-    {
-      key: 'reviewFields',
-      label: 'Unreadable fields (; separated)',
-      required: false,
-      synonyms: ['reviewfields', 'review fields', 'needs review', 'unreadable'],
-      help: 'e.g. adp;xrank — these values are forced to null and flagged',
-    },
-    {
-      key: 'qaNote',
-      label: 'QA / transcription note',
-      required: false,
-      synonyms: ['qa note', 'qa notes', 'transcription note', 'note', 'notes'],
-    },
+    ...PROVENANCE,
   ],
   AVAILABILITY: [
     NAME,
@@ -228,7 +257,8 @@ export const FIELD_SPECS: Record<ImportKind, FieldSpec[]> = {
 };
 
 function canon(h: string): string {
-  return h.toLowerCase().replace(/[_]/g, ' ').replace(/\s+/g, ' ').trim();
+  // Yahoo marks some headers with an asterisk ("GP*", "FGM/A*"); it is not part of the name.
+  return h.toLowerCase().replace(/\*+/g, '').replace(/[_]/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
 /** Auto-map headers to fields by synonyms. First exact synonym match wins; each header used once. */

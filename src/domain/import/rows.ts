@@ -25,6 +25,7 @@ export interface ProjectionRow extends IdentityFields {
   blk: number;
   to: number;
   sourcePct: { fg: number | null; ft: number | null };
+  meta: SourceMeta;
   upside: number | null;
   providerRank: number | null;
   providerAdp: number | null;
@@ -94,6 +95,70 @@ const REVIEW_ALIASES: Record<string, string> = {
   positions: 'positions',
   team: 'team',
 };
+
+/** Projection columns a transcription may flag as unreadable. A flagged stat rejects the row (never inferred). */
+const PROJECTION_REVIEW_ALIASES: Record<string, string> = {
+  gp: 'gp',
+  mpg: 'mpg',
+  fgm: 'fg',
+  fga: 'fg',
+  'fgm/a': 'fg',
+  'fg%': 'fg',
+  ftm: 'ft',
+  fta: 'ft',
+  'ftm/a': 'ft',
+  'ft%': 'ft',
+  '3pm': 'threes',
+  '3ptm': 'threes',
+  pts: 'pts',
+  reb: 'reb',
+  ast: 'ast',
+  st: 'stl',
+  stl: 'stl',
+  blk: 'blk',
+  to: 'to',
+  team: 'team',
+  pos: 'positions',
+  positions: 'positions',
+  rank: 'providerRank',
+  'pre-season rank': 'providerRank',
+};
+
+function readReviewFields(c: Collector, cells: Cells, aliases: Record<string, string>): string[] {
+  const out: string[] = [];
+  for (const part of (cells('reviewFields') ?? '').split(/[;,|]+/)) {
+    const key = aliases[part.trim().toLowerCase()];
+    if (key && !out.includes(key)) out.push(key);
+    else if (part.trim() && !key) c.warnings.push(`Unknown review field "${sanitizeText(part, 20)}".`);
+  }
+  return out;
+}
+
+function readMeta(c: Collector, cells: Cells, reviewFields: string[]): SourceMeta {
+  const confRaw = sanitizeText(cells('confidence'), 10).toUpperCase();
+  let confidence: SourceConfidence | null = null;
+  if (confRaw) {
+    if (confRaw === 'HIGH' || confRaw === 'MEDIUM' || confRaw === 'LOW') confidence = confRaw;
+    else c.errors.push('Confidence must be HIGH, MEDIUM or LOW.');
+  }
+  return {
+    source: sanitizeText(cells('source'), 40) || null,
+    capturedAt: sanitizeText(cells('capturedAt'), 40) || null,
+    confidence,
+    reviewFields,
+    note: sanitizeText(cells('qaNote'), 300) || null,
+  };
+}
+
+/** "8.1/16.4" → makes/attempts, exactly as written (decimals allowed). Blank → null. */
+export function parseMadeAttempted(
+  cell: string | undefined,
+): { makes: number; attempts: number; mRaw: string; aRaw: string } | 'INVALID' | null {
+  if (cell === undefined || cell.trim() === '' || cell.trim() === '-') return null;
+  const m = /^\s*(\d+(?:\.\d+)?|\.\d+)\s*\/\s*(\d+(?:\.\d+)?|\.\d+)\s*$/.exec(cell.replace(/,/g, ''));
+  if (!m) return 'INVALID';
+  return { makes: Number(m[1]), attempts: Number(m[2]), mRaw: m[1]!, aRaw: m[2]! };
+}
 
 function cellsFor(row: Record<string, string>, map: Record<string, string | null>): Cells {
   return (key) => {
@@ -167,6 +232,23 @@ function shooting(
   let attempts = c.num(cells, `${prefix}a`, `${label}A`, { min: 0 });
   let hm = halfUnit(mRaw, 0.05);
   let ha = halfUnit(aRaw, 0.05);
+  // Combined "makes/attempts" column (Yahoo "FGM/A"). Separate columns win if both are present.
+  const combo = parseMadeAttempted(cells(`${prefix}ma`));
+  if (combo === 'INVALID') c.errors.push(`${label}M/A must look like "made/attempted" (e.g. 8.1/16.4).`);
+  else if (combo) {
+    if (makes === null) {
+      makes = combo.makes;
+      hm = halfUnit(combo.mRaw, 0.05);
+    } else if (Math.abs(makes - combo.makes) > hm + halfUnit(combo.mRaw, 0.05))
+      c.warnings.push(`${label}M column ${makes} differs from ${label}M/A (${combo.makes}); column used.`);
+    if (attempts === null) {
+      attempts = combo.attempts;
+      ha = halfUnit(combo.aRaw, 0.05);
+    } else if (Math.abs(attempts - combo.attempts) > ha + halfUnit(combo.aRaw, 0.05))
+      c.warnings.push(
+        `${label}A column ${attempts} differs from ${label}M/A (${combo.attempts}); column used.`,
+      );
+  }
   // Columns win over a "pct (m/a)" cell; if both are present they must agree within rounding.
   if (pctCell.makes !== null && pctCell.attempts !== null) {
     if (makes === null) makes = pctCell.makes;
@@ -179,8 +261,8 @@ function shooting(
       c.warnings.push(
         `${label}A column ${attempts} differs from the ${label}% cell (${pctCell.attempts}); column used.`,
       );
-    if (mRaw === undefined || mRaw.trim() === '') hm = 0.05;
-    if (aRaw === undefined || aRaw.trim() === '') ha = 0.05;
+    if ((mRaw === undefined || mRaw.trim() === '') && !combo) hm = 0.05;
+    if ((aRaw === undefined || aRaw.trim() === '') && !combo) ha = 0.05;
   }
   const pct = pctCell.pct !== null && Number.isNaN(pctCell.pct) ? null : pctCell.pct;
   if (pctCell.pct !== null && Number.isNaN(pctCell.pct)) c.errors.push(`${label}% is not a number.`);
@@ -232,10 +314,21 @@ export function validateRow(
   switch (kind) {
     case 'PROJECTION': {
       const id = identityFields(c, cells);
+      const reviewFields = readReviewFields(c, cells, PROJECTION_REVIEW_ALIASES);
+      const statFlags = reviewFields.filter((k) => !['team', 'positions', 'providerRank', 'mpg'].includes(k));
+      if (statFlags.length)
+        c.errors.push(
+          `Flagged unreadable in the source: ${statFlags.join(', ')}. The row is rejected; stats are never inferred.`,
+        );
+      if (reviewFields.includes('team')) id.team = null;
+      if (reviewFields.includes('positions')) id.positions = [];
+      if (reviewFields.length && !statFlags.length)
+        c.warnings.push(`Needs review: ${reviewFields.join(', ')}.`);
+      const meta = readMeta(c, cells, reviewFields);
       const basis = sanitizeText(cells('statBasis'), 12).toUpperCase() || 'PER_GAME';
       if (basis !== 'PER_GAME' && basis !== 'TOTAL') c.errors.push('Stat basis must be PER_GAME or TOTAL.');
       const gp = c.num(cells, 'gp', 'GP', { required: true, min: 0, max: config.seasonGames }) ?? 0;
-      const mpg = c.num(cells, 'mpg', 'MPG', { min: 0, max: 60 });
+      const mpg = reviewFields.includes('mpg') ? null : c.num(cells, 'mpg', 'MPG', { min: 0, max: 60 });
       const fg = shooting(c, cells, 'fg', config.pctConsistencyTolerance);
       const ft = shooting(c, cells, 'ft', config.pctConsistencyTolerance);
       const counting = {
@@ -248,7 +341,9 @@ export function validateRow(
         to: c.num(cells, 'to', 'TO', { required: true, min: 0 }) ?? 0,
       };
       const upside = c.num(cells, 'upside', 'Upside', { min: 0, max: 1 });
-      const providerRank = c.num(cells, 'providerRank', 'Provider rank', { min: 1 });
+      const providerRank = reviewFields.includes('providerRank')
+        ? null
+        : c.num(cells, 'providerRank', 'Provider rank', { min: 1 });
       const providerAdp = c.num(cells, 'providerAdp', 'Provider ADP', { min: 1 });
       const weekGames: Record<number, number> = {};
       for (const [header, week] of Object.entries(weekColumns)) {
@@ -281,6 +376,7 @@ export function validateRow(
         mpg,
         ...perGame,
         sourcePct: { fg: fg.pct, ft: ft.pct },
+        meta,
         upside,
         providerRank,
         providerAdp,
@@ -291,12 +387,7 @@ export function validateRow(
     case 'YAHOO_MARKET': {
       const id = identityFields(c, cells);
       // Screenshot transcription metadata: fields marked unreadable are forced to null (never inferred).
-      const reviewFields: string[] = [];
-      for (const part of (cells('reviewFields') ?? '').split(/[;,|]+/)) {
-        const key = REVIEW_ALIASES[part.trim().toLowerCase()];
-        if (key && !reviewFields.includes(key)) reviewFields.push(key);
-        else if (part.trim() && !key) c.warnings.push(`Unknown review field "${sanitizeText(part, 20)}".`);
-      }
+      const reviewFields = readReviewFields(c, cells, REVIEW_ALIASES);
       const flagged = (k: string) => reviewFields.includes(k);
       const readNum = (k: string, label: string) => {
         if (flagged(k)) {
@@ -311,20 +402,8 @@ export function validateRow(
       const adp = readNum('adp', 'ADP');
       if (flagged('positions')) id.positions = [];
       if (flagged('team')) id.team = null;
-      const confRaw = sanitizeText(cells('confidence'), 10).toUpperCase();
-      let confidence: SourceConfidence | null = null;
-      if (confRaw) {
-        if (confRaw === 'HIGH' || confRaw === 'MEDIUM' || confRaw === 'LOW') confidence = confRaw;
-        else c.errors.push('Confidence must be HIGH, MEDIUM or LOW.');
-      }
       if (reviewFields.length) c.warnings.push(`Needs review: ${reviewFields.join(', ')}.`);
-      const meta: SourceMeta = {
-        source: sanitizeText(cells('source'), 40) || null,
-        capturedAt: sanitizeText(cells('capturedAt'), 40) || null,
-        confidence,
-        reviewFields,
-        note: sanitizeText(cells('qaNote'), 300) || null,
-      };
+      const meta = readMeta(c, cells, reviewFields);
       const rawStatus = flagged('status') ? undefined : cells('status');
       let status: InjuryStatus | null = null;
       if (rawStatus !== undefined && rawStatus.trim() !== '') {

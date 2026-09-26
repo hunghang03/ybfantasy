@@ -36,8 +36,8 @@ export interface CalibrationRow {
   yahooRank: number | null;
   yahooL7Adp: number | null;
   yahooReviewFields: string[];
-  hashtagRank: number | null;
-  hashtagAdp: number | null;
+  providerRank: number | null;
+  providerAdp: number | null;
   engineBpvRank: number;
   engineSeasonRank: number;
   enginePerGameRank: number;
@@ -49,9 +49,9 @@ export interface CalibrationRow {
   risk: string;
   availabilityScore: number;
   disagreementFlags: string[];
-  deltaEngineVsHashtag: number | null;
+  deltaEngineVsProvider: number | null;
   deltaEngineVsXRank: number | null;
-  deltaYahooL7AdpVsHashtagAdp: number | null;
+  deltaYahooL7AdpVsProviderAdp: number | null;
   severity: 'NONE' | 'DISAGREE' | 'MAJOR';
   tentativeClasses: OutlierClass[];
   evidence: string[];
@@ -66,7 +66,7 @@ export interface CalibrationReport {
     disagree: number;
     major: number;
     byClass: Record<string, number>;
-    medianAbsDeltaHashtag: number | null;
+    medianAbsDeltaProvider: number | null;
     medianAbsDeltaXRank: number | null;
     medianAbsDeltaAdp: number | null;
   };
@@ -146,8 +146,8 @@ export function buildCalibrationReport(args: {
       yahooRank: m?.yahooRank ?? null,
       yahooL7Adp: m?.yahooAdp7d ?? null,
       yahooReviewFields: m?.meta?.reviewFields ?? [],
-      hashtagRank: proj.providerRank ?? null,
-      hashtagAdp: proj.providerAdp ?? null,
+      providerRank: proj.providerRank ?? null,
+      providerAdp: proj.providerAdp ?? null,
       engineBpvRank: eng,
       engineSeasonRank: seasonRank.get(id)!,
       enginePerGameRank: pgRank.get(id)!,
@@ -159,9 +159,9 @@ export function buildCalibrationReport(args: {
       risk: p.availability.risk,
       availabilityScore: p.availability.score,
       disagreementFlags,
-      deltaEngineVsHashtag: dH,
+      deltaEngineVsProvider: dH,
       deltaEngineVsXRank: dX,
-      deltaYahooL7AdpVsHashtagAdp: dA,
+      deltaYahooL7AdpVsProviderAdp: dA,
       severity,
       tentativeClasses: classes,
       evidence,
@@ -190,16 +190,16 @@ export function buildCalibrationReport(args: {
       disagree: rows.filter((r) => r.severity === 'DISAGREE').length,
       major: rows.filter((r) => r.severity === 'MAJOR').length,
       byClass,
-      medianAbsDeltaHashtag: median(
-        rows.filter((r) => r.deltaEngineVsHashtag !== null).map((r) => Math.abs(r.deltaEngineVsHashtag!)),
+      medianAbsDeltaProvider: median(
+        rows.filter((r) => r.deltaEngineVsProvider !== null).map((r) => Math.abs(r.deltaEngineVsProvider!)),
       ),
       medianAbsDeltaXRank: median(
         rows.filter((r) => r.deltaEngineVsXRank !== null).map((r) => Math.abs(r.deltaEngineVsXRank!)),
       ),
       medianAbsDeltaAdp: median(
         rows
-          .filter((r) => r.deltaYahooL7AdpVsHashtagAdp !== null)
-          .map((r) => Math.abs(r.deltaYahooL7AdpVsHashtagAdp!)),
+          .filter((r) => r.deltaYahooL7AdpVsProviderAdp !== null)
+          .map((r) => Math.abs(r.deltaYahooL7AdpVsProviderAdp!)),
       ),
     },
     notes: [
@@ -266,8 +266,8 @@ export function calibrationCsv(report: CalibrationReport): string {
     'yahooXRank',
     'yahooRank',
     'yahooL7Adp',
-    'hashtagRank',
-    'hashtagAdp',
+    'providerRank',
+    'providerAdp',
     'engineBpvRank',
     'engineSeasonRank',
     'enginePerGameRank',
@@ -278,9 +278,9 @@ export function calibrationCsv(report: CalibrationReport): string {
     'risk',
     'availabilityScore',
     'disagreementFlags',
-    'deltaEngineVsHashtag',
+    'deltaEngineVsProvider',
     'deltaEngineVsXRank',
-    'deltaYahooL7AdpVsHashtagAdp',
+    'deltaYahooL7AdpVsProviderAdp',
     'severity',
     'tentativeClasses',
     'evidence',

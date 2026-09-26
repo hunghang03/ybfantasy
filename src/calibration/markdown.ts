@@ -36,14 +36,14 @@ export function reconciliationMarkdown(r: ReconciliationReport, label: string): 
     '',
     '| Bucket | Count |',
     '|---|---|',
-    `| Hashtag rows | ${c.hashtagRows} |`,
+    `| Projection rows | ${c.projectionRows} |`,
     `| Yahoo rows | ${c.yahooRows} |`,
     `| Matched | ${c.matched} |`,
     `| Yahoo-only | ${c.yahooOnly} |`,
-    `| Hashtag-only | ${c.hashtagOnly} |`,
+    `| Projection-only | ${c.projectionOnly} |`,
     `| Ambiguous (needs manual review) | ${c.ambiguous} |`,
     `| Team mismatch (matched, teams differ) | ${c.teamMismatch} |`,
-    `| Rejected rows (Hashtag / Yahoo) | ${c.hashtagRejected} / ${c.yahooRejected} |`,
+    `| Rejected rows (projections / Yahoo) | ${c.projectionRejected} / ${c.yahooRejected} |`,
     `| Duplicate rows | ${c.duplicates} |`,
     '',
     `Matched via: ${
@@ -58,7 +58,7 @@ export function reconciliationMarkdown(r: ReconciliationReport, label: string): 
     ...list('Ambiguous', r.ambiguous),
     ...list('Team mismatch', r.teamMismatch),
     ...list('Yahoo-only (kept as unranked market-only players)', r.yahooOnly),
-    ...list('Hashtag-only (projected, no Yahoo row)', r.hashtagOnly),
+    ...list('Projection-only (projected, no Yahoo market row)', r.projectionOnly),
     ...(r.rejected.length
       ? [
           '### Rejected rows',
@@ -75,11 +75,11 @@ export function calibrationMarkdown(r: CalibrationReport, label: string): string
   const major = r.rows.filter((x) => x.severity === 'MAJOR');
   const disagree = r.rows.filter((x) => x.severity === 'DISAGREE');
   const table = (rows: typeof r.rows) => [
-    '| Engine | Player | Pos | XRank | Y L7 ADP | HB rank | HB ADP | Δ HB | Δ XRank | Δ ADP | GP | Risk | Strengths | Tentative class | Evidence |',
+    '| Engine | Player | Pos | XRank | Y L7 ADP | Proj rank | Proj ADP | Δ proj | Δ XRank | Δ ADP | GP | Risk | Strengths | Tentative class | Evidence |',
     '|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|',
     ...rows.map(
       (x) =>
-        `| ${x.engineBpvRank} | ${esc(x.player)} | ${x.positions} | ${esc(x.yahooXRank)} | ${esc(x.yahooL7Adp)} | ${esc(x.hashtagRank)} | ${esc(x.hashtagAdp)} | ${esc(x.deltaEngineVsHashtag)} | ${esc(x.deltaEngineVsXRank)} | ${esc(x.deltaYahooL7AdpVsHashtagAdp === null ? null : Math.round(x.deltaYahooL7AdpVsHashtagAdp * 10) / 10)} | ${x.gp} | ${x.risk} | ${x.strengths.join(' ')} | ${x.tentativeClasses.join(', ')} | ${esc(x.evidence.join(' / '))} |`,
+        `| ${x.engineBpvRank} | ${esc(x.player)} | ${x.positions} | ${esc(x.yahooXRank)} | ${esc(x.yahooL7Adp)} | ${esc(x.providerRank)} | ${esc(x.providerAdp)} | ${esc(x.deltaEngineVsProvider)} | ${esc(x.deltaEngineVsXRank)} | ${esc(x.deltaYahooL7AdpVsProviderAdp === null ? null : Math.round(x.deltaYahooL7AdpVsProviderAdp * 10) / 10)} | ${x.gp} | ${x.risk} | ${x.strengths.join(' ')} | ${x.tentativeClasses.join(', ')} | ${esc(x.evidence.join(' / '))} |`,
     ),
   ];
   return [
@@ -94,7 +94,7 @@ export function calibrationMarkdown(r: CalibrationReport, label: string): string
     '',
     `Rows ${s.rows} · ≥15-rank disagreements ${s.disagree} · ≥30-rank MAJOR ${s.major}`,
     '',
-    `Median |Δ engine vs Hashtag| ${s.medianAbsDeltaHashtag ?? '—'} · median |Δ engine vs XRank| ${s.medianAbsDeltaXRank ?? '—'} · median |Yahoo L7 ADP − Hashtag ADP| ${s.medianAbsDeltaAdp ?? '—'}`,
+    `Median |Δ engine vs provider rank| ${s.medianAbsDeltaProvider ?? '—'} · median |Δ engine vs XRank| ${s.medianAbsDeltaXRank ?? '—'} · median |Yahoo L7 ADP − provider ADP| ${s.medianAbsDeltaAdp ?? '—'}`,
     '',
     'Primary tentative class of flagged rows: ' +
       (Object.entries(s.byClass)

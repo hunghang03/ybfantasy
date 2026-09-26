@@ -73,6 +73,8 @@ export interface ImportPlan {
   rejected: { rowNumber: number; name: string; errors: string[] }[];
   duplicates: { rowNumber: number; name: string; canonicalPlayerId: string }[];
   rowWarnings: { rowNumber: number; name: string; warnings: string[] }[];
+  /** File-level warnings (e.g. rows from more than one capture in a projection snapshot). */
+  batchWarnings: string[];
   matchedVia: Record<string, number>;
   missingRequiredColumns: string[];
 }
@@ -113,6 +115,8 @@ export function recordFor(
         blk: v.blk,
         to: v.to,
         sourcePct: v.sourcePct,
+        meta: v.meta,
+        sourceTeam: normalizeTeam(v.team),
         providerUpside: v.upside,
         providerRank: v.providerRank,
         providerAdp: v.providerAdp,
@@ -242,6 +246,7 @@ export function newIdentityFromRow(
     providerIds: kind !== 'YAHOO_MARKET' && row.providerPlayerId ? { [provider]: row.providerPlayerId } : {},
     positions: row.positions,
     positionsSource: row.positions.length ? (kind === 'YAHOO_MARKET' ? 'YAHOO' : 'PROVIDER') : 'NONE',
+    origin: provider,
   };
 }
 
@@ -255,6 +260,7 @@ export function planImport(req: ImportRequest): ImportPlan {
   const rejected: ImportPlan['rejected'] = [];
   const duplicates: ImportPlan['duplicates'] = [];
   const rowWarnings: ImportPlan['rowWarnings'] = [];
+  const captures = new Set<string>();
   const unmatched: UnmatchedRow[] = [];
   const matchedVia: Record<string, number> = {};
   const newIdentities: PlayerIdentity[] = [];
@@ -265,11 +271,19 @@ export function planImport(req: ImportRequest): ImportPlan {
   const weekColumns = kind === 'PLAYOFF' || kind === 'PROJECTION' ? detectWeekColumns(table.headers) : {};
 
   const idx = buildIdentityIndex(req.identities, req.mappings);
+  // AUTO creates identities for NO_MATCH rows (never for ambiguous ones) when:
+  //  - the identity table is empty (first projection or market import), or
+  //  - this is a Yahoo import and every existing identity came from Yahoo. Yahoo is authoritative for Yahoo
+  //    identities and both Yahoo datasets use Yahoo's own spelling, so an unmatched Yahoo row is a genuinely
+  //    different player (e.g. projected but outside the captured market list).
+  // Otherwise (mixed providers) unmatched rows go to the review queue: a spelling variant must not silently
+  // become a second player.
+  const allYahoo = req.identities.every((i) => i.origin === 'yahoo');
   const allowCreate =
     req.createPolicy === 'CREATE_UNMATCHED' ||
     (req.createPolicy === 'AUTO' &&
-      req.identities.length === 0 &&
-      (kind === 'PROJECTION' || kind === 'YAHOO_MARKET'));
+      (kind === 'PROJECTION' || kind === 'YAHOO_MARKET') &&
+      (req.identities.length === 0 || (provider === 'yahoo' && allYahoo)));
   const seen = new Map<string, number>();
   const createdIds = new Set<string>();
   const claimedIds = new Set<string>();
@@ -285,6 +299,8 @@ export function planImport(req: ImportRequest): ImportPlan {
         return;
       }
       if (res.warnings.length) rowWarnings.push({ rowNumber, name, warnings: res.warnings });
+      const cap = (res.value as { meta?: { capturedAt: string | null } }).meta?.capturedAt;
+      if (cap) captures.add(cap);
 
       if (kind === 'PLAYOFF') {
         const v = res.value as PlayoffRow;
@@ -385,6 +401,7 @@ export function planImport(req: ImportRequest): ImportPlan {
       description: req.description,
       counts,
       status: 'ACTIVE',
+      ...(captures.size ? { capturedAt: [...captures].sort() } : {}),
     },
     records,
     newIdentities,
@@ -393,6 +410,12 @@ export function planImport(req: ImportRequest): ImportPlan {
     rejected,
     duplicates,
     rowWarnings,
+    batchWarnings:
+      kind === 'PROJECTION' && captures.size > 1
+        ? [
+            `This file mixes ${captures.size} captures (${[...captures].sort().join(', ')}). A projection snapshot should come from one capture; statistics from different captures are not combined silently — confirm before committing.`,
+          ]
+        : [],
     matchedVia,
     missingRequiredColumns,
   };

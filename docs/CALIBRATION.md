@@ -1,5 +1,7 @@
 # Real-data calibration
 
+**Source change (2026-09-26):** Yahoo projections are now the primary statistical source; Hashtag/BBM are optional validation sources (`--hashtag`, `--bbm`). The fictional sample now runs Yahoo-primary; its fixtures were regenerated for that data-path change only (no weight change).
+
 **Status:** the pipeline is built and validated end to end on fictional data. **The real 2026-27 reports are pending your input files** (see §6). No strategy weight has been changed in this phase.
 
 ## 1. Principle
@@ -11,14 +13,14 @@
 ## 2. Workflow
 
 ```
-data/private/hashtag-2026-27.csv ─┐
+data/private/yahoo-projections-2026-27.csv ─┐
 data/private/yahoo-screenshot-*.csv ┼─► reconcile ─► dataset ─► calibration report (top ~200)
 data/aliases.csv ─────────────────┘                     └──► 30 deterministic draft scenarios
 (optional) bbm / availability / context / playoff                  (5 slots × 6 foundations)
 ```
 
 ```bash
-npm run calibrate -- --hashtag data/private/hashtag-2026-27.csv --yahoo data/private/yahoo-screenshot-2026-27.csv \
+npm run calibrate -- --projections data/private/yahoo-projections-2026-27.csv --yahoo data/private/yahoo-screenshot-2026-27.csv \
                      --aliases data/aliases.csv --out reports/private/2026-27
 npm run calibrate:sample        # fictional pipeline check → reports/sample/
 ```
@@ -37,33 +39,33 @@ The matching order is the app's normal order:
 
 | Bucket                | Meaning                                                                                                |
 | --------------------- | ------------------------------------------------------------------------------------------------------ |
-| matched               | Yahoo row linked to a Hashtag player (the `matchedVia` breakdown is shown)                             |
-| Yahoo-only            | No Hashtag projection. **Kept** as an unranked, market-only player.                                    |
-| Hashtag-only          | Projected player with no Yahoo row (outside the captured top ~250, or a naming problem)                |
+| matched               | Yahoo row linked to a primary-projection player (the `matchedVia` breakdown is shown)                  |
+| Yahoo-only            | No primary projection. **Kept** as an unranked, market-only player.                                    |
+| Projection-only       | Projected player with no Yahoo row (outside the captured top ~250, or a naming problem)                |
 | ambiguous             | More than one candidate. **Never merged**; listed with its candidates for an alias or manual decision. |
 | team mismatch         | Matched, but the teams differ (trade or stale source). Yahoo's team is kept for identity.              |
 | rejected / duplicates | Rows that failed validation, with the reasons                                                          |
 
-**Invariant (tested):** `matched + Yahoo-only + ambiguous + rejected + duplicates = Yahoo rows`, and `matched + Hashtag-only = Hashtag players`.
+**Invariant (tested):** `matched + Yahoo-only + ambiguous + rejected + duplicates = Yahoo rows`, and `matched + projection-only = projected players`.
 
 ## 4. Calibration report (`calibration.md/csv/json`)
 
-**Rows** are the union of engine BPV top 200, Yahoo XRank ≤ 200 and Hashtag rank ≤ 200, sorted by engine rank.
+**Rows** are the union of engine BPV top 200, Yahoo XRank ≤ 200 and provider rank ≤ 200, sorted by engine rank.
 
 **Columns:**
 
 - player, team, positions
 - Yahoo: XRank, Rank, L7 ADP (with any review flags)
-- Hashtag: rank, ADP
+- primary provider: rank (e.g. Yahoo Pre-Season Rank), provider ADP if published
 - engine: neutral **BPV rank**, **expected-season rank** (ESV), per-game rank, neutral 9-cat rank
 - GP, category strengths (capped z ≥ 1) and weaknesses (≤ −1), availability risk and score
 - disagreement flags: projection Δ vs validation provider, team mismatch, Yahoo review fields, missing market row
 
 **Deltas.** Each is `otherRank − engineRank`, so a positive value means the engine ranks the player earlier.
 
-- `Engine vs Hashtag`
+- `Engine vs provider rank`
 - `Engine vs Yahoo XRank`
-- `Yahoo L7 ADP − Hashtag ADP` (a market-vs-market check)
+- `Yahoo L7 ADP − provider ADP` (a market-vs-market check)
 
 **Flags:** `DISAGREE` when the worst |Δ| ≥ 15; `MAJOR` when it is ≥ 30.
 
@@ -109,11 +111,12 @@ The setup is a 14-team H2H 9-cat league, with draft slots **1, 4, 7, 11, 14** ×
 
 ## 6. Status of the real-data run
 
-| Input                                  | Status                                                                                                                                                       |
-| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Yahoo 2026-27 screenshots (~top 250)   | **Not available in this session.** No screenshots were attached, and none are reachable from the build environment. I did not transcribe or infer any value. |
-| Hashtag Basketball 2026-27 projections | **Not available.** The build environment's network policy blocks hashtagbasketball.com (HTTP 403 from the proxy), and I do not scrape.                       |
-| Basketball Monster                     | Not used (no legitimate export provided).                                                                                                                    |
+| Input                                  | Status                                                                                                                |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Yahoo 2026-27 market screenshots       | **Imported and validated** (275 players, QA-v4; `data/private/`, git-ignored).                                        |
+| Yahoo 2026-27 projections (primary)    | **Pending** — Codex is transcribing the Remaining Games (proj) view. Nothing has been entered or inferred.            |
+| Hashtag Basketball 2026-27 projections | Optional validation source; not required. Not available (hashtagbasketball.com is blocked here and is never scraped). |
+| Basketball Monster                     | Not used (no legitimate export provided).                                                                             |
 
 **To produce the real reports:**
 
@@ -125,7 +128,7 @@ Because the repository is public, those reports are git-ignored. Share them with
 
 ## 7. Findings from the pipeline validation run (fictional sample)
 
-These come from `reports/sample/`. The sample's "Hashtag rank" and "XRank" are noisy views of a hidden generator score, not of 9-category value. Its rank disagreements (median |Δ| 31–36, 139 MAJOR) therefore **say nothing about the engine** and only exercise the pipeline.
+These come from `reports/sample/`. The sample's provider rank and "XRank" are noisy views of a hidden generator score, not of 9-category value. Its rank disagreements (median |Δ| 32–36, 143 MAJOR after the Yahoo-primary switch) therefore **say nothing about the engine** and only exercise the pipeline.
 
 The scenario runs did surface two engine-behavior observations. Both must be re-checked on real data **before** any change is proposed:
 

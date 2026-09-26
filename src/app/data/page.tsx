@@ -11,7 +11,8 @@ import { buildPlan, parseFileText, SAMPLE_IMPORTS, type ImportSpec } from '@/lib
 import { derivePlayoffSchedule } from '@/calibration/playoffFromProjections';
 import { emptyRecords } from '@/domain/import/plan';
 import { newId, nowIso } from '@/lib/ids';
-import { useApp } from '@/state/store';
+import { reconcileMarketAndProjections } from '@/domain/dataset/reconcileSources';
+import { useActiveLeague, useApp } from '@/state/store';
 import { Button, Field, Input, Panel, Select, cx } from '@/components/ui/primitives';
 
 const KIND_LABEL: Record<ImportKind, string> = {
@@ -22,7 +23,7 @@ const KIND_LABEL: Record<ImportKind, string> = {
   PLAYOFF: 'Playoff schedule (team games per week)',
 };
 const DEFAULT_PROVIDER: Record<ImportKind, string> = {
-  PROJECTION: 'hashtag',
+  PROJECTION: 'yahoo',
   YAHOO_MARKET: 'yahoo',
   AVAILABILITY: 'manual',
   CONTEXT: 'manual',
@@ -33,6 +34,7 @@ export default function DataPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-3 p-3">
       <ImportWizard />
+      <SourceReconciliationPanel />
       <DerivePlayoff />
       <UnmatchedReview />
       <BatchHistory />
@@ -48,7 +50,7 @@ function ImportWizard() {
   const notify = useApp((s) => s.notify);
   const [spec, setSpec] = useState<ImportSpec>({
     kind: 'PROJECTION',
-    provider: 'hashtag',
+    provider: 'yahoo',
     season: '2026-27',
     description: '',
     createPolicy: 'AUTO',
@@ -350,6 +352,11 @@ function PlanSummary({ plan }: { plan: ImportPlan }) {
         <b>{c.unmatched}</b> · rejected <b>{plan.rejected.length}</b> · duplicates{' '}
         <b>{plan.duplicates.length}</b> · warnings <b>{plan.rowWarnings.length}</b>
       </p>
+      {plan.batchWarnings.map((w) => (
+        <p key={w} className="font-semibold text-amber-700" data-testid="batch-warning">
+          {w}
+        </p>
+      ))}
       {plan.rejected.length > 0 && (
         <details className="mt-1">
           <summary className="cursor-pointer text-red-700">Rejected rows</summary>
@@ -493,9 +500,70 @@ function UnmatchedReview() {
   );
 }
 
+/** Yahoo market ↔ primary projection snapshot: who is matched, and who exists in only one source. */
+function SourceReconciliationPanel() {
+  const league = useActiveLeague();
+  const dataset = useApp((s) => s.dataset);
+  const unmatched = useApp((s) => s.unmatched);
+  const batches = useApp((s) => s.batches);
+  const provider = league?.primaryProjectionProvider ?? 'yahoo';
+  const r = useMemo(
+    () =>
+      reconcileMarketAndProjections(
+        dataset,
+        provider,
+        unmatched,
+        new Set(batches.filter((b) => b.status === 'ACTIVE').map((b) => b.id)),
+      ),
+    [dataset, provider, unmatched, batches],
+  );
+  if (r.counts.marketPlayers === 0 && r.counts.projectionPlayers === 0) return null;
+  const c = r.counts;
+  const list = (title: string, rows: { name: string; team: string | null }[], note?: (i: number) => string) =>
+    rows.length > 0 && (
+      <details className="mt-1">
+        <summary className="cursor-pointer">
+          {title} ({rows.length})
+        </summary>
+        <ul className="max-h-40 overflow-auto pl-4">
+          {rows.map((x, i) => (
+            <li key={`${x.name}-${i}`}>
+              {x.name} {x.team ? `(${x.team})` : ''}
+              {note ? ` — ${note(i)}` : ''}
+            </li>
+          ))}
+        </ul>
+      </details>
+    );
+  return (
+    <Panel title={`Reconciliation: Yahoo market ↔ ${provider} projections (primary)`}>
+      <p className="text-xs" data-testid="source-reconciliation">
+        Market players <b>{c.marketPlayers}</b> · projected players <b>{c.projectionPlayers}</b> · matched{' '}
+        <b>{c.matched}</b> · market-only <b>{c.marketOnly}</b> · projection-only <b>{c.projectionOnly}</b> ·
+        ambiguous <b>{c.ambiguous}</b> · team mismatch <b>{c.teamMismatch}</b>
+      </p>
+      <div className="text-xs">
+        {list('Market-only (no projection: shown as unranked, can still be marked taken)', r.marketOnly)}
+        {list('Projection-only (valued, no Yahoo market row)', r.projectionOnly)}
+        {list(
+          'Ambiguous (never merged — resolve under Review unmatched)',
+          r.ambiguous,
+          (i) => `candidates: ${r.ambiguous[i]!.candidates.join('; ')}`,
+        )}
+        {list(
+          'Team mismatch (Yahoo market team kept)',
+          r.teamMismatch.map((t) => ({ name: t.name, team: t.marketTeam })),
+          (i) => `projection says ${r.teamMismatch[i]!.projectionTeam}`,
+        )}
+      </div>
+    </Panel>
+  );
+}
+
 function BatchHistory() {
   const batches = useApp((s) => s.batches);
   const revert = useApp((s) => s.revertBatch);
+  const activate = useApp((s) => s.activateBatch);
   if (batches.length === 0) return null;
   return (
     <Panel title="Import history (source-isolated, versioned)">
@@ -507,6 +575,7 @@ function BatchHistory() {
             <th>Provider</th>
             <th>Season</th>
             <th>Description</th>
+            <th>Captured</th>
             <th>Rows</th>
             <th>Status</th>
             <th />
@@ -520,6 +589,9 @@ function BatchHistory() {
               <td>{b.provider}</td>
               <td>{b.season}</td>
               <td className="max-w-xs truncate">{b.description}</td>
+              <td className={b.capturedAt && b.capturedAt.length > 1 ? 'text-amber-700' : ''}>
+                {b.capturedAt?.join(', ') ?? '—'}
+              </td>
               <td className="num">
                 {b.counts.matched}/{b.counts.rows}
               </td>
@@ -541,6 +613,17 @@ function BatchHistory() {
                     }}
                   >
                     Revert
+                  </Button>
+                )}
+                {b.status === 'SUPERSEDED' && (
+                  <Button
+                    size="xs"
+                    variant="ghost"
+                    data-testid={`activate-${b.id}`}
+                    title="Make this snapshot the active one for its source (the current one is kept, superseded)"
+                    onClick={() => void activate(b.id)}
+                  >
+                    Use this snapshot
                   </Button>
                 )}
               </td>
@@ -588,6 +671,7 @@ function DerivePlayoff() {
       identityUpdates: [],
       unmatched: [],
       rejected: [],
+      batchWarnings: [],
       duplicates: [],
       rowWarnings: [],
       matchedVia: {},

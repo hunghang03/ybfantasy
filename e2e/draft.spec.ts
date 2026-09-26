@@ -7,7 +7,7 @@ async function importFile(page: Page, kind: string, provider: string, file: stri
   await page.goto('/data/');
   await page.getByTestId('import-kind').selectOption(kind);
   await page.getByTestId('import-provider').fill(provider);
-  await page.getByTestId('import-file').setInputFiles(path.join(SAMPLE, file));
+  await page.getByTestId('import-file').setInputFiles(path.isAbsolute(file) ? file : path.join(SAMPLE, file));
   await expect(page.getByTestId('import-summary')).toBeVisible();
   await page.getByTestId('commit-import').click();
   await expect(page.getByTestId('import-report')).toBeVisible();
@@ -66,7 +66,7 @@ test('full live-draft workflow (§51)', async ({ page }) => {
 
   // 2–3. Import Yahoo market data and projection data through the import wizard.
   await importFile(page, 'YAHOO_MARKET', 'yahoo', 'yahoo-market.sample.csv');
-  await importFile(page, 'PROJECTION', 'hashtag', 'projections-hashtag.sample.csv');
+  await importFile(page, 'PROJECTION', 'yahoo', 'projections-yahoo.sample.csv');
   await expect(page.getByTestId('batch-history')).toContainText('YAHOO_MARKET');
   await expect(page.getByTestId('batch-history')).toContainText('PROJECTION');
 
@@ -192,4 +192,63 @@ test('manual resync after missed picks', async ({ page }) => {
   await expect(page.getByTestId('current-pick')).toHaveText('11');
   await page.getByTestId('undo').click();
   await expect(page.getByTestId('unrecorded-banner')).toContainText('1 pick');
+});
+
+test('draft day: type → Enter marks taken; market-only players; draft state; decision log', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page.getByTestId('create-league').click();
+  await page.goto('/setup/');
+  await page.getByTestId('draft-position').fill('4');
+  await page.getByTestId('save-league').click();
+  await page.goto('/data/');
+  await page.getByTestId('load-sample').click();
+  await expect(page.getByTestId('batch-history')).toContainText('PLAYOFF');
+  // Yahoo market ↔ Yahoo projections reconciliation is shown.
+  await expect(page.getByTestId('source-reconciliation')).toContainText('matched 300');
+
+  await page.goto('/draft/');
+  await expect(page.getByTestId('my-slot')).toHaveText('4');
+  await expect(page.getByTestId('drafting-slot')).toHaveText('1');
+  await expect(page.getByTestId('picks-until-mine')).toHaveText('3');
+  const avail0 = Number(await page.getByTestId('available-count').textContent());
+
+  // Partial name → Enter = MARK TAKEN (advances exactly one pick, recalculates, stays in the search box).
+  const search = page.getByTestId('player-search');
+  await search.click();
+  await search.fill('callo');
+  await search.press('Enter');
+  await expect(page.getByTestId('current-pick')).toHaveText('2');
+  await expect(page.getByTestId('last-event')).toContainText('Taken Quincy Calloway (#1)');
+  await expect(search).toHaveValue('');
+  await expect(search).toBeFocused();
+  await expect(page.getByTestId('available-count')).toHaveText(String(avail0 - 1));
+  await expect(page.getByTestId('drafting-slot')).toHaveText('2');
+  // ↓ selects the second hit.
+  await search.fill('a');
+  await search.press('ArrowDown');
+  await search.press('Enter');
+  await expect(page.getByTestId('current-pick')).toHaveText('3');
+  await page.getByTestId('undo').click();
+  await expect(page.getByTestId('current-pick')).toHaveText('2');
+
+  await takeTopOthers(page, 2);
+  await expect(page.getByTestId('current-pick')).toHaveText('4');
+  // DRAFT TO MY TEAM (distinct from MARK TAKEN) records a decision for the audit.
+  await page.locator('[data-testid^=mine-]').first().click();
+  await expect(page.getByTestId('current-pick')).toHaveText('5');
+  await page.goto('/review/');
+  await expect(page.getByTestId('decision-log')).toContainText('4');
+  await expect(page.getByTestId('decision-log').locator('tbody tr')).toHaveCount(1);
+
+  // A market-only player (no projection) can still be found and marked taken.
+  await importFile(page, 'YAHOO_MARKET', 'yahoo', path.resolve(__dirname, 'fixtures/market-unprojected.csv'));
+  await page.goto('/draft/');
+  await search.click();
+  await search.fill('zed unpro');
+  await expect(page.getByTestId('unprojected-results')).toContainText('Zed Unprojected');
+  await search.press('Enter');
+  await expect(page.getByTestId('current-pick')).toHaveText('6');
+  await expect(page.getByTestId('last-event')).toContainText('Zed Unprojected');
 });
