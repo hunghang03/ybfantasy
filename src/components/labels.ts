@@ -1,4 +1,4 @@
-import type { CategoryState, RiskLevel, SurvivalBand } from '@/domain/types/evaluation';
+import type { DisplayState, RiskLevel, SurvivalBand } from '@/domain/types/evaluation';
 import type { TimingLabel } from '@/domain/types/league';
 
 export const LABEL_TEXT: Record<TimingLabel, string> = {
@@ -7,6 +7,7 @@ export const LABEL_TEXT: Record<TimingLabel, string> = {
   WAIT: 'WAIT',
   SAFE_WAIT: 'SAFE WAIT',
   PASS: 'PASS',
+  NO_MARKET: 'NO MARKET',
 };
 
 export const LABEL_CLASS: Record<TimingLabel, string> = {
@@ -15,9 +16,13 @@ export const LABEL_CLASS: Record<TimingLabel, string> = {
   WAIT: 'bg-sky-100 text-sky-800 dark:bg-sky-900 dark:text-sky-100',
   SAFE_WAIT: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-100',
   PASS: 'bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300',
+  NO_MARKET: 'border border-dashed border-slate-400 text-slate-600 dark:text-slate-300',
 };
 
-export const STATE_TEXT: Record<CategoryState, string> = {
+export const STATE_TEXT: Record<DisplayState, string> = {
+  LEANING_STRONG: 'leaning +',
+  EVEN: 'even',
+  LEANING_WEAK: 'leaning −',
   ELITE: 'ELITE',
   STRONG: 'STRONG',
   COMPETITIVE: 'COMPETITIVE',
@@ -27,7 +32,10 @@ export const STATE_TEXT: Record<CategoryState, string> = {
   PUNT: 'PUNT',
 };
 
-export const STATE_CLASS: Record<CategoryState, string> = {
+export const STATE_CLASS: Record<DisplayState, string> = {
+  LEANING_STRONG: 'border border-emerald-400 text-emerald-800 dark:text-emerald-200',
+  EVEN: 'border border-slate-300 text-slate-600 dark:text-slate-300',
+  LEANING_WEAK: 'border border-amber-400 text-amber-800 dark:text-amber-200',
   ELITE: 'bg-emerald-600 text-white',
   STRONG: 'bg-emerald-200 text-emerald-900 dark:bg-emerald-800 dark:text-emerald-50',
   COMPETITIVE: 'bg-slate-200 text-slate-800 dark:bg-slate-700 dark:text-slate-100',
@@ -37,7 +45,10 @@ export const STATE_CLASS: Record<CategoryState, string> = {
   PUNT: 'bg-violet-600 text-white',
 };
 
-export const STATE_BAR: Record<CategoryState, string> = {
+export const STATE_BAR: Record<DisplayState, string> = {
+  LEANING_STRONG: 'bg-emerald-300',
+  EVEN: 'bg-slate-300',
+  LEANING_WEAK: 'bg-amber-300',
   ELITE: 'bg-emerald-600',
   STRONG: 'bg-emerald-400',
   COMPETITIVE: 'bg-slate-400',

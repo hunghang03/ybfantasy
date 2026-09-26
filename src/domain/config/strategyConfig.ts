@@ -44,6 +44,10 @@ export const StrategyConfigSchema = z.object({
   needStrongThreshold: num,
   needFullDeficit: num.positive(),
   categoryStateThresholds: z.object({ elite: num, strong: num, competitive: num, weak: num }),
+  // Added in config v5 (presentation only); older configs and backups get the shipped default.
+  categoryStateMaturity: z
+    .object({ tendencyMaxRoster: z.number().int().min(0), emergingMaxRoster: z.number().int().min(0) })
+    .default({ tendencyMaxRoster: 2, emergingMaxRoster: 4 }),
 
   puntThresholds: z.object({ tendency: unit, soft: unit, hard: unit }),
   puntDeficitRange: z.object({ start: num, full: num }),

@@ -103,17 +103,17 @@ export function timingLabel(i: LabelInput, config: StrategyConfig): { label: Tim
   if (ddpRel < t.passBelowRel) return { label: 'PASS', rule: 'P1: ddpRel below pass threshold' };
   if (i.avoid && ddpRel < t.avoidPassBelowRel)
     return { label: 'PASS', rule: 'P1: avoided and ddpRel below avoid threshold' };
+  // No Yahoo market record: timing cannot be judged. Never treat the gap as "at risk" or "safe".
+  if (band === 'UNKNOWN')
+    return { label: 'NO_MARKET', rule: 'U1: no Yahoo market data — market urgency unavailable' };
   if (ddpRel >= t.draftNowRel && (band === 'GONE' || band === 'UNLIKELY'))
     return { label: 'DRAFT_NOW', rule: 'D1: strong value and unlikely to last' };
   if (ddpRel >= t.draftNowTossupRel && band === 'TOSSUP')
     return { label: 'DRAFT_NOW', rule: 'D2: top value and toss-up' };
   if (ddpRel >= t.draftNowRel && band === 'TOSSUP' && missRel >= t.draftNowTossupMissRel)
     return { label: 'DRAFT_NOW', rule: 'D3: toss-up with high miss cost' };
-  if (
-    ddpRel >= t.leanDraftRel &&
-    (band === 'GONE' || band === 'UNLIKELY' || band === 'TOSSUP' || band === 'UNKNOWN')
-  )
-    return { label: 'LEAN_DRAFT', rule: 'L1: good value, at risk (or unknown market)' };
+  if (ddpRel >= t.leanDraftRel && (band === 'GONE' || band === 'UNLIKELY' || band === 'TOSSUP'))
+    return { label: 'LEAN_DRAFT', rule: 'L1: good value, at risk' };
   if (band === 'LIKELY' && missRel >= t.leanDraftLikelyMissRel)
     return { label: 'LEAN_DRAFT', rule: 'L2: likely to last but costly to miss' };
   if (band === 'SAFE') return { label: 'SAFE_WAIT', rule: 'S1: substantial ADP cushion' };

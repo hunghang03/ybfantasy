@@ -1,7 +1,7 @@
 {
  "label": "FICTIONAL SAMPLE DATA (pipeline validation only — not real players)",
  "season": "2026-27",
- "configVersion": 4,
+ "configVersion": 5,
  "inputs": {
   "source": "generateSample(20260923)"
  },
@@ -10,7 +10,8 @@
   "PROJECTION/hashtag: 0 unmatched, 0 rejected",
   "AVAILABILITY/manual: 0 unmatched, 0 rejected",
   "CONTEXT/manual: 0 unmatched, 0 rejected",
-  "Playoff schedule derived from hashtag week columns: 30 teams, 0 within-team conflicts"
+  "Playoff schedule derived from hashtag week columns: 30 teams, 0 within-team conflicts",
+  "Scenario opponents: MARKET"
  ],
  "counts": {
   "projectionRows": 300,

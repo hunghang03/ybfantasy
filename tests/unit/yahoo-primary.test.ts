@@ -184,6 +184,26 @@ describe('Yahoo projection CSV schema', () => {
     expect(team.rowWarnings[0]!.warnings.join(' ')).toMatch(/Needs review: team/);
   });
 
+  it('Confidence is HIGH | MEDIUM | LOW only: REVIEW is rejected with guidance; LOW + Review Fields + QA Note is the review form', () => {
+    const review = plan(`${HEADER}\n${yrow({ Confidence: 'REVIEW' })}`);
+    expect(review.rejected[0]!.errors.join(' ')).toMatch(
+      /HIGH, MEDIUM or LOW.*Confidence=LOW with Review Fields and a QA Note/,
+    );
+    // A flagged non-stat field with LOW confidence imports (field nulled, warning, provenance kept).
+    const low = plan(
+      `${HEADER}\n${yrow({ Confidence: 'LOW', 'Review Fields': 'Team', 'QA Note': 'team cell unreadable' })}`,
+    );
+    expect(low.rejected).toEqual([]);
+    expect(low.records.projections[0]!.meta).toMatchObject({
+      confidence: 'LOW',
+      reviewFields: ['team'],
+      note: 'team cell unreadable',
+    });
+    // A flagged stat with LOW confidence is still rejected: stats are never inferred.
+    const stat = plan(`${HEADER}\n${yrow({ Confidence: 'LOW', 'Review Fields': 'PTS', 'QA Note': 'x' })}`);
+    expect(stat.rejected).toHaveLength(1);
+  });
+
   it('rows from different captures in one file raise a snapshot warning', () => {
     const p = plan(`${HEADER}\n${yrow()}\n${yrow({ Player: 'Be Ta', 'Captured At': '2026-09-27' })}`);
     expect(p.batch.capturedAt).toEqual(['2026-09-26', '2026-09-27']);
@@ -521,4 +541,105 @@ describe('14-team snake: slots 1, 4, 7, 11, 14 including round turns', () => {
     it(`slot ${slot}`, () => {
       expect(userPicks({ teams: 14, slot: Number(slot), rounds: 13 })).toEqual(picks);
     });
+});
+
+describe('O1: sample-size-aware category states (presentation only)', () => {
+  const f = generateSample();
+  let ds = importInto(EMPTY, 'YAHOO_MARKET', 'yahoo', f['yahoo-market.sample.csv']);
+  ds = importInto(ds, 'PROJECTION', 'yahoo', f['projections-yahoo.sample.csv']);
+  const lg = league({ primaryProjectionProvider: 'yahoo', validationProviders: [], draftPosition: 1 });
+  const ctx = buildContext(ds, lg, cfg);
+  const R = rosterSize(lg.roster);
+
+  it('display mapping per maturity; calculated state, d, need and DDP are unchanged', async () => {
+    const { displayCategoryState, stateMaturity } = await import('@/domain/roster/profile');
+    expect([0, 1, 2, 3, 4, 5, 9].map((k) => stateMaturity(k, cfg))).toEqual([
+      'TENDENCY',
+      'TENDENCY',
+      'TENDENCY',
+      'EMERGING',
+      'EMERGING',
+      'FULL',
+      'FULL',
+    ]);
+    expect(displayCategoryState('CRITICAL', 'TENDENCY')).toBe('LEANING_WEAK');
+    expect(displayCategoryState('WEAK', 'TENDENCY')).toBe('LEANING_WEAK');
+    expect(displayCategoryState('COMPETITIVE', 'TENDENCY')).toBe('EVEN');
+    expect(displayCategoryState('ELITE', 'TENDENCY')).toBe('LEANING_STRONG');
+    expect(displayCategoryState('CRITICAL', 'EMERGING')).toBe('WEAK');
+    expect(displayCategoryState('STRONG', 'EMERGING')).toBe('STRONG');
+    expect(displayCategoryState('CRITICAL', 'FULL')).toBe('CRITICAL');
+    // A manual punt is the user's choice: always shown.
+    expect(displayCategoryState('PUNT', 'TENDENCY')).toBe('PUNT');
+    expect(displayCategoryState('SOFT_PUNT', 'EMERGING')).toBe('SOFT_PUNT');
+  });
+
+  it('a one-player roster never shows CRITICAL, even when the calculated state is CRITICAL', () => {
+    // Draft a specialist and walk the draft forward, checking the shown state at every roster size.
+    let events: DraftEvent[] = [];
+    const saw = { critCalcEarly: false };
+    for (let k = 0; k < 7; k++) {
+      const ev = evaluateDraft(ctx, { ...emptyDraft(), events });
+      for (const p of ev.profile) {
+        if (k <= 4) expect(p.displayState).not.toBe('CRITICAL');
+        if (k <= 2)
+          expect(['LEANING_STRONG', 'EVEN', 'LEANING_WEAK', 'SOFT_PUNT', 'PUNT']).toContain(p.displayState);
+        if (k >= 5) expect(p.displayState).toBe(p.state);
+        if (k <= 2 && p.state === 'CRITICAL') saw.critCalcEarly = true;
+      }
+      // my pick then 13 others (keeps it a realistic snake-ish sequence)
+      const mine = ev.players.find((x) => x.positions.includes('C')) ?? ev.players[0]!;
+      const r = appendPick(events, { playerId: mine.playerId, by: 'ME', at: 't' }, 14, R);
+      events = r.ok ? r.events : events;
+      for (let i = 0; i < 13; i++) {
+        const o = evaluateDraft(ctx, { ...emptyDraft(), events }).players[0]!;
+        const q = appendPick(events, { playerId: o.playerId, by: 'OTHER', at: 't' }, 14, R);
+        events = q.ok ? q.events : events;
+      }
+    }
+    // The fixture really exercises the case: a calculated CRITICAL exists early but is not shown.
+    expect(saw.critCalcEarly).toBe(true);
+  });
+});
+
+describe('no-market players: statistical rank separate from market urgency', () => {
+  const f = generateSample();
+  // Drop the market rows of three strong players: they keep their projections and value.
+  let ds = importInto(EMPTY, 'YAHOO_MARKET', 'yahoo', f['yahoo-market.sample.csv']);
+  ds = importInto(ds, 'PROJECTION', 'yahoo', f['projections-yahoo.sample.csv']);
+  const lg = league({ primaryProjectionProvider: 'yahoo', validationProviders: [], draftPosition: 7 });
+  const full = buildContext(ds, lg, cfg);
+  const top = evaluateDraft(full, emptyDraft())
+    .players.slice(3, 6)
+    .map((p) => p.playerId);
+  const noMarket: Dataset = { ...ds, market: ds.market.filter((m) => !top.includes(m.canonicalPlayerId)) };
+  const ctx = buildContext(noMarket, lg, cfg);
+  const ev = evaluateDraft(ctx, emptyDraft());
+
+  it('value is unchanged; urgency is UNAVAILABLE and the label is NO_MARKET (or PASS on value)', () => {
+    for (const id of top) {
+      const a = full.byId.get(id)!;
+      const b = ctx.byId.get(id)!;
+      expect(b.value.basePlayerValue).toBe(a.value.basePlayerValue);
+      const e = ev.byId.get(id)!;
+      expect(e.market).toMatchObject({
+        adp: null,
+        xrank: null,
+        marketRef: null,
+        band: 'UNKNOWN',
+        urgency: 'UNAVAILABLE',
+      });
+      expect(['NO_MARKET', 'PASS']).toContain(e.label);
+      expect(e.ddpRank).toBeGreaterThan(0); // statistical rank still reported
+    }
+    expect(
+      ev.players.filter((p) => p.market.urgency === 'AVAILABLE').every((p) => p.label !== 'NO_MARKET'),
+    ).toBe(true);
+  });
+
+  it('planning never assumes a no-market player survives to my next pick', () => {
+    for (const p of ev.players)
+      if (p.planning?.nextBestConservative.playerId)
+        expect(top).not.toContain(p.planning.nextBestConservative.playerId);
+  });
 });

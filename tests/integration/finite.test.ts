@@ -12,7 +12,7 @@ import {
 } from '../helpers/fixtures';
 import type { DraftEvaluation } from '@/domain/recommendations/engine';
 
-const LABELS = ['DRAFT_NOW', 'LEAN_DRAFT', 'WAIT', 'SAFE_WAIT', 'PASS'];
+const LABELS = ['DRAFT_NOW', 'LEAN_DRAFT', 'WAIT', 'SAFE_WAIT', 'PASS', 'NO_MARKET'];
 
 function assertFinite(x: unknown, path = ''): void {
   if (typeof x === 'number') {

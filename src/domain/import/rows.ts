@@ -140,7 +140,10 @@ function readMeta(c: Collector, cells: Cells, reviewFields: string[]): SourceMet
   let confidence: SourceConfidence | null = null;
   if (confRaw) {
     if (confRaw === 'HIGH' || confRaw === 'MEDIUM' || confRaw === 'LOW') confidence = confRaw;
-    else c.errors.push('Confidence must be HIGH, MEDIUM or LOW.');
+    else
+      c.errors.push(
+        'Confidence must be HIGH, MEDIUM or LOW. Review status is workflow, not confidence: use Confidence=LOW with Review Fields and a QA Note.',
+      );
   }
   return {
     source: sanitizeText(cells('source'), 40) || null,

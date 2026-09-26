@@ -22,6 +22,7 @@
     {
      "cat": "FG%",
      "state": "ELITE",
+     "shown": "LEANING_STRONG",
      "d": 1.96,
      "need": 0,
      "pi": 0,
@@ -30,6 +31,7 @@
     {
      "cat": "FT%",
      "state": "CRITICAL",
+     "shown": "LEANING_WEAK",
      "d": -2.05,
      "need": 1.04,
      "pi": 0.06,
@@ -38,6 +40,7 @@
     {
      "cat": "3PM",
      "state": "CRITICAL",
+     "shown": "LEANING_WEAK",
      "d": -2.38,
      "need": 1.04,
      "pi": 0.03,
@@ -46,6 +49,7 @@
     {
      "cat": "PTS",
      "state": "COMPETITIVE",
+     "shown": "EVEN",
      "d": -0.23,
      "need": 0.53,
      "pi": 0,
@@ -54,6 +58,7 @@
     {
      "cat": "REB",
      "state": "ELITE",
+     "shown": "LEANING_STRONG",
      "d": 2.16,
      "need": 0,
      "pi": 0,
@@ -62,6 +67,7 @@
     {
      "cat": "AST",
      "state": "WEAK",
+     "shown": "LEANING_WEAK",
      "d": -1.21,
      "need": 1.02,
      "pi": 0.01,
@@ -70,6 +76,7 @@
     {
      "cat": "STL",
      "state": "CRITICAL",
+     "shown": "LEANING_WEAK",
      "d": -1.49,
      "need": 1.04,
      "pi": 0.01,
@@ -78,6 +85,7 @@
     {
      "cat": "BLK",
      "state": "ELITE",
+     "shown": "LEANING_STRONG",
      "d": 2.55,
      "need": 0,
      "pi": 0,
@@ -86,6 +94,7 @@
     {
      "cat": "TO",
      "state": "COMPETITIVE",
+     "shown": "EVEN",
      "d": -0.25,
      "need": 0.5,
      "pi": 0,
@@ -181,6 +190,7 @@
     {
      "cat": "FG%",
      "state": "STRONG",
+     "shown": "LEANING_STRONG",
      "d": 1.18,
      "need": 0,
      "pi": 0,
@@ -189,6 +199,7 @@
     {
      "cat": "FT%",
      "state": "WEAK",
+     "shown": "LEANING_WEAK",
      "d": -0.75,
      "need": 0.78,
      "pi": 0.01,
@@ -197,6 +208,7 @@
     {
      "cat": "3PM",
      "state": "WEAK",
+     "shown": "LEANING_WEAK",
      "d": -1.12,
      "need": 0.97,
      "pi": 0.02,
@@ -205,6 +217,7 @@
     {
      "cat": "PTS",
      "state": "WEAK",
+     "shown": "LEANING_WEAK",
      "d": -0.65,
      "need": 0.73,
      "pi": 0,
@@ -213,6 +226,7 @@
     {
      "cat": "REB",
      "state": "STRONG",
+     "shown": "LEANING_STRONG",
      "d": 1.49,
      "need": 0,
      "pi": 0,
@@ -221,6 +235,7 @@
     {
      "cat": "AST",
      "state": "CRITICAL",
+     "shown": "LEANING_WEAK",
      "d": -1.36,
      "need": 1.03,
      "pi": 0.04,
@@ -229,6 +244,7 @@
     {
      "cat": "STL",
      "state": "CRITICAL",
+     "shown": "LEANING_WEAK",
      "d": -1.54,
      "need": 1.03,
      "pi": 0.07,
@@ -237,6 +253,7 @@
     {
      "cat": "BLK",
      "state": "ELITE",
+     "shown": "LEANING_STRONG",
      "d": 2.34,
      "need": 0,
      "pi": 0,
@@ -245,6 +262,7 @@
     {
      "cat": "TO",
      "state": "COMPETITIVE",
+     "shown": "EVEN",
      "d": 0.12,
      "need": 0.31,
      "pi": 0,
@@ -352,6 +370,7 @@
     {
      "cat": "FG%",
      "state": "STRONG",
+     "shown": "STRONG",
      "d": 1.14,
      "need": 0,
      "pi": 0,
@@ -360,6 +379,7 @@
     {
      "cat": "FT%",
      "state": "WEAK",
+     "shown": "WEAK",
      "d": -0.7,
      "need": 0.73,
      "pi": 0.01,
@@ -368,6 +388,7 @@
     {
      "cat": "3PM",
      "state": "WEAK",
+     "shown": "WEAK",
      "d": -0.78,
      "need": 0.78,
      "pi": 0.02,
@@ -376,6 +397,7 @@
     {
      "cat": "PTS",
      "state": "COMPETITIVE",
+     "shown": "COMPETITIVE",
      "d": 0.48,
      "need": 0.14,
      "pi": 0,
@@ -384,6 +406,7 @@
     {
      "cat": "REB",
      "state": "ELITE",
+     "shown": "ELITE",
      "d": 2.03,
      "need": 0,
      "pi": 0,
@@ -392,6 +415,7 @@
     {
      "cat": "AST",
      "state": "CRITICAL",
+     "shown": "WEAK",
      "d": -1.4,
      "need": 1.01,
      "pi": 0.13,
@@ -400,6 +424,7 @@
     {
      "cat": "STL",
      "state": "WEAK",
+     "shown": "WEAK",
      "d": -0.6,
      "need": 0.69,
      "pi": 0.01,
@@ -408,6 +433,7 @@
     {
      "cat": "BLK",
      "state": "ELITE",
+     "shown": "ELITE",
      "d": 2.4,
      "need": 0,
      "pi": 0,
@@ -416,6 +442,7 @@
     {
      "cat": "TO",
      "state": "COMPETITIVE",
+     "shown": "COMPETITIVE",
      "d": 0.35,
      "need": 0.2,
      "pi": 0,
@@ -535,6 +562,7 @@
     {
      "cat": "FG%",
      "state": "STRONG",
+     "shown": "STRONG",
      "d": 1.17,
      "need": 0,
      "pi": 0,
@@ -543,6 +571,7 @@
     {
      "cat": "FT%",
      "state": "COMPETITIVE",
+     "shown": "COMPETITIVE",
      "d": -0.18,
      "need": 0.46,
      "pi": 0,
@@ -551,6 +580,7 @@
     {
      "cat": "3PM",
      "state": "WEAK",
+     "shown": "WEAK",
      "d": -0.7,
      "need": 0.72,
      "pi": 0.02,
@@ -559,6 +589,7 @@
     {
      "cat": "PTS",
      "state": "COMPETITIVE",
+     "shown": "COMPETITIVE",
      "d": 0.28,
      "need": 0.23,
      "pi": 0,
@@ -567,6 +598,7 @@
     {
      "cat": "REB",
      "state": "ELITE",
+     "shown": "ELITE",
      "d": 1.92,
      "need": 0,
      "pi": 0,
@@ -575,6 +607,7 @@
     {
      "cat": "AST",
      "state": "CRITICAL",
+     "shown": "CRITICAL",
      "d": -1.5,
      "need": 1,
      "pi": 0.18,
@@ -583,6 +616,7 @@
     {
      "cat": "STL",
      "state": "COMPETITIVE",
+     "shown": "COMPETITIVE",
      "d": -0.12,
      "need": 0.43,
      "pi": 0,
@@ -591,6 +625,7 @@
     {
      "cat": "BLK",
      "state": "ELITE",
+     "shown": "ELITE",
      "d": 2.32,
      "need": 0,
      "pi": 0,
@@ -599,6 +634,7 @@
     {
      "cat": "TO",
      "state": "COMPETITIVE",
+     "shown": "COMPETITIVE",
      "d": 0.6,
      "need": 0.07,
      "pi": 0,
@@ -736,6 +772,7 @@
     {
      "cat": "FG%",
      "state": "STRONG",
+     "shown": "STRONG",
      "d": 0.84,
      "need": 0,
      "pi": 0,
@@ -744,6 +781,7 @@
     {
      "cat": "FT%",
      "state": "COMPETITIVE",
+     "shown": "COMPETITIVE",
      "d": 0.56,
      "need": 0.09,
      "pi": 0,
@@ -752,6 +790,7 @@
     {
      "cat": "3PM",
      "state": "COMPETITIVE",
+     "shown": "COMPETITIVE",
      "d": -0.18,
      "need": 0.46,
      "pi": 0,
@@ -760,6 +799,7 @@
     {
      "cat": "PTS",
      "state": "COMPETITIVE",
+     "shown": "COMPETITIVE",
      "d": 0.08,
      "need": 0.34,
      "pi": 0,
@@ -768,6 +808,7 @@
     {
      "cat": "REB",
      "state": "ELITE",
+     "shown": "ELITE",
      "d": 1.51,
      "need": 0,
      "pi": 0,
@@ -776,6 +817,7 @@
     {
      "cat": "AST",
      "state": "WEAK",
+     "shown": "WEAK",
      "d": -0.85,
      "need": 0.8,
      "pi": 0.06,
@@ -784,6 +826,7 @@
     {
      "cat": "STL",
      "state": "COMPETITIVE",
+     "shown": "COMPETITIVE",
      "d": 0.52,
      "need": 0.11,
      "pi": 0,
@@ -792,6 +835,7 @@
     {
      "cat": "BLK",
      "state": "ELITE",
+     "shown": "ELITE",
      "d": 2.03,
      "need": 0,
      "pi": 0,
@@ -800,6 +844,7 @@
     {
      "cat": "TO",
      "state": "COMPETITIVE",
+     "shown": "COMPETITIVE",
      "d": 0.29,
      "need": 0.23,
      "pi": 0,
@@ -955,6 +1000,7 @@
     {
      "cat": "FG%",
      "state": "STRONG",
+     "shown": "STRONG",
      "d": 1,
      "need": 0,
      "pi": 0,
@@ -963,6 +1009,7 @@
     {
      "cat": "FT%",
      "state": "COMPETITIVE",
+     "shown": "COMPETITIVE",
      "d": 0.65,
      "need": 0.05,
      "pi": 0,
@@ -971,6 +1018,7 @@
     {
      "cat": "3PM",
      "state": "COMPETITIVE",
+     "shown": "COMPETITIVE",
      "d": -0.07,
      "need": 0.41,
      "pi": 0,
@@ -979,6 +1027,7 @@
     {
      "cat": "PTS",
      "state": "COMPETITIVE",
+     "shown": "COMPETITIVE",
      "d": 0.2,
      "need": 0.28,
      "pi": 0,
@@ -987,6 +1036,7 @@
     {
      "cat": "REB",
      "state": "ELITE",
+     "shown": "ELITE",
      "d": 1.58,
      "need": 0,
      "pi": 0,
@@ -995,6 +1045,7 @@
     {
      "cat": "AST",
      "state": "COMPETITIVE",
+     "shown": "COMPETITIVE",
      "d": -0.4,
      "need": 0.58,
      "pi": 0,
@@ -1003,6 +1054,7 @@
     {
      "cat": "STL",
      "state": "COMPETITIVE",
+     "shown": "COMPETITIVE",
      "d": 0.14,
      "need": 0.3,
      "pi": 0,
@@ -1011,6 +1063,7 @@
     {
      "cat": "BLK",
      "state": "ELITE",
+     "shown": "ELITE",
      "d": 2.45,
      "need": 0,
      "pi": 0,
@@ -1019,6 +1072,7 @@
     {
      "cat": "TO",
      "state": "COMPETITIVE",
+     "shown": "COMPETITIVE",
      "d": -0.11,
      "need": 0.43,
      "pi": 0,

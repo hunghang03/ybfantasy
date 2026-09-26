@@ -15,7 +15,8 @@ function v3Config(): StrategyConfig {
 describe('INJ status and config v4 upgrade', () => {
   it('upgrades a stored v3 config: adds statusRisk.INJ, keeps user values', () => {
     const up = upgradeStoredConfig(v3Config());
-    expect(up.version).toBe(4);
+    expect(up.version).toBe(defaultConfig().version);
+    expect(up.categoryStateMaturity).toEqual({ tendencyMaxRoster: 2, emergingMaxRoster: 4 });
     expect(up.statusRisk.INJ).toBe(0.08);
     expect(up.statusRisk.DTD).toBe(0.05);
   });

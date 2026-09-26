@@ -155,7 +155,9 @@ export default function ReviewPage() {
                   <td className="pr-3">{fmt(p.expected)}</td>
                   <td className="pr-3">{fmt(p.teamSd)}</td>
                   <td className="pr-3">{fmt(p.d)}</td>
-                  <td className="pr-3">{p.state}</td>
+                  <td className="pr-3" title={`shown as ${p.displayState} (${p.maturity})`}>
+                    {p.state}
+                  </td>
                   <td className="pr-3">{fmt(p.need)}</td>
                   <td className="pr-3">{fmt(p.surplus)}</td>
                   <td className="pr-3">{fmt(p.poolScarcity)}</td>

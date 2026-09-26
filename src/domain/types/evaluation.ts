@@ -23,6 +23,13 @@ export type SurvivalBand = 'GONE' | 'UNLIKELY' | 'TOSSUP' | 'LIKELY' | 'SAFE' | 
 export const BAND_ORDER: readonly SurvivalBand[] = ['GONE', 'UNLIKELY', 'TOSSUP', 'LIKELY', 'SAFE'];
 
 export type CategoryState = 'ELITE' | 'STRONG' | 'COMPETITIVE' | 'WEAK' | 'CRITICAL' | 'SOFT_PUNT' | 'PUNT';
+/**
+ * How much a category state can be trusted given the roster size: a one- or two-player roster only shows a
+ * direction (TENDENCY), 3–4 players may show a weakness (EMERGING), 5+ uses the normal state (FULL).
+ */
+export type StateMaturity = 'TENDENCY' | 'EMERGING' | 'FULL';
+/** What the UI shows. Early rosters use direction labels instead of alarming ones. */
+export type DisplayState = CategoryState | 'LEANING_STRONG' | 'EVEN' | 'LEANING_WEAK';
 export type RiskLevel = 'LOW' | 'MODERATE' | 'HIGH' | 'VERY_HIGH';
 export type DataConfidence = 'HIGH' | 'MEDIUM' | 'LOW';
 
@@ -111,6 +118,8 @@ export interface MarketBlock {
   rank: number | null;
   marketRef: number | null;
   marketRefSource: 'ADP' | 'XRANK' | 'RANK' | 'NONE';
+  /** UNAVAILABLE when there is no Yahoo market record: no timing/urgency is derived (statistical rank = ddpRank). */
+  urgency: 'AVAILABLE' | 'UNAVAILABLE';
   band: SurvivalBand;
   bandBeforeXrank: SurvivalBand;
   zS: number | null;
@@ -163,8 +172,12 @@ export interface CategoryProfileEntry {
   expected: number; // B_c(k)
   teamSd: number; // σT_c(k)
   d: number;
+  /** Calculated state (unchanged by roster size; never used in DDP math). */
   state: CategoryState;
   baseState: Exclude<CategoryState, 'SOFT_PUNT' | 'PUNT'>;
+  /** Sample-size-aware presentation of `state` (see StateMaturity). */
+  displayState: DisplayState;
+  maturity: StateMaturity;
   need: number;
   surplus: number;
   poolScarcity: number; // qP

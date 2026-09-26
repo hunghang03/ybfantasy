@@ -42,6 +42,7 @@ export interface DecisionCandidate {
   label: string;
   labelRule: string;
   band: string;
+  urgency: string;
   adp: number | null;
   xrank: number | null;
   risk: string;
@@ -51,6 +52,8 @@ export interface DecisionCandidate {
 export interface DecisionProfileEntry {
   category: Category;
   state: string;
+  /** Sample-size-aware label the user saw (O1). */
+  shown: string;
   d: number;
   need: number;
   pi: number;
@@ -91,7 +94,8 @@ export interface DecisionRecord {
   recordedAt: string;
 }
 
-export type TimingLabel = 'DRAFT_NOW' | 'LEAN_DRAFT' | 'WAIT' | 'SAFE_WAIT' | 'PASS';
+/** NO_MARKET: projected player without a Yahoo market record — market urgency is unavailable, never invented. */
+export type TimingLabel = 'DRAFT_NOW' | 'LEAN_DRAFT' | 'WAIT' | 'SAFE_WAIT' | 'PASS' | 'NO_MARKET';
 
 export interface PickSnapshot {
   ddpRaw: number;

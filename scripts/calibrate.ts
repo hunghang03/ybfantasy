@@ -223,7 +223,9 @@ function main() {
   let scenarioCount = 0;
   if (!flag('no-scenarios')) {
     const ctx = buildContext(ds, league, config);
-    const results = runAllScenarios(ctx);
+    const opponents = flag('opponents-preseason') ? 'MARKET_OR_PRESEASON' : 'MARKET';
+    const results = runAllScenarios(ctx, opponents);
+    extraNotes.push(`Scenario opponents: ${opponents}`);
     scenarioCount = results.length;
     for (const r of results)
       write(

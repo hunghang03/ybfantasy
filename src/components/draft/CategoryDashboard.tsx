@@ -41,6 +41,14 @@ export function CategoryDashboard({
   };
   return (
     <Panel title="Category profile vs expected competition">
+      {ev.profile[0] && ev.profile[0].maturity !== 'FULL' && (
+        <p className="mb-1 text-[11px] text-slate-500" data-testid="state-maturity">
+          {ev.profile[0].maturity === 'TENDENCY'
+            ? 'Early roster: showing direction only (no WEAK/CRITICAL calls yet).'
+            : 'Weaknesses can be named now; CRITICAL starts at pick 5.'}{' '}
+          Numbers are unchanged — hover a row for the calculated state.
+        </p>
+      )}
       <ul className="space-y-1" data-testid="category-dashboard">
         {ev.profile.map((p) => {
           const pos = Math.max(-2.5, Math.min(2.5, p.d));
@@ -50,6 +58,7 @@ export function CategoryDashboard({
             `d = ${fmt(p.d)} team SD (roster ${fmt(p.rosterSum)} vs expected ${fmt(p.expected)}, σT ${fmt(p.teamSd)})`,
             `need ${fmt(p.need)} · surplus ${fmt(p.surplus)} · pool scarcity ${fmt(p.poolScarcity)} · next-pick scarcity ${fmt(p.nextPickScarcity)}`,
             `punt π ${fmt(p.punt.pi)} (deficit ${fmt(p.punt.deficit)}, coherence ${fmt(p.punt.coherence)}, recoverability ${fmt(p.punt.recoverability)}) · weight ×${fmt(p.weightMultiplier)}`,
+            `calculated state ${p.state}${p.maturity === 'FULL' ? '' : ` · shown as ${STATE_TEXT[p.displayState]} (${p.maturity.toLowerCase()}: roster too small to call)`}`,
           ].join('\n');
           return (
             <li
@@ -62,15 +71,18 @@ export function CategoryDashboard({
               <span className="relative h-2.5 rounded bg-slate-100 dark:bg-slate-800">
                 <span className="absolute top-0 h-full w-px bg-slate-400" style={{ left: '50%' }} />
                 <span
-                  className={cx('absolute top-0 h-full rounded', STATE_BAR[p.state])}
+                  className={cx('absolute top-0 h-full rounded', STATE_BAR[p.displayState])}
                   style={{ left: `${left}%`, width: `${Math.max(width, 1)}%` }}
                 />
               </span>
               <span
-                className={cx('rounded px-1 py-0.5 text-center text-[10px] font-bold', STATE_CLASS[p.state])}
+                className={cx(
+                  'rounded px-1 py-0.5 text-center text-[10px] font-bold',
+                  STATE_CLASS[p.displayState],
+                )}
                 data-testid={`cat-state-${p.category}`}
               >
-                {STATE_TEXT[p.state]}
+                {STATE_TEXT[p.displayState]}
               </span>
               <span className="num text-right text-slate-600 dark:text-slate-400">{total(p.category)}</span>
               <Select

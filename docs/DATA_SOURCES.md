@@ -30,13 +30,13 @@ The primary provider is a per-league setting (`LeagueProfile.primaryProjectionPr
 
 Every Yahoo row (market and projection) carries:
 
-| Column          | Meaning                                                                                                                                                       |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Source`        | always `yahoo_screenshot` for screenshot transcriptions                                                                                                       |
-| `Captured At`   | ISO timestamp of the screenshot                                                                                                                               |
-| `Confidence`    | `HIGH` / `MEDIUM` / `LOW`: your confidence in the transcription of that row                                                                                   |
-| `QA Note`       | free-text QA note, kept as provenance                                                                                                                         |
-| `Review Fields` | fields that could not be read. Market: forced to `null` (`xrank`, `rank`, `adp`, `status`, `positions`, `team`). Projections: a flagged stat rejects the row. |
+| Column          | Meaning                                                                                                                                                               |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Source`        | always `yahoo_screenshot` for screenshot transcriptions                                                                                                               |
+| `Captured At`   | ISO timestamp of the screenshot                                                                                                                                       |
+| `Confidence`    | `HIGH` / `MEDIUM` / `LOW` only. Rows needing human verification use `LOW` + `Review Fields` + `QA Note`; `REVIEW` is workflow state, not confidence, and is rejected. |
+| `QA Note`       | free-text QA note, kept as provenance                                                                                                                                 |
+| `Review Fields` | fields that could not be read. Market: forced to `null` (`xrank`, `rank`, `adp`, `status`, `positions`, `team`). Projections: a flagged stat rejects the row.         |
 
 Raw cell values are preserved verbatim (`raw`) on every market and projection record for auditability.
 

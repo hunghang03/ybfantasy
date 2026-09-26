@@ -232,14 +232,20 @@ describe('survival bands and timing labels', () => {
     expect(down.band).toBe('LIKELY');
   });
 
-  it('labels: PASS, LEAN, UNKNOWN never DRAFT NOW, avoid', () => {
+  it('labels: PASS, LEAN, UNKNOWN market → NO_MARKET (urgency unavailable), avoid', () => {
     expect(timingLabel({ ddpRel: 0.3, band: 'UNLIKELY', missRel: 0, avoid: false }, cfg).label).toBe('PASS');
     expect(timingLabel({ ddpRel: 0.8, band: 'TOSSUP', missRel: 0, avoid: false }, cfg).label).toBe(
       'LEAN_DRAFT',
     );
+    // No market record: never DRAFT NOW / LEAN DRAFT / SAFE WAIT from an invented ADP.
     expect(timingLabel({ ddpRel: 1, band: 'UNKNOWN', missRel: 1, avoid: false }, cfg).label).toBe(
-      'LEAN_DRAFT',
+      'NO_MARKET',
     );
+    expect(timingLabel({ ddpRel: 0.5, band: 'UNKNOWN', missRel: 0, avoid: false }, cfg).label).toBe(
+      'NO_MARKET',
+    );
+    // …but a low-value player is still PASS: that judgement is statistical, not market-based.
+    expect(timingLabel({ ddpRel: 0.3, band: 'UNKNOWN', missRel: 0, avoid: false }, cfg).label).toBe('PASS');
     expect(timingLabel({ ddpRel: 0.7, band: 'UNLIKELY', missRel: 0, avoid: true }, cfg).label).toBe('PASS');
     expect(timingLabel({ ddpRel: 0.9, band: 'LIKELY', missRel: 0.4, avoid: false }, cfg).label).toBe(
       'LEAN_DRAFT',

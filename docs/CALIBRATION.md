@@ -87,7 +87,7 @@ Every flagged row gets an **automated, tentative** classification (multi-label; 
 
 The setup is a 14-team H2H 9-cat league, with draft slots **1, 4, 7, 11, 14** × foundations **balanced, soft-punt TO, punt FT%, guard-heavy, big-heavy, injury-risk stars**.
 
-- **Other teams** draft strictly by Yahoo market order (L7 ADP → XRank → Rank; players with no market data are taken last, by BPV).
+- **Other teams** draft strictly by Yahoo market order (L7 ADP → XRank → Rank; players with no market data are taken last, by BPV). With `--opponents-preseason`, a player without a market row is instead ordered by the projection file's own Yahoo Pre-Season Rank (a simulation assumption, never used by the engine). The real-data QA showed the default policy lets every no-market player fall to "me" in all 30 scenarios, so real-data scenario results should be read under both policies.
 - **My picks** follow the foundation policy, but only **within the engine's own top-8 candidates**. The foundation shapes the roster; it never replaces the engine.
 
 | Foundation        | My-pick policy                                                                   |

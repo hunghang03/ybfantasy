@@ -30,6 +30,7 @@ export function candidateOf(p: PlayerEvaluation): DecisionCandidate {
     label: p.label,
     labelRule: p.labelRule,
     band: p.market.band,
+    urgency: p.market.urgency,
     adp: p.market.adp,
     xrank: p.market.xrank,
     risk: p.availability.risk,
@@ -41,6 +42,7 @@ function profile(entries: readonly CategoryProfileEntry[]): DecisionRecord['prof
   return entries.map((e) => ({
     category: e.category,
     state: e.state,
+    shown: e.displayState,
     d: r4(e.d),
     need: r4(e.need),
     pi: r4(e.punt.pi),

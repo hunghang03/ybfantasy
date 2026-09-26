@@ -2,7 +2,13 @@ import type { StrategyConfig } from '../config/strategyConfig';
 import { byRosterSize } from '../config/defaults';
 import { clamp, clamp01, safeDiv } from '../numeric/safe';
 import { CATEGORIES, mapCategories, type Category, type CategoryRecord } from '../types/core';
-import type { CategoryState, RosterTotals, StaticPlayer } from '../types/evaluation';
+import type {
+  CategoryState,
+  DisplayState,
+  RosterTotals,
+  StateMaturity,
+  StaticPlayer,
+} from '../types/evaluation';
 import { teamPct } from '../stats/zscores';
 
 /**
@@ -40,6 +46,26 @@ export function baseState(d: number, config: StrategyConfig): Exclude<CategorySt
   if (d >= t.competitive) return 'COMPETITIVE';
   if (d >= t.weak) return 'WEAK';
   return 'CRITICAL';
+}
+
+export function stateMaturity(k: number, config: StrategyConfig): StateMaturity {
+  const m = config.categoryStateMaturity;
+  return k <= m.tendencyMaxRoster ? 'TENDENCY' : k <= m.emergingMaxRoster ? 'EMERGING' : 'FULL';
+}
+
+/**
+ * Sample-size-aware presentation of a category state (O1). Presentation only: `state`, d, need and DDP are
+ * untouched. Punt states (auto or manual) are always shown as they are.
+ *  - TENDENCY (roster ≤ 2): direction only — LEANING_STRONG / EVEN / LEANING_WEAK, never CRITICAL or WEAK.
+ *  - EMERGING (roster 3–4): a weakness may be named (WEAK), but never CRITICAL.
+ *  - FULL (roster ≥ 5): the calculated state.
+ */
+export function displayCategoryState(state: CategoryState, maturity: StateMaturity): DisplayState {
+  if (state === 'PUNT' || state === 'SOFT_PUNT' || maturity === 'FULL') return state;
+  if (maturity === 'EMERGING') return state === 'CRITICAL' ? 'WEAK' : state;
+  if (state === 'ELITE' || state === 'STRONG') return 'LEANING_STRONG';
+  if (state === 'WEAK' || state === 'CRITICAL') return 'LEANING_WEAK';
+  return 'EVEN';
 }
 
 /** need_c = clamp((strong − d)/fullDeficit, 0, 1)·m_c + prior_c·max(0, 1 − k/decay) */

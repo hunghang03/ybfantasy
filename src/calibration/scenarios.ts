@@ -154,6 +154,7 @@ function snapshot(ev: DraftEvaluation, afterRound: number, reasons: Map<string, 
     categories: ev.profile.map((p) => ({
       cat: CATEGORY_LABEL[p.category],
       state: p.state,
+      shown: p.displayState,
       d: r2(p.d),
       need: r2(p.need),
       pi: r2(p.punt.pi),
@@ -176,10 +177,21 @@ function snapshot(ev: DraftEvaluation, afterRound: number, reasons: Map<string, 
 }
 
 /** Market-order pick for other teams (deterministic). */
-function marketPick(ev: DraftEvaluation): string {
+/**
+ * How SIMULATED opponents order players (never used by the engine's own market layer):
+ *  - MARKET: Yahoo market reference (L7 ADP → XRank → Rank); players without a market row go last, by BPV.
+ *  - MARKET_OR_PRESEASON: as MARKET, but a player without a market row is ordered by the projection file's own
+ *    Yahoo Pre-Season Rank (providerRank) instead of being assumed undrafted. A simulation assumption only.
+ */
+export type OpponentPolicy = 'MARKET' | 'MARKET_OR_PRESEASON';
+
+function marketPick(ev: DraftEvaluation, ctx: StaticContext, policy: OpponentPolicy): string {
+  const ref = (p: PlayerEvaluation): number | null =>
+    p.market.marketRef ??
+    (policy === 'MARKET_OR_PRESEASON' ? (ctx.byId.get(p.playerId)?.player.proj?.providerRank ?? null) : null);
   const sorted = [...ev.players].sort((a, b) => {
-    const ma = a.market.marketRef;
-    const mb = b.market.marketRef;
+    const ma = ref(a);
+    const mb = ref(b);
     if (ma !== null && mb !== null) return ma - mb || cmpId(a.playerId, b.playerId);
     if (ma !== null) return -1;
     if (mb !== null) return 1;
@@ -188,7 +200,12 @@ function marketPick(ev: DraftEvaluation): string {
   return sorted[0]!.playerId;
 }
 
-export function runScenario(ctx: StaticContext, slot: number, foundation: Foundation): ScenarioResult {
+export function runScenario(
+  ctx: StaticContext,
+  slot: number,
+  foundation: Foundation,
+  opponents: OpponentPolicy = 'MARKET',
+): ScenarioResult {
   const sc: StaticContext = { ...ctx, league: { ...ctx.league, draftPosition: slot } };
   const overrides = OVERRIDES[foundation];
   const teams = sc.teams;
@@ -211,7 +228,12 @@ export function runScenario(ctx: StaticContext, slot: number, foundation: Founda
       events = r.events;
       myRoundsDone++;
     } else {
-      const r = appendPick(events, { playerId: marketPick(ev), by: 'OTHER', at: 'scenario' }, teams, rounds);
+      const r = appendPick(
+        events,
+        { playerId: marketPick(ev, sc, opponents), by: 'OTHER', at: 'scenario' },
+        teams,
+        rounds,
+      );
       if (!r.ok) break;
       events = r.events;
     }
@@ -226,9 +248,10 @@ export function runScenario(ctx: StaticContext, slot: number, foundation: Founda
   };
 }
 
-export function runAllScenarios(ctx: StaticContext): ScenarioResult[] {
+export function runAllScenarios(ctx: StaticContext, opponents: OpponentPolicy = 'MARKET'): ScenarioResult[] {
   const out: ScenarioResult[] = [];
-  for (const slot of SCENARIO_SLOTS) for (const f of FOUNDATIONS) out.push(runScenario(ctx, slot, f));
+  for (const slot of SCENARIO_SLOTS)
+    for (const f of FOUNDATIONS) out.push(runScenario(ctx, slot, f, opponents));
   return out;
 }
 

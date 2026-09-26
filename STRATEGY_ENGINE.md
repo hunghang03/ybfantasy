@@ -269,18 +269,19 @@ MissCost(X)  = DDP(X) + NextScarAdj(X) − NextBest(roster, pool \ {X});    miss
 
 ```
 P1 PASS        ddpRel < 0.50, or avoided and ddpRel < 0.75
+U1 NO MARKET   band = UNKNOWN (no Yahoo market record): market urgency UNAVAILABLE
 D1 DRAFT NOW   ddpRel ≥ 0.85 and band ∈ {GONE, UNLIKELY}
 D2 DRAFT NOW   ddpRel ≥ 0.95 and band = TOSSUP
 D3 DRAFT NOW   ddpRel ≥ 0.85, TOSSUP and missRel ≥ 0.25
-L1 LEAN DRAFT  ddpRel ≥ 0.75 and band ∈ {GONE, UNLIKELY, TOSSUP, UNKNOWN}
+L1 LEAN DRAFT  ddpRel ≥ 0.75 and band ∈ {GONE, UNLIKELY, TOSSUP}
 L2 LEAN DRAFT  LIKELY and missRel ≥ 0.35
 S1 SAFE WAIT   SAFE
 W1 WAIT        otherwise
-R0             the recommended pick is shown as at least LEAN DRAFT (records the original rule)
+R0             the recommended pick is shown as at least LEAN DRAFT (records the original rule); a NO MARKET pick stays NO MARKET
 DND            Do-Not-Draft → PASS
 ```
 
-UNKNOWN can never produce DRAFT NOW.
+A missing market record never produces an urgency (DRAFT NOW, LEAN DRAFT, WAIT or SAFE WAIT): the player gets NO MARKET, with `market.urgency = UNAVAILABLE`, and keeps its statistical rank (`ddpRank`) and value unchanged. Pick-pair planning never assumes such a player survives to P1 (it is excluded from the conservative, neutral and fallback next-pick tiers), and the at-risk tiebreak among contenders is skipped when any contender's urgency is unknown (order falls back to DDP).
 
 **Value over market** is `marketRef − ((current − 1) + ddpRank)`. It is display only.
 
@@ -342,3 +343,5 @@ These were found while running the engine on realistic data. Each has a regressi
 - **Catch-up accounting** (Codex blocker 2). Non-advancing picks without an unrecorded slot are now rejected, as is a RESYNC behind the recorded picks. A randomized 400-step property test asserts `unrecorded ≥ 0` and exact undo.
 - **Pick-pair discount.** Changed to 0.90 (see §12.1).
 - **Yahoo `INJ` status** (Codex, config v4). `INJ` was read as `OUT_SHORT`, which asserted a duration Yahoo never states. It is now its own `INJ` state (blank → null, `GTD` → DTD, `INJ` → INJ; raw cell kept). `statusRisk.INJ = 0.08` is the value INJ rows already received, so no engine output changes; it is a new key, not a re-weighting. Stored v3 configs and backups are upgraded by adding the default `INJ` value and keeping every user-set value.
+- **Sample-size-aware category states (O1, config v5, presentation only).** Each profile entry keeps its calculated `state` and adds `displayState` + `maturity`: roster ≤ 2 → TENDENCY (shown as leaning + / even / leaning −), 3–4 → EMERGING (CRITICAL shown as WEAK), ≥ 5 → FULL (calculated state). Punt states are always shown. `d`, need, punt π and DDP are unchanged. Thresholds: `categoryStateMaturity` (default 2 / 4).
+- **No-market players (real-data QA).** See §9.5: NO MARKET label, `urgency = UNAVAILABLE`, no survival assumption in planning, no at-risk tiebreak across unknown urgency. No value or weight changed.

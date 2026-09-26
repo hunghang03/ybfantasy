@@ -8,7 +8,7 @@ import {
   timingLabel,
   valueOverMarket,
 } from '../market/market';
-import { baseState, rosterTotals } from '../roster/profile';
+import { baseState, displayCategoryState, rosterTotals, stateMaturity } from '../roster/profile';
 import { gapFactor, nextPickScarcity, scarcityAdjustment } from '../scarcity/scarcity';
 import { cmpId, sanitizeFinite } from '../numeric/safe';
 import { CATEGORIES, mapCategories, type Category, type CategoryRecord, type Position } from '../types/core';
@@ -159,20 +159,20 @@ export function evaluateDraft(sc: StaticContext, input: DraftInput): DraftEvalua
       roundP1,
       input.puntOverrides,
     );
+    // Players without a Yahoo market record are never assumed to last until P1 (no invented survival).
+    const known = (p: StaticPlayer) => bands.get(p.player.id)!.band !== 'UNKNOWN';
     const fallbackSet = new Set(
       marketOrder(poolAll)
         .slice(gFallback)
+        .filter(known)
         .map((p) => p.player.id),
     );
     const tiers: ((p: StaticPlayer) => boolean)[] = [
       (p) =>
-        (config.pickPair.conservativeBands as SurvivalBand[]).includes(
-          tierBand(bands.get(p.player.id)!.band, config),
-        ),
+        known(p) &&
+        (config.pickPair.conservativeBands as SurvivalBand[]).includes(bands.get(p.player.id)!.band),
       (p) =>
-        (config.pickPair.neutralBands as SurvivalBand[]).includes(
-          tierBand(bands.get(p.player.id)!.band, config),
-        ),
+        known(p) && (config.pickPair.neutralBands as SurvivalBand[]).includes(bands.get(p.player.id)!.band),
       (p) => fallbackSet.has(p.player.id),
     ];
     for (let t = 0; t < tiers.length; t++) {
@@ -238,6 +238,7 @@ export function evaluateDraft(sc: StaticContext, input: DraftInput): DraftEvalua
         rank: p.player.market?.yahooRank ?? null,
         marketRef: ref.value,
         marketRefSource: ref.source,
+        urgency: ref.value === null ? 'UNAVAILABLE' : 'AVAILABLE',
         band: b.band,
         bandBeforeXrank: b.bandBeforeXrank,
         zS: b.zS,
@@ -274,6 +275,9 @@ export function evaluateDraft(sc: StaticContext, input: DraftInput): DraftEvalua
     (qualified.length > 0
       ? e.ddpRel >= config.marketTimingThresholds.leanDraftRel && e.planning.pairScore >= bestQualified - tol
       : e.planning.pairScore >= bestPair - tol);
+  // The at-risk tiebreak compares urgency. If any contender's urgency is unknown (no market record) the
+  // comparison is impossible, so contenders are ordered by DDP instead (keeps the order transitive).
+  const urgencyComparable = !evals.some((e) => isContender(e) && e.market.band === 'UNKNOWN');
   evals.sort((a, b) => {
     const ad = a.flags.doNotDraft ? 1 : 0;
     const bd = b.flags.doNotDraft ? 1 : 0;
@@ -283,7 +287,12 @@ export function evaluateDraft(sc: StaticContext, input: DraftInput): DraftEvalua
     if (ac !== bc) return ac - bc;
     // Among contenders: most at-risk band first; within the same band, the higher DDP first
     // (pair scores inside the tolerance are treated as ties, so take the better player now).
-    if (ac === 0) return bandIdx(a) - bandIdx(b) || b.ddpRaw - a.ddpRaw || cmpId(a.playerId, b.playerId);
+    if (ac === 0)
+      return (
+        (urgencyComparable ? bandIdx(a) - bandIdx(b) : 0) ||
+        b.ddpRaw - a.ddpRaw ||
+        cmpId(a.playerId, b.playerId)
+      );
     const ap = a.planning ? 0 : 1;
     const bp = b.planning ? 0 : 1;
     if (ap !== bp) return ap - bp;
@@ -293,24 +302,32 @@ export function evaluateDraft(sc: StaticContext, input: DraftInput): DraftEvalua
   const recommendedId = evals.find((e) => !e.flags.doNotDraft && e.planning)?.playerId ?? null;
   // R0: the plan's recommended pick is never shown as WAIT/SAFE WAIT/PASS — it is at least LEAN DRAFT.
   const recEval = recommendedId ? evals.find((e) => e.playerId === recommendedId) : undefined;
-  if (recEval && recEval.label !== 'DRAFT_NOW' && recEval.label !== 'LEAN_DRAFT') {
+  if (
+    recEval &&
+    recEval.label !== 'DRAFT_NOW' &&
+    recEval.label !== 'LEAN_DRAFT' &&
+    recEval.label !== 'NO_MARKET'
+  ) {
     recEval.label = 'LEAN_DRAFT';
     recEval.labelRule = `R0: recommended by the pick-pair plan (was ${recEval.labelRule})`;
   }
 
   // ---- Profile ----
+  const maturity = stateMaturity(state.myPicks.length, config);
   const profile: CategoryProfileEntry[] = CATEGORIES.map((c) => {
     const punt = rc.punts.entries[c];
     const bs = baseState(rc.standing.d[c], config);
-    const state = punt.level === 'HARD' ? 'PUNT' : punt.level === 'SOFT' ? 'SOFT_PUNT' : bs;
+    const catState = punt.level === 'HARD' ? 'PUNT' : punt.level === 'SOFT' ? 'SOFT_PUNT' : bs;
     return {
       category: c,
       rosterSum: rc.standing.s[c],
       expected: rc.standing.B[c],
       teamSd: rc.standing.sigmaT[c],
       d: rc.standing.d[c],
-      state,
+      state: catState,
       baseState: bs,
+      displayState: displayCategoryState(catState, maturity),
+      maturity,
       need: rc.need[c],
       surplus: rc.surplus[c],
       poolScarcity: rc.qP[c],

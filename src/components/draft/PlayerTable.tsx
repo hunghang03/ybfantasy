@@ -181,11 +181,13 @@ export function PlayerTable({
           className="py-0.5 text-xs"
         >
           <option value="ALL">All actions</option>
-          {(['DRAFT_NOW', 'LEAN_DRAFT', 'WAIT', 'SAFE_WAIT', 'PASS'] as TimingLabel[]).map((l) => (
-            <option key={l} value={l}>
-              {LABEL_TEXT[l]}
-            </option>
-          ))}
+          {(['DRAFT_NOW', 'LEAN_DRAFT', 'WAIT', 'SAFE_WAIT', 'PASS', 'NO_MARKET'] as TimingLabel[]).map(
+            (l) => (
+              <option key={l} value={l}>
+                {LABEL_TEXT[l]}
+              </option>
+            ),
+          )}
         </Select>
         <Select
           aria-label="Risk filter"

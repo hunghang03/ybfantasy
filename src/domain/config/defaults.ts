@@ -2,7 +2,7 @@ import { StrategyConfigSchema, type StrategyConfig } from './strategyConfig';
 
 /** Default strategy configuration. Mirrors docs/DESIGN.md §4 (revision 3). */
 export const DEFAULT_STRATEGY_CONFIG: StrategyConfig = {
-  version: 4,
+  version: 5,
   seasonGames: 82,
 
   numeric: { eps: 1e-9, minPopulationSize: 30, minSdSamples: 2 },
@@ -25,6 +25,8 @@ export const DEFAULT_STRATEGY_CONFIG: StrategyConfig = {
   needStrongThreshold: 0.75,
   needFullDeficit: 2.0,
   categoryStateThresholds: { elite: 1.5, strong: 0.75, competitive: -0.5, weak: -1.25 },
+  // Presentation only: rosters of ≤ 2 show tendencies, ≤ 4 never show CRITICAL, 5+ show the calculated state.
+  categoryStateMaturity: { tendencyMaxRoster: 2, emergingMaxRoster: 4 },
 
   puntThresholds: { tendency: 0.3, soft: 0.5, hard: 0.9 },
   puntDeficitRange: { start: -0.5, full: -2.0 },
@@ -144,11 +146,17 @@ export function defaultConfig(): StrategyConfig {
 
 /**
  * Bring a config saved by an older version up to the current shape without touching values the user set.
- * v3 → v4: adds statusRisk.INJ (default value).
+ * v3 → v4: adds statusRisk.INJ (default value). v4 → v5: adds categoryStateMaturity (presentation only).
+ * Missing top-level keys take their default; every value the user set is kept.
  */
 export function upgradeStoredConfig(stored: StrategyConfig): StrategyConfig {
   const statusRisk = { ...DEFAULT_STRATEGY_CONFIG.statusRisk, ...stored.statusRisk };
-  return { ...stored, statusRisk, version: Math.max(stored.version, DEFAULT_STRATEGY_CONFIG.version) };
+  return {
+    ...structuredClone(DEFAULT_STRATEGY_CONFIG),
+    ...stored,
+    statusRisk,
+    version: Math.max(stored.version, DEFAULT_STRATEGY_CONFIG.version),
+  };
 }
 
 export type ConfigParseResult = { ok: true; config: StrategyConfig } | { ok: false; errors: string[] };
