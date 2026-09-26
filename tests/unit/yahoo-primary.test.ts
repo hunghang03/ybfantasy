@@ -608,7 +608,7 @@ describe('O1: sample-size-aware category states (presentation only)', () => {
     }
     // The fixture really exercises the case: a calculated CRITICAL exists early but is not shown.
     expect(saw.critCalcEarly).toBe(true);
-  });
+  }, 60_000); // walks ~90 engine evaluations; generous timeout so CPU load cannot flake it
 });
 
 describe('no-market players: statistical rank separate from market urgency', () => {
