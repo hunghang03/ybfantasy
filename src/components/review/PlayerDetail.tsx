@@ -156,7 +156,7 @@ export function PlayerDetail({ p, ctx }: { p: PlayerEvaluation; ctx: StaticConte
             <tbody>
               <Row
                 k="Availability score"
-                v={`${p.availability.score} (${p.availability.displayRisk === 'UNKNOWN' ? 'NO HISTORY — calculated ' + p.availability.risk : p.availability.risk})${p.availability.terms.historyKnown ? ` · history coverage ${Math.round(100 * p.availability.terms.historyCoverage)}%` : ''}`}
+                v={`${p.availability.score} (calculated ${p.availability.risk}) · ${p.availability.terms.historyKnown ? `history coverage ${Math.round(100 * p.availability.terms.historyCoverage)}%` : 'NO HISTORY'}`}
               />
               <Row
                 k="History H (weighted)"

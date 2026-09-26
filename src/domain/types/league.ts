@@ -49,6 +49,10 @@ export interface DecisionCandidate {
   risk: string;
   /** Calculated level behind it (the default when there is no history). */
   riskCalculated: string;
+  /** Band with independent history coverage, as shown: "NO HIST", "MODERATE · NO HIST", "HIGH". */
+  riskDisplay?: string;
+  /** Share of the 3-season weights backed by history rows (0 = none). */
+  historyCoverage?: number;
   projectionGap: {
     projectedGp: number;
     historicalGpRate: number;

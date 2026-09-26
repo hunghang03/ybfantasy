@@ -20,6 +20,19 @@ export function seasonStartYear(season: string): number | null {
 }
 
 /**
+ * Durability-history anchor for a fantasy season: the immediately preceding NBA season.
+ * "2026-27" → "2025-26" (so the window is 2025-26 · .5, 2024-25 · .3, 2023-24 · .2). Accepts "2026-27",
+ * "2026/27", "2026-2027" or "2026". Anything else → null (history is then not used; never guessed from data).
+ */
+export function historyAnchorFor(fantasySeason: string): string | null {
+  const m = /^(\d{4})(?:\s*[-/]\s*(\d{2}|\d{4}))?$/.exec(fantasySeason.trim());
+  if (!m) return null;
+  const start = Number(m[1]);
+  if (m[2] !== undefined && Number(m[2]) % 100 !== (start + 1) % 100) return null;
+  return `${start - 1}-${String(start % 100).padStart(2, '0')}`;
+}
+
+/**
  * Injury-weighted missed share of one season (DESIGN §6.8 + availability-history rules):
  * measured against Games Available (games he could have played; defaults to team games), with suspension and
  * other non-injury games excluded. Itemised injury absences use their recurrence weight; missed games nobody
@@ -43,15 +56,15 @@ export function computeAvailability(
   marketStatus: InjuryStatus | null,
   config: StrategyConfig,
   /**
-   * Most recent history season in the dataset (e.g. "2025-26"). Seasons are weighted by their offset from it, and
-   * seasons with no row count as unknown (shrinkage toward unknownHistoryRisk), so one or two seasons of history
-   * (sophomores, returners) are not treated as a full three-season record. Null → newest-first order (legacy).
+   * The NBA season immediately before the fantasy season (`historyAnchorFor(league.season)`, e.g. "2025-26" for
+   * 2026-27). Slot i holds the season i years before it (weights .5/.3/.2); a slot with no row keeps its weight at
+   * unknownHistoryRisk (shrinkage), so a newest row of 2024-25 stays in the .3 slot. Never derived from the rows
+   * present. Null (fantasy season not recognised) → history is not used.
    */
-  anchorSeason: string | null = null,
+  anchorSeason: string | null,
 ): AvailabilityBlock {
   const weights = config.historySeasonWeights;
   const anchor = anchorSeason ? seasonStartYear(anchorSeason) : null;
-  // slot i ← the season i years before the anchor (or the i-th newest row when there is no anchor)
   const slots: (AvailabilitySeason | null)[] = weights.map(() => null);
   if (anchor !== null) {
     for (const s of history) {
@@ -60,11 +73,6 @@ export function computeAvailability(
       const i = anchor - y;
       if (i >= 0 && i < weights.length) slots[i] = s;
     }
-  } else {
-    [...history]
-      .sort((a, b) => (a.season < b.season ? 1 : -1))
-      .slice(0, weights.length)
-      .forEach((s, i) => (slots[i] = s));
   }
   const shares = slots.map((s) => (s ? seasonMissShare(s, config) : null));
   const seasons = slots.filter((s, i): s is AvailabilitySeason => !!s && shares[i] !== null);
@@ -128,6 +136,19 @@ export function computeAvailability(
   };
 }
 
+/**
+ * Risk band plus history coverage, as displayed (presentation only). The calculated band is always kept; history
+ * coverage is shown independently: "NO HIST" when the band is LOW only because of the unknown default,
+ * "MODERATE · NO HIST" when current status drives a worse band but no history season exists.
+ */
+export function riskDisplayText(
+  a: Pick<AvailabilityBlock, 'risk' | 'displayRisk' | 'terms'>,
+  text: (r: RiskLevel | 'UNKNOWN') => string = (r) => (r === 'UNKNOWN' ? 'NO HIST' : r),
+): string {
+  if (a.displayRisk === 'UNKNOWN') return text('UNKNOWN');
+  return a.terms.historyKnown ? text(a.risk) : `${text(a.risk)} · ${text('UNKNOWN')}`;
+}
+
 export function riskLevel(score: number, config: StrategyConfig): RiskLevel {
   if (score >= config.riskBands.low) return 'LOW';
   if (score >= config.riskBands.moderate) return 'MODERATE';
@@ -149,7 +170,10 @@ export function riskAdjustment(
 
 export interface AvailabilityProjectionGap {
   projectedGp: number;
-  /** Mean GP rate over the recent seasons, scaled to a full season: GP × seasonGames / Games Available. */
+  /**
+   * UNWEIGHTED arithmetic mean of the qualifying seasons' GP rates (GP × seasonGames / Games Available) inside
+   * the 3-season window. Unlike the durability calculation, the .5/.3/.2 weights are not applied.
+   */
   historicalGpRate: number;
   seasons: number;
   difference: number;
@@ -172,9 +196,12 @@ export function availabilityProjectionGap(
     return (
       y !== null &&
       avail > 0 &&
-      (anchor === null || (anchor - y >= 0 && anchor - y < config.historySeasonWeights.length))
+      anchor !== null &&
+      anchor - y >= 0 &&
+      anchor - y < config.historySeasonWeights.length
     );
   });
+  if (anchor === null) return null;
   if (inWindow.length < config.availabilityGapFlag.minSeasons) return null;
   const rate =
     inWindow.reduce(

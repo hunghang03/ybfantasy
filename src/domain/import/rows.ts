@@ -132,6 +132,12 @@ const PROJECTION_REVIEW_ALIASES: Record<string, string> = {
 };
 
 /** Availability columns a transcription may flag as unreadable. Flagged GP rejects the row. */
+/**
+ * Absolute sanity ceiling for one player's Games Available in a season. The NBA single-season games-played record
+ * is 88 (Walt Bellamy, 1968-69, after a trade), so a larger value is a transcription error, not a trade.
+ */
+export const MAX_SEASON_GAMES_AVAILABLE = 88;
+
 const AVAILABILITY_REVIEW_ALIASES: Record<string, string> = {
   gp: 'gamesPlayed',
   'games available': 'gamesAvailable',
@@ -473,11 +479,29 @@ export function validateRow(
         ? null
         : c.num(cells, 'gamesAvailable', 'Games available', { min: 0, max: 100 });
       if (availRaw === null && cells('gamesAvailable') !== undefined)
-        c.warnings.push('Games Available blank: Team Games used (no partial-season adjustment).');
+        c.warnings.push(
+          teams.length > 1
+            ? 'Games Available blank for a traded player: Team Games used. Enter the actual number from the source.'
+            : 'Games Available blank: Team Games used (no partial-season adjustment).',
+        );
       const gamesAvailable = availRaw ?? teamGames;
-      // A traded player can have a few more (or fewer) games available than one team's schedule.
-      if (gamesAvailable > teamGames + 4)
-        c.errors.push(`Games available (${gamesAvailable}) exceeds team games + 4 (${teamGames + 4}).`);
+      // Games Available is a source fact, never an allowance. Sanity bounds:
+      //  · absolute ceiling MAX_SEASON_GAMES_AVAILABLE (above any NBA single-season games-played record) → rejected;
+      //  · one team (or teams not given): cannot exceed that team's schedule → rejected;
+      //  · several teams (trade): above Team Games is possible only through the trade, so it is kept but flagged
+      //    for verification against the source.
+      if (availRaw !== null && availRaw > MAX_SEASON_GAMES_AVAILABLE)
+        c.errors.push(
+          `Games Available (${availRaw}) is above ${MAX_SEASON_GAMES_AVAILABLE}, more than any NBA player has played in one season.`,
+        );
+      else if (gamesAvailable > teamGames && teams.length <= 1)
+        c.errors.push(
+          `Games Available (${gamesAvailable}) exceeds Team Games (${teamGames}). Only a player traded mid-season can have more; list all his teams in Team(s).`,
+        );
+      else if (gamesAvailable > teamGames)
+        c.warnings.push(
+          `Needs review: Games Available (${gamesAvailable}) exceeds Team Games (${teamGames}) after a trade (${teams.join('/')}); verify it against the source.`,
+        );
       if (gamesPlayed > gamesAvailable) c.errors.push('GP cannot exceed Games Available.');
       const note = sanitizeText(cells('note'));
       const absences: Absence[] = [];

@@ -56,7 +56,10 @@ export interface AvailabilityBlock {
   score: number;
   /** Calculated level (used by calibration/scenario logic). */
   risk: RiskLevel;
-  /** What the UI shows: UNKNOWN instead of LOW when no season of history exists (durability not observed). */
+  /**
+   * UNKNOWN instead of LOW when no season of history exists (durability not observed); otherwise the calculated
+   * band. History coverage is shown independently of it (terms.historyKnown → "MODERATE · NO HIST").
+   */
   displayRisk: RiskLevel | 'UNKNOWN';
   /** AVAILABILITY_PROJECTION_GAP (QA/display only; never scored). */
   projectionGap?: {

@@ -1,5 +1,9 @@
 import type { StrategyConfig } from '../config/strategyConfig';
-import { availabilityProjectionGap, computeAvailability } from '../availability/availability';
+import {
+  availabilityProjectionGap,
+  computeAvailability,
+  historyAnchorFor,
+} from '../availability/availability';
 
 const fmtGp = (x: number) => (Math.round(x * 10) / 10).toString();
 import { computeDisagreement, dataConfidence } from '../confidence/confidence';
@@ -126,13 +130,15 @@ export function buildStaticContext(
       severity: 'info',
     });
 
-  // Most recent history season in the dataset: seasons are weighted by their distance from it.
-  const historyAnchor =
-    players
-      .flatMap((p) => p.history.map((h) => h.season))
-      .filter((s) => /^\d{4}-\d{2}$/.test(s))
-      .sort()
-      .at(-1) ?? null;
+  // Durability window: the NBA season before the league's fantasy season (2026-27 → 2025-26 · .5, 2024-25 · .3,
+  // 2023-24 · .2), never the newest season that happens to be in the imported history.
+  const historyAnchor = historyAnchorFor(league.season);
+  if (historyAnchor === null && players.some((p) => p.history.length > 0))
+    warnings.push({
+      code: 'HISTORY_ANCHOR_UNKNOWN',
+      message: `League season "${league.season}" is not a season like 2026-27; availability history is not used.`,
+      severity: 'warn',
+    });
   const ranked: StaticPlayer[] = pre.map((x) => {
     const value = computeValue(x.pg, x.p.proj!.gp, replacement, config);
     const availability = computeAvailability(

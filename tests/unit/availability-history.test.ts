@@ -4,6 +4,8 @@ import { buildContext } from '@/domain';
 import {
   availabilityProjectionGap,
   computeAvailability,
+  historyAnchorFor,
+  riskDisplayText,
   seasonMissShare,
 } from '@/domain/availability/availability';
 import { defaultConfig, parseStrategyConfig } from '@/domain/config/defaults';
@@ -124,7 +126,7 @@ describe('availability-history CSV schema', () => {
     expect(p.identityUpdates[0]!.providerIds).toEqual({ nba_history: 'src-123' });
   });
 
-  it('validation: confidence, GP ≤ available, accounting, season format, cap, flagged GP, duplicates', () => {
+  it('validation: confidence, GP ≤ available, accounting, season format, Games Available bounds, flagged GP, duplicates', () => {
     const ds = importInto(EMPTY, 'YAHOO_MARKET', 'yahoo', MARKET);
     const errs = (o: Record<string, string | number>) =>
       planHistory(`${HEADER}\n${row(o)}`, ds).rejected[0]?.errors.join(' ') ?? '';
@@ -135,7 +137,11 @@ describe('availability-history CSV schema', () => {
     );
     expect(errs({ Season: '2025' })).toMatch(/2025-26/);
     expect(errs({ Season: '2025-27' })).toMatch(/consecutive/);
-    expect(errs({ 'Games Available': 90 })).toMatch(/team games \+ 4/);
+    // Games Available: no "+4 trade allowance". One team → at most Team Games; absolute ceiling 88 for anyone.
+    expect(errs({ 'Games Available': 83 })).toMatch(/exceeds Team Games \(82\).*list all his teams/);
+    expect(errs({ 'Games Available': 71, 'Team Games': 70, GP: 60 })).toMatch(/exceeds Team Games \(70\)/);
+    expect(errs({ 'Team(s)': 'AAA/BBB', 'Games Available': 89 })).toMatch(/above 88/);
+    expect(errs({ 'Team(s)': 'AAA/BBB', 'Games Available': 100 })).toMatch(/above 88/);
     expect(errs({ GP: '', 'Review Fields': 'GP' })).toMatch(/GP is flagged unreadable/);
     const dup = planHistory(`${HEADER}\n${row()}\n${row({ GP: 60 })}`, ds);
     expect(dup.duplicates).toHaveLength(1);
@@ -154,6 +160,10 @@ describe('identity matching uses the existing system (no independent fuzzy merge
       ds,
     );
     expect(p.rejected).toEqual([]);
+    // above one team's schedule is possible only through the trade: accepted, but flagged for source verification
+    expect(p.rowWarnings.flatMap((w) => w.warnings).join(' ')).toMatch(
+      /Needs review: Games Available \(83\) exceeds Team Games \(82\) after a trade/,
+    );
     expect(p.matchedVia).toEqual({ NAME_TEAM: 1 });
     expect(p.records.availability[0]!.teams).toEqual(['MIA', 'PHI']);
     const upd = p.identityUpdates.find((i) => i.canonicalName === 'Be Ta');
@@ -186,7 +196,77 @@ describe('durability history → residual risk only', () => {
       'LOW',
       'UNKNOWN',
     ]);
-    expect(computeAvailability([], null, 'INJ', cfg, '2025-26').displayRisk).toBe('MODERATE');
+    // INJ without history: the calculated band is kept, history coverage is shown independently
+    const inj = computeAvailability([], null, 'INJ', cfg, '2025-26');
+    expect([inj.risk, inj.displayRisk, inj.score]).toEqual(['MODERATE', 'MODERATE', 82]);
+    expect(riskDisplayText(inj)).toBe('MODERATE · NO HIST');
+    expect(riskDisplayText(none)).toBe('NO HIST');
+    expect(riskDisplayText(computeAvailability(AD, null, 'DTD', cfg, '2025-26'))).toBe('HIGH');
+  });
+
+  it('anchor: the NBA season before the fantasy season, never the newest season in the file', () => {
+    expect(historyAnchorFor('2026-27')).toBe('2025-26');
+    expect(historyAnchorFor('2026/27')).toBe('2025-26');
+    expect(historyAnchorFor('2026-2027')).toBe('2025-26');
+    expect(historyAnchorFor('2026')).toBe('2025-26');
+    expect(historyAnchorFor('2000-01')).toBe('1999-00');
+    expect(historyAnchorFor('2026-28')).toBeNull();
+    expect(historyAnchorFor('next season')).toBeNull();
+  });
+
+  it('regression: newest row 2024-25 in a 2026-27 fantasy season keeps the .3 slot (not promoted to .5)', () => {
+    const cfgAnchor = historyAnchorFor(league().season);
+    expect(cfgAnchor).toBe('2025-26');
+    const rows = [season('2024-25', 60), season('2023-24', 70)];
+    const a = computeAvailability(rows, null, null, cfg, cfgAnchor);
+    const s2425 = 0.75 * (22 / 82);
+    const s2324 = 0.75 * (12 / 82);
+    expect(a.terms.history).toBeCloseTo(0.5 * cfg.unknownHistoryRisk + 0.3 * s2425 + 0.2 * s2324, 12);
+    expect(a.terms.historyCoverage).toBeCloseTo(0.5, 12);
+    // not the old dataset-derived behaviour (2024-25 → .5, 2023-24 → .3)
+    expect(a.terms.history).not.toBeCloseTo(0.5 * s2425 + 0.3 * s2324 + 0.2 * cfg.unknownHistoryRisk, 6);
+    // end to end: the whole file only reaches 2024-25, the league is 2026-27
+    const ds = importInto(EMPTY, 'YAHOO_MARKET', 'yahoo', MARKET);
+    const proj =
+      'Player,Team,Pos,GP*,FGM/A*,FG%,FTM/A*,FT%,3PTM,PTS,REB,AST,ST,BLK,TO,Stat Basis\n' +
+      Array.from({ length: 30 }, (_, i) =>
+        [
+          i === 0 ? 'Al Pha' : `Fill ${i}`,
+          i === 0 ? 'AAA' : `T${i}`,
+          'PG',
+          70,
+          `${400 + i}/900`,
+          '',
+          '150/190',
+          '',
+          100,
+          1400 - i * 10,
+          400,
+          300,
+          70,
+          30,
+          150,
+          'TOTAL',
+        ].join(','),
+      ).join('\n');
+    const withProj = importInto(ds, 'PROJECTION', 'yahoo', proj);
+    const hist = [HEADER, row({ Season: '2024-25', GP: 60 }), row({ Season: '2023-24', GP: 70 })].join('\n');
+    const full = importInto(withProj, 'AVAILABILITY', 'nba_history', hist, cfg, 'NEVER');
+    const ctx = buildContext(
+      full,
+      league({ primaryProjectionProvider: 'yahoo', validationProviders: [] }),
+      cfg,
+    );
+    const id = full.identities.find((i) => i.canonicalName === 'Al Pha')!.canonicalPlayerId;
+    expect(ctx.byId.get(id)!.availability.terms.history).toBeCloseTo(a.terms.history, 12);
+    // an unrecognised league season → history not used, with a warning (never guessed from the rows)
+    const odd = buildContext(
+      full,
+      league({ season: 'draft', primaryProjectionProvider: 'yahoo', validationProviders: [] }),
+      cfg,
+    );
+    expect(odd.byId.get(id)!.availability.terms.historyKnown).toBe(false);
+    expect(odd.warnings.map((w) => w.code)).toContain('HISTORY_ANCHOR_UNKNOWN');
   });
 
   it('sophomore shrinkage: missing seasons keep their weight at the unknown default', () => {
@@ -281,7 +361,7 @@ describe('durability history → residual risk only', () => {
     );
   });
 
-  it('gap flag needs ≥ 2 seasons and scales partial seasons to a full season', () => {
+  it('gap flag: unweighted mean of season GP rates (not .5/.3/.2), ≥ 2 seasons, partial seasons scaled', () => {
     expect(availabilityProjectionGap([season('2025-26', 20)], 70, cfg, '2025-26')).toBeNull();
     const g = availabilityProjectionGap(
       [season('2025-26', 38, { gamesAvailable: 41 }), season('2024-25', 80)],
@@ -290,6 +370,9 @@ describe('durability history → residual risk only', () => {
       '2025-26',
     );
     expect(g!.historicalGpRate).toBeCloseTo((38 * 82) / 41 / 2 + 40, 12); // (76 + 80) / 2 = 78
+    // AD 76/51/20: unweighted (76+51+20)/3 = 49, whereas a .5/.3/.2 weighting would give 37.5
+    expect(availabilityProjectionGap(AD, 58, cfg, '2025-26')!.historicalGpRate).toBeCloseTo(49, 12);
+    expect(availabilityProjectionGap(AD, 58, cfg, null)).toBeNull();
   });
 
   it('config v6: availabilityGapFlag defaults for older configs', () => {

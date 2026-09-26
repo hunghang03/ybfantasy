@@ -7,7 +7,7 @@ import { CATEGORY_LABEL, type Position } from '@/domain/types/core';
 import type { PlayerEvaluation, RiskLevel } from '@/domain/types/evaluation';
 import type { TimingLabel } from '@/domain/types/league';
 import { Badge, Button, Input, Select, cx } from '../ui/primitives';
-import { LABEL_CLASS, LABEL_TEXT, RISK_CLASS, RISK_TEXT } from '../labels';
+import { LABEL_CLASS, LABEL_TEXT, RISK_CLASS, riskText } from '../labels';
 
 export type SortKey = 'priority' | 'ddp' | 'adp' | 'xrank' | 'name' | 'risk' | 'neutral';
 
@@ -316,10 +316,10 @@ export function PlayerTable({
                     title={
                       p.availability.terms.historyKnown
                         ? `Availability score ${p.availability.score}`
-                        : 'No availability history: durability not observed (default risk used in the calculation)'
+                        : `No availability history: durability not observed (default risk used in the calculation). Calculated ${p.availability.risk}, score ${p.availability.score}.`
                     }
                   >
-                    {RISK_TEXT[p.availability.displayRisk]}
+                    {riskText(p.availability)}
                   </td>
                   <td className={cx('px-1 text-[10px] text-slate-600 dark:text-slate-300', pad)}>
                     {p.fitTags.map((c) => CATEGORY_LABEL[c]).join(' ')}

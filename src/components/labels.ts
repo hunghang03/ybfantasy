@@ -1,4 +1,5 @@
-import type { DisplayState, RiskLevel, SurvivalBand } from '@/domain/types/evaluation';
+import { riskDisplayText } from '@/domain/availability/availability';
+import type { AvailabilityBlock, DisplayState, RiskLevel, SurvivalBand } from '@/domain/types/evaluation';
 import type { TimingLabel } from '@/domain/types/league';
 
 export const LABEL_TEXT: Record<TimingLabel, string> = {
@@ -73,6 +74,11 @@ export const RISK_TEXT: Record<RiskLevel | 'UNKNOWN', string> = {
   HIGH: 'HIGH',
   VERY_HIGH: 'V.HIGH',
 };
+
+/** Short risk text with independent history coverage: "NO HIST", "MOD · NO HIST", "HIGH". */
+export function riskText(a: Pick<AvailabilityBlock, 'risk' | 'displayRisk' | 'terms'>): string {
+  return riskDisplayText(a, (r) => RISK_TEXT[r]);
+}
 
 export const BAND_TEXT: Record<SurvivalBand, string> = {
   GONE: 'Overdue',

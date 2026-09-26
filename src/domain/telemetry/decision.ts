@@ -1,3 +1,4 @@
+import { riskDisplayText } from '../availability/availability';
 import type { StaticContext } from '../recommendations/staticContext';
 import { evaluateDraft, type DraftEvaluation, type DraftInput } from '../recommendations/engine';
 import { appendPick } from '../draft/replay';
@@ -35,6 +36,8 @@ export function candidateOf(p: PlayerEvaluation): DecisionCandidate {
     xrank: p.market.xrank,
     risk: p.availability.displayRisk,
     riskCalculated: p.availability.risk,
+    riskDisplay: riskDisplayText(p.availability),
+    historyCoverage: r4(p.availability.terms.historyCoverage),
     projectionGap: p.availability.projectionGap ?? null,
     fitTags: p.fitTags,
   };

@@ -70,7 +70,7 @@ const trio: SynthSpec[] = [
 const hist = (id: string, seasons: [number, number, 'LOW' | 'MODERATE' | 'HIGH'][]): AvailabilitySeason[] =>
   seasons.map(([season, missed, rec]) => ({
     canonicalPlayerId: id,
-    season: String(season),
+    season: `${season}-${String((season + 1) % 100).padStart(2, '0')}`, // 2025 → 2025-26
     importBatchId: 'syn',
     gamesPlayed: 82 - missed,
     teamGames: 82,

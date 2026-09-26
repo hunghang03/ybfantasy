@@ -1,6 +1,6 @@
 # Availability / durability audit (no code or calibration changes)
 
-Status: audit (§1–7) approved by Codex; availability-history import implemented (§8). No weight or threshold changed: `durabilityResidualWeight` 0.5 and `unknownHistoryRisk` 0.10 stay; history is residual risk only. Real-data player values (Yahoo-derived) are kept out of this public file; they are summarised in the Codex prompt and in `reports/private/` (git-ignored).
+Status: audit (§1–7) approved by Codex; availability-history import implemented (§8), with the QA corrections of §8.1. No weight or threshold changed: `durabilityResidualWeight` 0.5 and `unknownHistoryRisk` 0.10 stay; history is residual risk only. Real-data player values (Yahoo-derived) are kept out of this public file; they are summarised in the Codex prompt and in `reports/private/` (git-ignored).
 
 ## 1. Current data flow
 
@@ -35,7 +35,7 @@ BPV  = PGV + (1 − perGameBlend) · (ESV − PGV)        perGameBlend 0.5  → 
 ### Risk
 
 ```
-H (history) = weighted mean over up to 3 seasons (newest first, weights .5/.3/.2) of
+H (history) = weighted mean over the 3 NBA seasons before the fantasy season (weights .5/.3/.2; see §8) of
      wMiss = Σ(missed × recurrenceWeight) / teamGames          if absences are itemised
      wMiss = (1 − GP/teamGames) × 0.75                         otherwise ("unclassified")
      recurrence weights LOW .25 · MODERATE .6 · HIGH 1.0 · UNCLASSIFIED .75
@@ -98,7 +98,7 @@ Source, Captured At, Confidence, Review Fields, QA Note
 | Rookie (no NBA season)                                | No rows → H = unknown default. Never fabricate college/overseas GP.                                                 |
 | Sophomore (1 season)                                  | Use it, but shrink toward the unknown default in proportion to the missing weight (0.3 + 0.2). **Decision needed.** |
 | Partial season (signed mid-season, two-way, overseas) | Measure against `Games Available`; games he could not play are not missed.                                          |
-| Trade                                                 | Sum GP across teams; `Games Available` may be 80–84 (cap); one row per season.                                      |
+| Trade                                                 | Sum GP across teams; `Games Available` = actual games available across the teams, from the source (§8.1).           |
 | Suspension                                            | Own column; excluded from injury recurrence.                                                                        |
 | Shortened season                                      | `Team Games` = actual schedule. (2023-24 to 2025-26 were 82-game seasons.)                                          |
 | Rest / load management                                | Unclassified unless the source says otherwise; optional LOW recurrence.                                             |
@@ -116,18 +116,32 @@ No formula, weight, threshold, BPV, DDP or data file was changed by this audit.
   Player ID,Player,Team(s),Season,GP,Games Available,Team Games,Missed LOW,Missed MODERATE,Missed HIGH,Missed Unclassified,Suspension Games,Other Non-Injury Games,Status Note,Source,Captured At,Confidence,Review Fields,QA Note
   ```
 
-- **Validation:** Confidence HIGH | MEDIUM | LOW; Season `YYYY-YY` (consecutive years); GP ≤ Games Available; Games Available ≤ Team Games + 4 (trades); missed LOW + MODERATE + HIGH + Unclassified + Suspension + Other ≤ Games Available − GP; GP flagged in Review Fields → row rejected; duplicate player-season → rejected as duplicate. Blank Games Available → Team Games (warning). Raw cells and provenance are stored.
+- **Validation:** Confidence HIGH | MEDIUM | LOW; Season `YYYY-YY` (consecutive years); GP ≤ Games Available; Games Available bounds as in §8.1 (no "+4" allowance); missed LOW + MODERATE + HIGH + Unclassified + Suspension + Other ≤ Games Available − GP; GP flagged in Review Fields → row rejected; duplicate player-season → rejected as duplicate. Blank Games Available → Team Games (warning). Raw cells and provenance are stored.
 - **Scoring per season:** share = (Σ itemised injury games × recurrence weight + unexplained × 0.75) / Games Available, where unexplained = Games Available − GP − itemised − suspension − other non-injury. Suspension and other non-injury games never count (nor toward the chronic pattern). Unexplained games stay UNCLASSIFIED — never assumed to be a known injury type.
-- **Window & shrinkage:** seasons are placed by their distance from the most recent history season in the dataset (weights .5/.3/.2). A season with no row keeps its weight at `unknownHistoryRisk` (sophomores / returners). No row at all → the unknown default, as before. Seasons outside the window are ignored.
+- **Window & shrinkage:** the window is anchored explicitly on the league's fantasy season, never on the seasons present in the file (§8.1). For 2026-27: 2025-26 · .5, 2024-25 · .3, 2023-24 · .2. A season with no row keeps its weight at `unknownHistoryRisk` (sophomores / returners). No row at all → the unknown default, as before. Seasons outside the window are ignored.
 - **Identity:** the existing matcher and confirmed alias table only (provider id → name + team → alias → unique name → review). Several teams (trade) are tried one by one; history never changes the identity's current team or eligibility, and never creates an identity. A real `Player ID` is recorded for that source; blank IDs are never filled.
-- **Presentation:** without any season of history a LOW score is shown as **NO HIST / UNKNOWN** (numbers unchanged; a status-driven MODERATE+ still shows). Player detail shows history coverage.
-- **`AVAILABILITY_PROJECTION_GAP`:** player warning when |projected GP − recent GP rate| ≥ 8 with ≥ 2 seasons (rate = GP × 82 / Games Available, averaged). Config `availabilityGapFlag` (v6). Flag only — never changes BPV, DDP or risk.
-- **Tests:** `tests/unit/availability-history.test.ts` (Anthony Davis 76/51/20 → H = 0.3796, score 59 HIGH with DTD; BPV unchanged; gap flag 58 vs 49), `tests/unit/availability.test.ts`.
+- **Presentation:** the calculated band is kept and history coverage is shown independently (§8.1): no history + LOW → **NO HIST**; no history + a status-driven band → e.g. **MODERATE · NO HIST** (`MOD · NO HIST` in the table). Numbers unchanged. Player detail shows the calculated band and history coverage.
+- **`AVAILABILITY_PROJECTION_GAP`:** player warning when |projected GP − `historicalGpRate`| ≥ 8 with ≥ 2 seasons in the window. `historicalGpRate` is the **unweighted arithmetic mean** of the qualifying seasons' GP rates (GP × 82 / Games Available), unlike the .5/.3/.2 durability calculation (Anthony Davis 76/51/20 → 49, not 37.5). Config `availabilityGapFlag {minSeasons: 2, gpDifference: 8}` (v6). Flag only — never changes BPV, DDP or risk.
+- **Tests:** `tests/unit/availability-history.test.ts` (Anthony Davis 76/51/20 → H = 0.3796, score 59 HIGH with DTD; BPV unchanged; gap flag 58 vs 49; anchor regression; Games Available bounds; `MODERATE · NO HIST`), `tests/unit/availability.test.ts`, `tests/integration/durability.test.ts`.
+
+### 8.1 QA corrections (before real-data transcription)
+
+1. **Explicit anchor.** `historyAnchorFor(league.season)` = the NBA season immediately before the fantasy season ("2026-27" → "2025-26"; also accepts "2026/27", "2026-2027", "2026"). Slot i = the season i years before the anchor. The newest row in the file no longer matters: if a player's (or the whole file's) newest row is 2024-25 in a 2026-27 league, 2024-25 keeps the .3 slot and the empty 2025-26 slot shrinks toward `unknownHistoryRisk` (regression test). An unrecognised league season → history not used + engine warning `HISTORY_ANCHOR_UNKNOWN` (never guessed from the rows).
+2. **Games Available.** The "Team Games + 4" trade allowance is removed. Games Available is a source fact:
+   - GP ≤ Games Available (rejected otherwise).
+   - Absolute ceiling **88** (`MAX_SEASON_GAMES_AVAILABLE`: the NBA single-season games-played record, set after a trade) — above it the row is rejected as a transcription error.
+   - One team (or Team(s) blank): Games Available ≤ Team Games — above it the row is rejected ("only a player traded mid-season can have more; list all his teams").
+   - Several teams: Games Available above Team Games is accepted but flagged **Needs review** on the import screen, to be verified against the source.
+   - Blank Games Available → Team Games with a warning (for a traded player the warning asks for the actual number).
+3. **No-history presentation** as described above (`riskDisplayText`; decision records carry `riskDisplay` and `historyCoverage`).
+4. **Gap flag** documented as an unweighted mean (above). Unchanged in behaviour and threshold.
+
+No BPV, DDP, durability weight, recurrence weight, status risk, round weight, risk band or gap threshold changed. The fictional sample reports are byte-identical (their history is 2023-24 → 2025-26 with a 2026-27 league).
 
 ### Notes for whoever transcribes the history file
 
 1. **Names:** use the Yahoo market spelling. Other spellings match only through `data/aliases.csv`; anything else goes to the review queue (history never creates players).
-2. **One row per player per season** for 2023-24, 2024-25 and 2025-26 only. Traded player: ONE row, `Team(s)` like `BKN/PHX`, GP summed across teams, Games Available = games while he was in the league (may exceed 82 by up to 4).
+2. **One row per player per season** for 2023-24, 2024-25 and 2025-26 only (the 2026-27 fantasy season's window). Traded player: ONE row, `Team(s)` listing every team like `BKN/PHX`, GP summed across teams, and **Games Available = the actual number of NBA games he could have played while rostered across those teams, taken from the source** — do not add or assume any allowance. It can exceed Team Games only for a traded player (that row is flagged for review); above 88 is always rejected.
 3. **No row** for a season the player was not in the NBA (college, overseas, unsigned). A season in the NBA but fully injured: a row with GP 0.
 4. **Games Available** is the key partial-season field (signed mid-season, two-way limits, called up): count only games he could have played.
 5. **Blank means unknown.** Leave missed-by-type columns blank when the reason is unknown; the remainder becomes UNCLASSIFIED. Put suspensions and non-injury absences (personal, not with team) in their own columns — they never count as injury.

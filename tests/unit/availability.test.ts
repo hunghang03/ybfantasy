@@ -1,9 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { defaultConfig, weightForRound } from '@/domain/config/defaults';
-import { computeAvailability, riskAdjustment } from '@/domain/availability/availability';
+import { computeAvailability as compute, riskAdjustment } from '@/domain/availability/availability';
 import type { AvailabilitySeason, PlayerContext } from '@/domain/types/data';
 
 const cfg = defaultConfig();
+// Fantasy season 2026-27 → history anchor 2025-26 (slots 2025-26 · .5, 2024-25 · .3, 2023-24 · .2).
+const computeAvailability = (...a: [AvailabilitySeason[], PlayerContext | null, 'DTD' | null, typeof cfg]) =>
+  compute(...a, '2025-26');
 const season = (s: string, gp: number, abs: AvailabilitySeason['absences'] = []): AvailabilitySeason => ({
   canonicalPlayerId: 'p',
   season: s,
@@ -22,13 +25,13 @@ const ctx = (over: Partial<PlayerContext> = {}): PlayerContext => ({
 describe('availability score', () => {
   it('recurrence class matters: same games missed, HIGH ≫ LOW', () => {
     const low = computeAvailability(
-      [season('2025', 62, [{ games: 20, recurrence: 'LOW' }])],
+      [season('2025-26', 62, [{ games: 20, recurrence: 'LOW' }])],
       ctx(),
       null,
       cfg,
     );
     const high = computeAvailability(
-      [season('2025', 62, [{ games: 20, recurrence: 'HIGH' }])],
+      [season('2025-26', 62, [{ games: 20, recurrence: 'HIGH' }])],
       ctx(),
       null,
       cfg,
@@ -40,7 +43,7 @@ describe('availability score', () => {
 
   it('three-season weighting 50/30/20 (missing seasons shrink toward the unknown default)', () => {
     const h = computeAvailability(
-      [season('2025', 82), season('2024', 82 - 41), season('2023', 82)].map((s) =>
+      [season('2025-26', 82), season('2024-25', 82 - 41), season('2023-24', 82)].map((s) =>
         s.gamesPlayed < 82 ? { ...s, absences: [{ games: 41, recurrence: 'HIGH' as const }] } : s,
       ),
       ctx(),
@@ -49,7 +52,7 @@ describe('availability score', () => {
     );
     expect(h.terms.history).toBeCloseTo(0.3 * 0.5);
     const two = computeAvailability(
-      [season('2025', 82), season('2024', 41, [{ games: 41, recurrence: 'HIGH' }])],
+      [season('2025-26', 82), season('2024-25', 41, [{ games: 41, recurrence: 'HIGH' }])],
       ctx(),
       null,
       cfg,
@@ -58,7 +61,7 @@ describe('availability score', () => {
   });
 
   it('no detail → unclassified weight; no history → default risk flagged', () => {
-    const nd = computeAvailability([season('2025', 62)], ctx(), null, cfg);
+    const nd = computeAvailability([season('2025-26', 62)], ctx(), null, cfg);
     expect(nd.terms.history).toBeCloseTo(0.5 * (20 / 82) * 0.75 + 0.5 * cfg.unknownHistoryRisk);
     const none = computeAvailability([], ctx(), null, cfg);
     expect(none.terms.historyKnown).toBe(false);
@@ -67,8 +70,8 @@ describe('availability score', () => {
 
   it('chronic pattern, age, current status and manual note add risk', () => {
     const hist = [
-      season('2025', 70, [{ games: 12, recurrence: 'HIGH' }]),
-      season('2024', 70, [{ games: 12, recurrence: 'HIGH' }]),
+      season('2025-26', 70, [{ games: 12, recurrence: 'HIGH' }]),
+      season('2024-25', 70, [{ games: 12, recurrence: 'HIGH' }]),
     ];
     const a = computeAvailability(
       hist,
@@ -112,7 +115,7 @@ describe('round-dependent risk (R3-1)', () => {
   });
 
   it('residual weight applies only to historical risk; current status is applied in full', () => {
-    const hist = [season('2025', 60, [{ games: 22, recurrence: 'HIGH' }])];
+    const hist = [season('2025-26', 60, [{ games: 22, recurrence: 'HIGH' }])];
     const r0 = computeAvailability(hist, ctx({ currentStatus: 'OUT_LONG' }), null, {
       ...cfg,
       durabilityResidualWeight: 0,

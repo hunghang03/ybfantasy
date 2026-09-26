@@ -28,6 +28,6 @@ describe('INJ status and config v4 upgrade', () => {
   it('INJ has its own risk term, equal to what INJ rows received before v4 (no engine change)', () => {
     const cfg = defaultConfig();
     expect(cfg.statusRisk.INJ).toBe(cfg.statusRisk.OUT_SHORT);
-    expect(computeAvailability([], null, 'INJ', cfg).terms.status).toBe(cfg.statusRisk.INJ);
+    expect(computeAvailability([], null, 'INJ', cfg, '2025-26').terms.status).toBe(cfg.statusRisk.INJ);
   });
 });
