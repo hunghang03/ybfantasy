@@ -118,6 +118,7 @@ export function recordFor(
         sourcePct: v.sourcePct,
         meta: v.meta,
         sourceTeam: normalizeTeam(v.team),
+        sourcePositions: v.positions,
         providerUpside: v.upside,
         providerRank: v.providerRank,
         providerAdp: v.providerAdp,

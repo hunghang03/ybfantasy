@@ -68,6 +68,8 @@ export interface ProjectionLine {
   meta?: SourceMeta;
   /** NBA team as written in this projection source (normalized). Identity team comes from Yahoo market. */
   sourceTeam?: string | null;
+  /** Eligibility as written in this projection source. Identity eligibility comes from Yahoo market. */
+  sourcePositions?: Position[];
   /** Optional provider upside tag, 0..1. */
   providerUpside?: number | null;
   /** Provider's own overall rank (report/comparison only; never used by the engine). */

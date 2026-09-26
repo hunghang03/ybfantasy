@@ -24,7 +24,8 @@ import type { Dataset, ImportKind } from '../src/domain/types/data';
 import { DEFAULT_ROSTER, type LeagueProfile } from '../src/domain/types/league';
 import { calibrationMarkdown, reconciliationMarkdown } from '../src/calibration/markdown';
 import { derivePlayoffSchedule } from '../src/calibration/playoffFromProjections';
-import { reconcile, type AliasEntry } from '../src/calibration/reconcile';
+import { reconcile } from '../src/calibration/reconcile';
+import { parseAliasRows, type AliasEntry } from '../src/domain/identity/aliases';
 import { buildCalibrationReport, calibrationCsv } from '../src/calibration/report';
 import { runAllScenarios, scenariosMarkdown } from '../src/calibration/scenarios';
 import { generateSample } from '../src/lib/sample/generator';
@@ -47,14 +48,7 @@ function readTable(file: string): { table: ParsedTable; sha256: string } {
 
 function readAliases(file: string | undefined): AliasEntry[] {
   if (!file) return [];
-  const { table } = readTable(file);
-  return table.rows
-    .map((r) => ({
-      alias: r.alias ?? r.Alias ?? '',
-      canonicalName: r.canonical ?? r.Canonical ?? r.canonicalName ?? '',
-      team: r.team ?? r.Team ?? null,
-    }))
-    .filter((a) => a.alias && a.canonicalName);
+  return parseAliasRows(readTable(file).table.rows);
 }
 
 function addSource(

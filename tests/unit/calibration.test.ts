@@ -210,7 +210,8 @@ describe('reconciliation', () => {
     });
     expect(report.teamMismatch[0]!.name).toBe('Traded Guy');
     expect(report.ambiguous[0]!.candidates).toHaveLength(2);
-    expect(report.aliasProblems).toHaveLength(1);
+    // A confirmed alias whose players are absent from this dataset is simply not applied (not a problem).
+    expect(report.aliasProblems).toHaveLength(0);
     expect(report.matchedVia.ALIAS).toBe(1);
     // Yahoo rows: matched + yahooOnly + ambiguous (+ rejected + duplicates) = all rows.
     const c = report.counts;

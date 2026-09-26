@@ -4,6 +4,7 @@ import { planImport, type CreatePolicy, type ImportPlan } from '@/domain/import/
 import type { StrategyConfig } from '@/domain/config/strategyConfig';
 import type { ImportKind, ManualMapping, PlayerIdentity } from '@/domain/types/data';
 import { newId, nowIso } from './ids';
+import { applyAliases, CONFIRMED_ALIASES } from '@/domain/identity/aliases';
 
 export interface ImportSpec {
   kind: ImportKind;
@@ -29,7 +30,8 @@ export function buildPlan(
     ...spec,
     table,
     columnMap: columnMap ?? autoMapColumns(spec.kind, table.headers),
-    identities,
+    // Human-confirmed aliases (data/aliases.csv) are applied deterministically before matching.
+    identities: applyAliases(identities, CONFIRMED_ALIASES).identities,
     mappings,
     config,
     batchId: newId(),

@@ -47,7 +47,13 @@ npm run yahoo:projections -- --market data/private/yahoo-screenshot-2026-27.csv 
   - Market-only players have no projection: they appear as _unprojected_ in draft search and can be marked taken, but are not ranked.
   - Projection-only players are valued normally (no market timing data).
   - Ambiguous rows are never merged; resolve them under **Review unmatched**.
-- Identity creation (AUTO policy): a Yahoo import creates new players for unmatched rows only when all existing identities came from Yahoo. Even then, a row with a **same-team player of a similar name** (Jaro-Winkler ≥ 0.8, same surname, or same first name — e.g. `Herb`/`Herbert`, `M`/`Moritz`, `Mike`/`Mikel`) is **not** created: it waits under **Needs review** with that candidate, because the two Yahoo files were transcribed separately and can spell a player differently. Resolve it by mapping it to the candidate (or add an alias). With identities from another provider, unmatched rows go to review instead. Identities created before this rule was recorded (no `origin`) count as non-Yahoo: in an older browser database, choose **Create unmatched** explicitly for the projection import.
+- Identity creation (AUTO policy): a Yahoo import creates new players for unmatched rows only when all existing identities came from Yahoo. Even then, a row is **not** created if a same-team player's name is evidence of the same person — it waits under **Needs review** with that candidate:
+  - **strong**: same surname (or a one-letter surname typo) and a compatible first name — `Herb`/`Herbert`, `M`/`Moritz`, `N.`/`Nickeil`, `Jaylin`/`Jaylen`;
+  - **surname only**: exact same surname, unrelated first name — `Dylan`/`Darius Acuff Jr.` (held for screenshot verification).
+  - A shared **first name only** (`Kobe Wagner`/`Kobe Sanders`, rejected) or a similar surname with an unrelated first name (`Kobe Wagner`/`Keaton Wagler`) is **not** evidence: the row is created as a separate player. It can still show up as a weak suggestion in the review UI; it never matches automatically.
+    With identities from another provider, unmatched rows go to review instead. Identities created before this rule was recorded (no `origin`) count as non-Yahoo: in an older browser database, choose **Create unmatched** explicitly for the projection import.
+- **Confirmed aliases** (`data/aliases.csv`, mirrored in `src/domain/identity/aliases.ts`; a test keeps them identical) are applied deterministically before every import, in either direction and only on the pair's team. They never merge two identities that already exist separately. Add a pair only after confirming it from the source screenshots.
+- **Source disagreements** (team or eligibility differs between the market and projection files) are flagged on the Data page, in the CLI report and as a player warning. Both raw observations are kept; the Yahoo market team/eligibility is used for identity and market logic.
 
 ## 3. Manual draft sync
 

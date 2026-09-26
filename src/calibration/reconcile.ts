@@ -1,9 +1,10 @@
 import type { StrategyConfig } from '@/domain/config/strategyConfig';
 import { autoMapColumns } from '@/domain/import/fields';
-import { normalizeName, normalizeTeam } from '@/domain/identity/normalize';
+import { normalizeTeam } from '@/domain/identity/normalize';
 import type { ParsedTable } from '@/domain/import/parse';
 import { planImport, type ImportPlan } from '@/domain/import/plan';
 import type { Dataset, ImportKind, PlayerIdentity } from '@/domain/types/data';
+import { applyAliases, type AliasEntry } from '@/domain/identity/aliases';
 
 /**
  * Yahoo (market) ↔ primary projection provider reconciliation for the calibration workflow (provider-generic;
@@ -14,14 +15,8 @@ import type { Dataset, ImportKind, PlayerIdentity } from '@/domain/types/data';
  * alias table. Nothing is silently discarded: every market and projection row lands in exactly one bucket.
  */
 
-export interface AliasEntry {
-  /** Name as it appears in the source being matched (e.g. Yahoo). */
-  alias: string;
-  /** Canonical (primary-source) name it refers to. */
-  canonicalName: string;
-  /** Optional team to disambiguate the canonical player. */
-  team?: string | null;
-}
+export type { AliasEntry } from '@/domain/identity/aliases';
+export { applyAliases } from '@/domain/identity/aliases';
 
 export interface SourceInput {
   table: ParsedTable;
@@ -95,28 +90,6 @@ function plan(
     now: '1970-01-01T00:00:00.000Z',
     newId: seqIds(idPrefix),
   });
-}
-
-/** Attach alias names to identities (never merges identities; ambiguous targets are reported). */
-export function applyAliases(
-  identities: PlayerIdentity[],
-  aliases: readonly AliasEntry[],
-): { identities: PlayerIdentity[]; problems: string[] } {
-  const problems: string[] = [];
-  const out = identities.map((i) => ({ ...i, aliases: [...i.aliases] }));
-  for (const a of aliases) {
-    const n = normalizeName(a.canonicalName);
-    const team = normalizeTeam(a.team ?? null);
-    const hits = out.filter((i) => i.normalizedName === n && (!team || i.nbaTeam === team));
-    if (hits.length === 1) {
-      if (!hits[0]!.aliases.some((x) => normalizeName(x) === normalizeName(a.alias)))
-        hits[0]!.aliases.push(a.alias);
-    } else
-      problems.push(
-        `Alias "${a.alias}" → "${a.canonicalName}"${team ? ` (${team})` : ''}: ${hits.length === 0 ? 'no such player' : 'ambiguous target'}`,
-      );
-  }
-  return { identities: out, problems };
 }
 
 export function reconcile(args: {

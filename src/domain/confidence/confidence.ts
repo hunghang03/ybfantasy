@@ -54,6 +54,22 @@ export function dataConfidence(
   if (player.history.length === 0) warnings.push('No availability history (default risk applied).');
   if (player.positions.length === 0) warnings.push('No position eligibility.');
   if (player.positionsSource === 'PROVIDER') warnings.push('Positions from projection provider, not Yahoo.');
+  // Source disagreement: both observations are kept; Yahoo market team/eligibility is used. Needs verification.
+  const pt = player.proj?.sourceTeam;
+  if (player.market && pt && player.team && pt !== player.team)
+    warnings.push(
+      `Sources disagree on team: Yahoo market ${player.team}, projection ${pt} (market used; verify).`,
+    );
+  const pp = player.proj?.sourcePositions;
+  if (
+    player.market &&
+    pp?.length &&
+    player.positionsSource === 'YAHOO' &&
+    pp.join() !== player.positions.join()
+  )
+    warnings.push(
+      `Sources disagree on eligibility: Yahoo market ${player.positions.join('/')}, projection ${pp.join('/')} (market used; verify).`,
+    );
   const flagged = disagreement.filter((d) => d.flagged);
   if (flagged.length)
     warnings.push(`Projection disagreement vs ${flagged.map((d) => d.provider).join(', ')}.`);

@@ -541,7 +541,7 @@ function SourceReconciliationPanel() {
         Market players <b>{c.marketPlayers}</b> · projected players <b>{c.projectionPlayers}</b> · matched{' '}
         <b>{c.matched}</b> · market-only <b>{c.marketOnly}</b> · projection-only <b>{c.projectionOnly}</b> ·
         ambiguous <b>{c.ambiguous}</b> · needs review <b>{c.needsReview}</b> · team mismatch{' '}
-        <b>{c.teamMismatch}</b>
+        <b>{c.teamMismatch}</b> · source disagreements <b>{c.sourceDisagreements}</b>
       </p>
       <div className="text-xs">
         {list('Market-only (no projection: shown as unranked, can still be marked taken)', r.marketOnly)}
@@ -555,6 +555,14 @@ function SourceReconciliationPanel() {
           'Needs review (possible spelling variant of a same-team player — not imported until resolved)',
           r.needsReview,
           (i) => `candidates: ${r.needsReview[i]!.candidates.join('; ') || 'none'}`,
+        )}
+        {list(
+          'Source disagreements — verify against the screenshots (both kept; market used)',
+          r.sourceDisagreements.map((t) => ({ name: t.name, team: t.market.team })),
+          (i) => {
+            const t = r.sourceDisagreements[i]!;
+            return `${t.fields.join(' + ')}: market ${t.market.team ?? '—'} ${t.market.positions.join('/')} XRank ${t.market.xrank ?? '—'} · projection ${t.projection.team ?? '—'} ${t.projection.positions.join('/')} Pre-Season ${t.projection.providerRank ?? '—'}`;
+          },
         )}
         {list(
           'Team mismatch (Yahoo market team kept)',

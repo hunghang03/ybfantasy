@@ -125,10 +125,37 @@ export function suggestCandidates(
   return scored.slice(0, limit);
 }
 
+export type NameEvidence = 'STRONG' | 'SURNAME_ONLY' | 'FIRST_NAME_ONLY' | 'NONE';
+
 /**
- * Same-team players whose name is close enough to be a spelling variant of `name` (for example "Herb Jones" /
- * "Herbert Jones", "M Wagner" / "Moritz Wagner", "Mike" / "Mikel Brown Jr."): Jaro-Winkler ≥ 0.8, the same surname,
- * or the same first name. Used to stop an automatic identity creation and send the row to review instead.
+ * How strongly two names on the SAME team suggest one person (never used to match automatically):
+ *  - STRONG: same surname (exact, or Jaro-Winkler ≥ 0.9 for a typo) and a compatible first name — equal,
+ *    one a prefix/initial of the other ("Herb"/"Herbert", "M"/"Moritz", "N."/"Nickeil"), or JW ≥ 0.85
+ *    ("Jaylin"/"Jaylen").
+ *  - SURNAME_ONLY: EXACT same surname, unrelated first name ("Dylan"/"Darius Acuff") — could be one or two people.
+ *    A merely similar surname with an unrelated first name ("Kobe Wagner"/"Keaton Wagler") is NONE.
+ *  - FIRST_NAME_ONLY: same first name, different surname ("Kobe Wagner"/"Kobe Sanders") — weak suggestion only.
+ */
+export function nameEvidence(a: string, b: string): NameEvidence {
+  const ta = normalizeName(a).split(' ');
+  const tb = normalizeName(b).split(' ');
+  const la = ta.at(-1) ?? '';
+  const lb = tb.at(-1) ?? '';
+  const fa = ta.length > 1 ? ta[0]! : '';
+  const fb = tb.length > 1 ? tb[0]! : '';
+  const surnameExact = la === lb;
+  const surnameSimilar = surnameExact || (la.length > 2 && lb.length > 2 && jaroWinkler(la, lb) >= 0.9);
+  const firstCompatible =
+    !!fa && !!fb && (fa === fb || fa.startsWith(fb) || fb.startsWith(fa) || jaroWinkler(fa, fb) >= 0.85);
+  if (surnameSimilar && firstCompatible) return 'STRONG';
+  if (surnameExact) return 'SURNAME_ONLY';
+  return fa && fa === fb ? 'FIRST_NAME_ONLY' : 'NONE';
+}
+
+/**
+ * Same-team identities that may be the same person as `name` (STRONG or SURNAME_ONLY evidence). Used only to
+ * stop an automatic identity creation and send the row to human review. A shared first name alone
+ * (FIRST_NAME_ONLY) is not enough: such rows are created as separate players.
  */
 export function sameTeamNearMatches(
   idx: IdentityIndex,
@@ -138,14 +165,11 @@ export function sameTeamNearMatches(
 ): string[] {
   const t = normalizeTeam(team);
   if (!t) return [];
-  const n = normalizeName(name);
-  const tok = n.split(' ');
   const out: string[] = [];
   for (const p of idx.byId.values()) {
     if (p.nbaTeam !== t || exclude.has(p.canonicalPlayerId)) continue;
-    const pt = p.normalizedName.split(' ');
-    if (jaroWinkler(n, p.normalizedName) >= 0.8 || pt.at(-1) === tok.at(-1) || pt[0] === tok[0])
-      out.push(p.canonicalPlayerId);
+    const e = nameEvidence(name, p.canonicalName);
+    if (e === 'STRONG' || e === 'SURNAME_ONLY') out.push(p.canonicalPlayerId);
   }
   return out.sort();
 }

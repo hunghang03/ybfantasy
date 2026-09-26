@@ -61,12 +61,14 @@ R#, ADP, PLAYER, TEAM, POS, GP, MPG, FGM, FGA, FG%, FTM, FTA, FT%, 3PM, PTS, TRE
 
 ## 3. Aliases → `data/aliases.csv`
 
-Add rows when Yahoo and Hashtag spell a player differently and name + team matching fails. For example:
+Confirmed identity pairs only: two spellings of ONE player on one team (e.g. the Yahoo market and Yahoo projection transcriptions). A row is added only after the pair has been confirmed from the source screenshots — never to clear the review queue. The table is applied in either direction, only on the given team, and never merges two identities that already exist separately.
 
 ```
 alias,canonical,team
-Nic Claxton,Nicolas Claxton,BKN
+Herb Jones,Herbert Jones,NOP
 ```
+
+`src/domain/identity/aliases.ts` mirrors this file for the app; a unit test keeps them identical.
 
 The reconciliation report lists every ambiguous or unmatched player that still needs an alias or a manual decision.
 

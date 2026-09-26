@@ -1,4 +1,5 @@
 import type { Dataset, ProviderId, UnmatchedRow } from '../types/data';
+import { nameEvidence } from '../identity/matcher';
 
 /**
  * Yahoo market ↔ projection snapshot reconciliation (post-import, over ACTIVE batches only).
@@ -19,12 +20,21 @@ export interface SourceReconciliation {
     /** Unmatched projection rows waiting in review (e.g. a same-team spelling variant); not imported yet. */
     needsReview: number;
     teamMismatch: number;
+    /** Matched players whose two sources disagree on team and/or eligibility (both kept; market used). */
+    sourceDisagreements: number;
   };
   marketOnly: { id: string; name: string; team: string | null }[];
   projectionOnly: { id: string; name: string; team: string | null }[];
   ambiguous: { name: string; team: string | null; candidates: string[] }[];
   needsReview: { name: string; team: string | null; candidates: string[] }[];
   teamMismatch: { id: string; name: string; marketTeam: string | null; projectionTeam: string | null }[];
+  sourceDisagreements: {
+    id: string;
+    name: string;
+    fields: ('team' | 'positions')[];
+    market: { team: string | null; positions: string[]; xrank: number | null; rank: number | null };
+    projection: { team: string | null; positions: string[]; providerRank: number | null };
+  }[];
 }
 
 export function reconcileMarketAndProjections(
@@ -76,12 +86,47 @@ export function reconcileMarketAndProjections(
         name: u.rawName,
         team: u.rawTeam,
         candidates: u.candidateIds.map(
-          (c) => `${byId.get(c)?.canonicalName ?? c} (${byId.get(c)?.nbaTeam ?? '—'})`,
+          (c) =>
+            `${byId.get(c)?.canonicalName ?? c} (${byId.get(c)?.nbaTeam ?? '—'}) [${nameEvidence(
+              u.rawName,
+              byId.get(c)?.canonicalName ?? '',
+            )
+              .toLowerCase()
+              .replace('_', ' ')}]`,
         ),
       }))
       .sort(byName);
   const ambiguous = queued('AMBIGUOUS');
   const needsReview = queued('NO_MATCH');
+  const marketById = new Map(dataset.market.map((m) => [m.canonicalPlayerId, m]));
+  const sourceDisagreements = matchedIds
+    .map((id) => {
+      const i = byId.get(id)!;
+      const pl = proj.get(id)!;
+      const m = marketById.get(id);
+      const fields: ('team' | 'positions')[] = [];
+      if (i.nbaTeam && pl.sourceTeam && i.nbaTeam !== pl.sourceTeam) fields.push('team');
+      if (pl.sourcePositions?.length && i.positions.join() !== pl.sourcePositions.join())
+        fields.push('positions');
+      return {
+        id,
+        name: i.canonicalName,
+        fields,
+        market: {
+          team: i.nbaTeam,
+          positions: i.positions,
+          xrank: m?.yahooXRank ?? null,
+          rank: m?.yahooRank ?? null,
+        },
+        projection: {
+          team: pl.sourceTeam ?? null,
+          positions: pl.sourcePositions ?? [],
+          providerRank: pl.providerRank ?? null,
+        },
+      };
+    })
+    .filter((r) => r.fields.length > 0)
+    .sort(byName);
   return {
     provider,
     counts: {
@@ -93,11 +138,13 @@ export function reconcileMarketAndProjections(
       ambiguous: ambiguous.length,
       needsReview: needsReview.length,
       teamMismatch: teamMismatch.length,
+      sourceDisagreements: sourceDisagreements.length,
     },
     marketOnly,
     projectionOnly,
     ambiguous,
     needsReview,
     teamMismatch,
+    sourceDisagreements,
   };
 }
