@@ -46,6 +46,7 @@ Keyboard: `↑↓`/`j k` select · `M` mine · `D` taken · `F` favorite · `A` 
 - [DEPLOYMENT.md](DEPLOYMENT.md): Vercel / static hosting
 - [QA_HANDOFF.md](QA_HANDOFF.md): what to challenge first
 - [docs/DATA_SOURCES.md](docs/DATA_SOURCES.md) · [docs/CALIBRATION.md](docs/CALIBRATION.md) · [data/README.md](data/README.md): real-data workflow
+- [docs/AVAILABILITY_AUDIT.md](docs/AVAILABILITY_AUDIT.md): how availability/durability risk is modeled today, and the 3-season GP history proposal
 - [docs/DRAFT_DAY.md](docs/DRAFT_DAY.md): Yahoo projection CSV schema, snapshots, manual draft sync (search → Enter = mark taken), decision log
 - [docs/YAHOO_API.md](docs/YAHOO_API.md): Yahoo Fantasy API / OAuth feasibility spike (server-side OAuth, field matrix, live-draft sync)
 - [docs/DESIGN.md](docs/DESIGN.md): the reviewed technical design (rev 3)
