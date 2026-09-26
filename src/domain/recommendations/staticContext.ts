@@ -1,5 +1,7 @@
 import type { StrategyConfig } from '../config/strategyConfig';
-import { computeAvailability } from '../availability/availability';
+import { availabilityProjectionGap, computeAvailability } from '../availability/availability';
+
+const fmtGp = (x: number) => (Math.round(x * 10) / 10).toString();
 import { computeDisagreement, dataConfidence } from '../confidence/confidence';
 import { cmpId, mean, pearson, safeSd } from '../numeric/safe';
 import { playoffFractions } from '../playoffs/playoff';
@@ -124,12 +126,32 @@ export function buildStaticContext(
       severity: 'info',
     });
 
+  // Most recent history season in the dataset: seasons are weighted by their distance from it.
+  const historyAnchor =
+    players
+      .flatMap((p) => p.history.map((h) => h.season))
+      .filter((s) => /^\d{4}-\d{2}$/.test(s))
+      .sort()
+      .at(-1) ?? null;
   const ranked: StaticPlayer[] = pre.map((x) => {
     const value = computeValue(x.pg, x.p.proj!.gp, replacement, config);
-    const availability = computeAvailability(x.p.history, x.p.context, x.p.market?.status ?? null, config);
+    const availability = computeAvailability(
+      x.p.history,
+      x.p.context,
+      x.p.market?.status ?? null,
+      config,
+      historyAnchor,
+    );
     const up = computeUpside(x.p.proj, x.p.context, config);
     const disagreement = computeDisagreement(x.p, stats, neutralSd, config);
     const conf = dataConfidence(x.p, disagreement);
+    // QA/display flag only: never feeds BPV, DDP or risk.
+    const gap = availabilityProjectionGap(x.p.history, x.p.proj!.gp, config, historyAnchor);
+    availability.projectionGap = gap;
+    if (gap)
+      conf.warnings.push(
+        `AVAILABILITY_PROJECTION_GAP: projected ${fmtGp(gap.projectedGp)} GP vs recent rate ${fmtGp(gap.historicalGpRate)} over ${gap.seasons} season(s) (flag only; value unchanged).`,
+      );
     return {
       player: x.p,
       stats: {

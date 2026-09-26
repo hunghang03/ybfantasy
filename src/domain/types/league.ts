@@ -45,7 +45,16 @@ export interface DecisionCandidate {
   urgency: string;
   adp: number | null;
   xrank: number | null;
+  /** Displayed risk (UNKNOWN = no history). */
   risk: string;
+  /** Calculated level behind it (the default when there is no history). */
+  riskCalculated: string;
+  projectionGap: {
+    projectedGp: number;
+    historicalGpRate: number;
+    seasons: number;
+    difference: number;
+  } | null;
   fitTags: string[];
 }
 

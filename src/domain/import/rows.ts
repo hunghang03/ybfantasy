@@ -44,7 +44,14 @@ export interface AvailabilityRow extends IdentityFields {
   season: string;
   gamesPlayed: number;
   teamGames: number;
+  gamesAvailable: number;
   absences: Absence[];
+  suspensionGames: number;
+  otherNonInjuryGames: number;
+  teams: string[];
+  statusNote: string;
+  meta: SourceMeta;
+  raw: Record<string, string>;
 }
 export interface ContextRow extends IdentityFields {
   age: number | null;
@@ -122,6 +129,21 @@ const PROJECTION_REVIEW_ALIASES: Record<string, string> = {
   positions: 'positions',
   rank: 'providerRank',
   'pre-season rank': 'providerRank',
+};
+
+/** Availability columns a transcription may flag as unreadable. Flagged GP rejects the row. */
+const AVAILABILITY_REVIEW_ALIASES: Record<string, string> = {
+  gp: 'gamesPlayed',
+  'games available': 'gamesAvailable',
+  'team games': 'teamGames',
+  'missed low': 'missedLow',
+  'missed moderate': 'missedModerate',
+  'missed high': 'missedHigh',
+  'missed unclassified': 'missedUnclassified',
+  'suspension games': 'suspensionGames',
+  'other non-injury games': 'otherNonInjuryGames',
+  team: 'team',
+  'team(s)': 'team',
 };
 
 function readReviewFields(c: Collector, cells: Cells, aliases: Record<string, string>): string[] {
@@ -421,27 +443,82 @@ export function validateRow(
     }
     case 'AVAILABILITY': {
       const id = identityFields(c, cells);
+      // Team(s): several teams (trade) are allowed; they are historical and used only to disambiguate identity.
+      const teams = [
+        ...new Set(
+          (cells('team') ?? '')
+            .split(/[\/,;|]+/)
+            .map((t) => sanitizeText(t, 8).toUpperCase())
+            .filter(Boolean),
+        ),
+      ];
+      const reviewFields = readReviewFields(c, cells, AVAILABILITY_REVIEW_ALIASES);
+      if (reviewFields.includes('team')) teams.length = 0;
+      id.team = teams.length === 1 ? teams[0]! : null;
+      const meta = readMeta(c, cells, reviewFields);
+      const flagged = (k: string) => reviewFields.includes(k);
       const season = sanitizeText(cells('season'), 12);
       if (!season) c.errors.push('Season is required.');
-      const teamGames = c.num(cells, 'teamGames', 'Team games', { min: 1, max: 100 }) ?? config.seasonGames;
+      else if (!/^\d{4}-\d{2}$/.test(season)) c.errors.push('Season must look like 2025-26.');
+      else if ((Number(season.slice(0, 4)) + 1) % 100 !== Number(season.slice(5)))
+        c.errors.push(`Season ${season} is not a consecutive year pair.`);
+      if (flagged('gamesPlayed'))
+        c.errors.push('GP is flagged unreadable in the source. The row is rejected; GP is never inferred.');
+      const teamGamesRaw = c.num(cells, 'teamGames', 'Team games', { min: 1, max: 100 });
+      const teamGames = teamGamesRaw ?? config.seasonGames;
+      if (teamGamesRaw === null && (cells('teamGames') ?? '') === '' && cells('gamesAvailable') !== undefined)
+        c.warnings.push(`Team Games blank: season length ${config.seasonGames} used.`);
       const gamesPlayed = c.num(cells, 'gamesPlayed', 'Games played', { required: true, min: 0 }) ?? 0;
-      if (gamesPlayed > teamGames) c.errors.push('Games played cannot exceed team games.');
-      const absences: Absence[] = [];
+      const availRaw = flagged('gamesAvailable')
+        ? null
+        : c.num(cells, 'gamesAvailable', 'Games available', { min: 0, max: 100 });
+      if (availRaw === null && cells('gamesAvailable') !== undefined)
+        c.warnings.push('Games Available blank: Team Games used (no partial-season adjustment).');
+      const gamesAvailable = availRaw ?? teamGames;
+      // A traded player can have a few more (or fewer) games available than one team's schedule.
+      if (gamesAvailable > teamGames + 4)
+        c.errors.push(`Games available (${gamesAvailable}) exceeds team games + 4 (${teamGames + 4}).`);
+      if (gamesPlayed > gamesAvailable) c.errors.push('GP cannot exceed Games Available.');
       const note = sanitizeText(cells('note'));
-      const pairs: [string, Absence['recurrence']][] = [
-        ['missedLow', 'LOW'],
-        ['missedModerate', 'MODERATE'],
-        ['missedHigh', 'HIGH'],
-        ['missedUnclassified', 'UNCLASSIFIED'],
+      const absences: Absence[] = [];
+      const pairs: [string, string, Absence['recurrence']][] = [
+        ['missedLow', 'missedLow', 'LOW'],
+        ['missedModerate', 'missedModerate', 'MODERATE'],
+        ['missedHigh', 'missedHigh', 'HIGH'],
+        ['missedUnclassified', 'missedUnclassified', 'UNCLASSIFIED'],
       ];
-      for (const [key, rec] of pairs) {
+      for (const [key, flagKey, rec] of pairs) {
+        if (flagged(flagKey)) continue; // unreadable → not itemised (remainder stays unclassified)
         const g = c.num(cells, key, `Missed (${rec})`, { min: 0, max: 100 });
         if (g !== null && g > 0) absences.push({ games: g, recurrence: rec, ...(note ? { note } : {}) });
       }
-      const missedTotal = absences.reduce((a, b) => a + b.games, 0);
-      if (missedTotal > teamGames - gamesPlayed + 1e-9)
-        c.warnings.push('Classified missed games exceed (team games − games played).');
-      return done<AvailabilityRow>({ ...id, season, gamesPlayed, teamGames, absences });
+      const suspensionGames = flagged('suspensionGames')
+        ? 0
+        : (c.num(cells, 'suspensionGames', 'Suspension games', { min: 0, max: 100 }) ?? 0);
+      const otherNonInjuryGames = flagged('otherNonInjuryGames')
+        ? 0
+        : (c.num(cells, 'otherNonInjuryGames', 'Other non-injury games', { min: 0, max: 100 }) ?? 0);
+      const accounted = absences.reduce((a, b) => a + b.games, 0) + suspensionGames + otherNonInjuryGames;
+      if (accounted > gamesAvailable - gamesPlayed + 1e-9)
+        c.errors.push(
+          `Missed-game accounting (${accounted}) exceeds Games Available − GP (${gamesAvailable - gamesPlayed}).`,
+        );
+      if (reviewFields.length && !flagged('gamesPlayed'))
+        c.warnings.push(`Needs review: ${reviewFields.join(', ')}.`);
+      return done<AvailabilityRow>({
+        ...id,
+        season,
+        gamesPlayed,
+        teamGames,
+        gamesAvailable,
+        absences,
+        suspensionGames,
+        otherNonInjuryGames,
+        teams,
+        statusNote: note,
+        meta,
+        raw: rawCells(row, columnMap, {}),
+      });
     }
     case 'CONTEXT': {
       const id = identityFields(c, cells);

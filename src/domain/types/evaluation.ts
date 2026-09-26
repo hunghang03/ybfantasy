@@ -54,7 +54,17 @@ export interface ValueBlock {
 
 export interface AvailabilityBlock {
   score: number;
+  /** Calculated level (used by calibration/scenario logic). */
   risk: RiskLevel;
+  /** What the UI shows: UNKNOWN instead of LOW when no season of history exists (durability not observed). */
+  displayRisk: RiskLevel | 'UNKNOWN';
+  /** AVAILABILITY_PROJECTION_GAP (QA/display only; never scored). */
+  projectionGap?: {
+    projectedGp: number;
+    historicalGpRate: number;
+    seasons: number;
+    difference: number;
+  } | null;
   rhoHist: number;
   rhoNow: number;
   rhoFull: number;
@@ -67,6 +77,8 @@ export interface AvailabilityBlock {
     manual: number;
     seasonsUsed: number;
     historyKnown: boolean;
+    /** Share of the season weights backed by real history (1 = three seasons; 0.5 = only the latest). */
+    historyCoverage: number;
   };
   status: InjuryStatus;
 }

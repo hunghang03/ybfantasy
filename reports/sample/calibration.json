@@ -394,7 +394,7 @@
     "TO"
    ],
    "risk": "LOW",
-   "availabilityScore": 100,
+   "availabilityScore": 98,
    "disagreementFlags": [],
    "deltaEngineVsProvider": 36,
    "deltaEngineVsXRank": 17,
@@ -2214,7 +2214,7 @@
    ],
    "weaknesses": [],
    "risk": "LOW",
-   "availabilityScore": 99,
+   "availabilityScore": 97,
    "disagreementFlags": [],
    "deltaEngineVsProvider": -42,
    "deltaEngineVsXRank": -29,
@@ -2833,7 +2833,7 @@
     "TO"
    ],
    "risk": "HIGH",
-   "availabilityScore": 50,
+   "availabilityScore": 57,
    "disagreementFlags": [],
    "deltaEngineVsProvider": -44,
    "deltaEngineVsXRank": -32,
@@ -4017,7 +4017,7 @@
     "STL"
    ],
    "risk": "LOW",
-   "availabilityScore": 98,
+   "availabilityScore": 94,
    "disagreementFlags": [],
    "deltaEngineVsProvider": -18,
    "deltaEngineVsXRank": -20,
@@ -4284,8 +4284,8 @@
    "gp": 56,
    "strengths": [],
    "weaknesses": [],
-   "risk": "HIGH",
-   "availabilityScore": 62,
+   "risk": "MODERATE",
+   "availabilityScore": 76,
    "disagreementFlags": [],
    "deltaEngineVsProvider": -12,
    "deltaEngineVsXRank": -13,
@@ -5005,8 +5005,8 @@
     "BLK",
     "TO"
    ],
-   "risk": "VERY_HIGH",
-   "availabilityScore": 44,
+   "risk": "HIGH",
+   "availabilityScore": 51,
    "disagreementFlags": [
     "projection Δ vs bbm"
    ],
@@ -5021,7 +5021,7 @@
    ],
    "evidence": [
     "projection Δ vs bbm",
-    "GP 48, per-game rank 90 vs season-blended rank 133, risk VERY_HIGH",
+    "GP 48, per-game rank 90 vs season-blended rank 133, risk HIGH",
     "neutral 9-cat rank 118 vs BPV rank 133 (TO weight 0.75)"
    ]
   },
@@ -6984,7 +6984,7 @@
     "PTS"
    ],
    "risk": "LOW",
-   "availabilityScore": 98,
+   "availabilityScore": 96,
    "disagreementFlags": [
     "Yahoo review: adp"
    ],
@@ -7711,7 +7711,7 @@
     "BLK"
    ],
    "risk": "LOW",
-   "availabilityScore": 96,
+   "availabilityScore": 93,
    "disagreementFlags": [],
    "deltaEngineVsProvider": -21,
    "deltaEngineVsXRank": -20,
@@ -7966,8 +7966,8 @@
    "weaknesses": [
     "FG%"
    ],
-   "risk": "HIGH",
-   "availabilityScore": 65,
+   "risk": "MODERATE",
+   "availabilityScore": 76,
    "disagreementFlags": [],
    "deltaEngineVsProvider": -62,
    "deltaEngineVsXRank": -66,
@@ -7978,7 +7978,7 @@
     "INTENTIONAL_ENGINE_BEHAVIOR"
    ],
    "evidence": [
-    "GP 51, per-game rank 182 vs season-blended rank 223, risk HIGH",
+    "GP 51, per-game rank 182 vs season-blended rank 223, risk MODERATE",
     "neutral 9-cat rank 186 vs BPV rank 223 (TO weight 0.75)"
    ]
   },
@@ -8209,7 +8209,7 @@
     "STL"
    ],
    "risk": "LOW",
-   "availabilityScore": 97,
+   "availabilityScore": 93,
    "disagreementFlags": [],
    "deltaEngineVsProvider": -154,
    "deltaEngineVsXRank": -160,
@@ -8481,7 +8481,7 @@
     "FG%"
    ],
    "risk": "LOW",
-   "availabilityScore": 99,
+   "availabilityScore": 97,
    "disagreementFlags": [],
    "deltaEngineVsProvider": -122,
    "deltaEngineVsXRank": -132,

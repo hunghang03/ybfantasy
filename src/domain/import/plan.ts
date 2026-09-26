@@ -150,7 +150,14 @@ export function recordFor(
         importBatchId: batchId,
         gamesPlayed: v.gamesPlayed,
         teamGames: v.teamGames,
+        gamesAvailable: v.gamesAvailable,
         absences: v.absences,
+        suspensionGames: v.suspensionGames,
+        otherNonInjuryGames: v.otherNonInjuryGames,
+        teams: v.teams,
+        ...(v.statusNote ? { statusNote: v.statusNote } : {}),
+        meta: v.meta,
+        raw: v.raw,
       });
       return;
     }
@@ -210,12 +217,18 @@ export function applyIdentityFacts(
       changed = true;
     }
   } else {
-    if (row.positions.length && (next.positionsSource === 'NONE' || next.positions.length === 0)) {
+    // Historical availability rows never change the identity's current team or eligibility.
+    const historical = kind === 'AVAILABILITY';
+    if (
+      !historical &&
+      row.positions.length &&
+      (next.positionsSource === 'NONE' || next.positions.length === 0)
+    ) {
       next.positions = row.positions;
       next.positionsSource = 'PROVIDER';
       changed = true;
     }
-    if (team && !next.nbaTeam) {
+    if (!historical && team && !next.nbaTeam) {
       next.nbaTeam = team;
       changed = true;
     }
@@ -331,6 +344,20 @@ export function planImport(req: ImportRequest): ImportPlan {
       const input = { provider, providerPlayerId: v.providerPlayerId, name: v.name, team: v.team };
       let m: MatchResult = matchPlayer(idx, input);
       near = [];
+      // History rows can list several teams (a trade). Try each through the normal matcher (name + team);
+      // a single consistent hit wins, otherwise the team-less match (alias → unique name → review) stands.
+      if (
+        kind === 'AVAILABILITY' &&
+        (v as AvailabilityRow).teams.length > 1 &&
+        (m.kind !== 'MATCHED' || m.via === 'NAME')
+      ) {
+        const hits = new Set<string>();
+        for (const t of (v as AvailabilityRow).teams) {
+          const r = matchPlayer(idx, { ...input, team: t });
+          if (r.kind === 'MATCHED' && r.via === 'NAME_TEAM') hits.add(r.canonicalPlayerId);
+        }
+        if (hits.size === 1) m = { kind: 'MATCHED', canonicalPlayerId: [...hits][0]!, via: 'NAME_TEAM' };
+      }
       // A weak (name/alias-only) match onto an identity that THIS import already created or claimed
       // means two different rows want one player — never merge them silently.
       if (kind !== 'AVAILABILITY' && m.kind === 'MATCHED' && (m.via === 'NAME' || m.via === 'ALIAS')) {

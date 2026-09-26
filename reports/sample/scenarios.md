@@ -139,7 +139,7 @@ Final roster: 4 Florian Ingram (C) · 25 Niall Northcott (PF/C) · 32 Ulises Bir
 | After round | Pick | Build | Priority | Weak/punt categories | Recommended | Top-3 |
 |---|---|---|---|---|---|---|
 | 1 | 25 | balanced — no punt yet. | AST > FT% > 3PM | FT%:CRITICAL 3PM:CRITICAL AST:WEAK STL:CRITICAL | Cyrus Ingram (LEAN_DRAFT) | Cyrus Ingram 100 LEAN_DRAFT; Kellan Lockhart 62 WAIT; Niall Northcott 48 PASS |
-| 2 | 32 | balanced — no punt yet. | AST > 3PM > FT% | FT%:WEAK 3PM:WEAK PTS:WEAK AST:CRITICAL STL:CRITICAL | Cyrus Ingram (DRAFT_NOW) | Cyrus Ingram 100 DRAFT_NOW; Kellan Lockhart 67 WAIT; Orin Hartwell 58 WAIT |
+| 2 | 32 | balanced — no punt yet. | AST > 3PM > FT% | FT%:WEAK 3PM:WEAK PTS:WEAK AST:CRITICAL STL:CRITICAL | Cyrus Ingram (DRAFT_NOW) | Cyrus Ingram 100 DRAFT_NOW; Kellan Lockhart 67 WAIT; Orin Hartwell 57 WAIT |
 | 4 | 60 | balanced — no punt yet. | AST > PTS > 3PM | 3PM:WEAK PTS:WEAK AST:CRITICAL STL:WEAK | Galen Stroud (DRAFT_NOW) | Galen Stroud 100 DRAFT_NOW; Milo Northcott 96 DRAFT_NOW; Orin Ravensworth 70 WAIT |
 | 6 | 88 | balanced — no punt yet. | AST > PTS > 3PM | 3PM:WEAK PTS:WEAK AST:CRITICAL | Eli Birchwell (DRAFT_NOW) | Eli Birchwell 97 DRAFT_NOW; Idris Pembrook 86 DRAFT_NOW; Hugo Kestrel 100 WAIT |
 | 9 | 137 | balanced — no punt yet. | PTS > 3PM > AST | PTS:WEAK | Eli Zeller (LEAN_DRAFT) | Eli Zeller 100 LEAN_DRAFT; Orin Northcott 60 WAIT; Ulises Vexley 61 WAIT |
@@ -191,7 +191,7 @@ Final roster: 7 Hugo Corvell (PG) · 22 Linus Eastlake (C) · 35 Cyrus Ingram (S
 | After round | Pick | Build | Priority | Weak/punt categories | Recommended | Top-3 |
 |---|---|---|---|---|---|---|
 | 1 | 22 | Punt FT% — 100% confidence (still recoverable) [manual]. | BLK > REB > FG% | FT%:PUNT REB:WEAK BLK:CRITICAL | Cyrus Ingram (LEAN_DRAFT) | Cyrus Ingram 100 LEAN_DRAFT; Linus Eastlake 83 SAFE_WAIT; Tate Dunmore 80 LEAN_DRAFT |
-| 2 | 35 | Punt FT% — 100% confidence (still recoverable) [manual]. | 3PM > PTS > TO | FT%:PUNT 3PM:WEAK PTS:WEAK | Cyrus Ingram (DRAFT_NOW) | Cyrus Ingram 100 DRAFT_NOW; Kellan Lockhart 70 WAIT; Orin Hartwell 67 WAIT |
+| 2 | 35 | Punt FT% — 100% confidence (still recoverable) [manual]. | 3PM > PTS > TO | FT%:PUNT 3PM:WEAK PTS:WEAK | Cyrus Ingram (DRAFT_NOW) | Cyrus Ingram 100 DRAFT_NOW; Kellan Lockhart 70 WAIT; Orin Hartwell 66 WAIT |
 | 4 | 63 | Punt FT% — 100% confidence (still recoverable) [manual]. | 3PM > TO > AST | FT%:PUNT 3PM:WEAK | Kade Draven (DRAFT_NOW) | Kade Draven 100 DRAFT_NOW; Milo Northcott 70 WAIT; Orin Ravensworth 58 WAIT |
 | 6 | 91 | Punt FT% — 100% confidence (still recoverable) [manual]. | 3PM > AST > PTS | FT%:PUNT 3PM:WEAK | Emeka Corvell (DRAFT_NOW) | Emeka Corvell 100 DRAFT_NOW; Hugo Kestrel 98 LEAN_DRAFT; Idris Pembrook 76 LEAN_DRAFT |
 | 9 | 134 | Punt FT% — 100% confidence (still recoverable) [manual]. | 3PM > AST > PTS | FT%:PUNT 3PM:WEAK | Eli Ravensworth (LEAN_DRAFT) | Eli Ravensworth 97 LEAN_DRAFT; Ansel Stroud 100 SAFE_WAIT; Hollis Quill 73 WAIT |
@@ -290,16 +290,16 @@ Final roster: 11 Hugo Corvell (PG) · 18 Cyrus Ingram (SG/SF) · 39 Yuri Ravensw
 
 ## Slot 11 — bigHeavy
 
-Final roster: 11 Emeka Blackwood (C) · 18 Niall Northcott (PF/C) · 39 Linus Eastlake (C) · 46 Milo Northcott (PF) · 67 Orin Ravensworth (SF/PF) · 74 Florian Yarrow (PG/SG) · 95 Idris Pembrook (SG) · 102 Hugo Kestrel (PG) · 123 Eli Zeller (PG/SG) · 130 Eli Fairbourne (C) · 151 Blake Hartwell (PF) · 158 Lior Draven (SG/SF) · 179 Rowan Hartwell (C)
+Final roster: 11 Linus Eastlake (C) · 18 Niall Northcott (PF/C) · 39 Milo Northcott (PF) · 46 Florian Ravensworth (SF/PF) · 67 Orin Ravensworth (SF/PF) · 74 Florian Yarrow (PG/SG) · 95 Idris Pembrook (SG) · 102 Niall Pembrook (C) · 123 Idris Thorne (PG) · 130 Eli Zeller (PG/SG) · 151 Eli Fairbourne (C) · 158 Lior Draven (SG/SF) · 179 Rowan Hartwell (C)
 
 | After round | Pick | Build | Priority | Weak/punt categories | Recommended | Top-3 |
 |---|---|---|---|---|---|---|
-| 1 | 18 | balanced — no punt yet. | AST > 3PM > FT% | FT%:CRITICAL 3PM:CRITICAL AST:CRITICAL STL:WEAK | Tate Dunmore (DRAFT_NOW) | Tate Dunmore 91 DRAFT_NOW; Cyrus Ingram 100 DRAFT_NOW; Hugo Corvell 88 DRAFT_NOW |
-| 2 | 39 | balanced — no punt yet. | AST > 3PM > STL | FT%:WEAK 3PM:WEAK AST:CRITICAL STL:CRITICAL | Orin Wolcott (DRAFT_NOW) | Orin Wolcott 98 DRAFT_NOW; Yuri Ravensworth 95 LEAN_DRAFT; Quincy Fairbourne 100 DRAFT_NOW |
-| 4 | 67 | balanced — no punt yet. | 3PM > FT% > AST | FT%:CRITICAL 3PM:CRITICAL PTS:WEAK AST:CRITICAL STL:WEAK | Florian Yarrow (LEAN_DRAFT) | Florian Yarrow 96 LEAN_DRAFT; Hugo Kestrel 100 SAFE_WAIT; Idris Pembrook 90 SAFE_WAIT |
-| 6 | 95 | balanced — no punt yet. | 3PM > AST > PTS | FT%:WEAK 3PM:CRITICAL AST:WEAK | Idris Pembrook (LEAN_DRAFT) | Idris Pembrook 92 LEAN_DRAFT; Emeka Corvell 81 LEAN_DRAFT; Hugo Kestrel 100 WAIT |
-| 9 | 130 | balanced — no punt yet. | 3PM > PTS > TO | — | Eli Fairbourne (DRAFT_NOW) | Eli Fairbourne 100 DRAFT_NOW; Orin Northcott 68 WAIT; Ulises Vexley 57 WAIT |
-| 12 | 179 | balanced — no punt yet. | 3PM > PTS > AST | — | Rowan Hartwell (DRAFT_NOW) | Rowan Hartwell 100 DRAFT_NOW; Wes Garrow 85 LEAN_DRAFT; Nico Fairbourne 83 LEAN_DRAFT |
+| 1 | 18 | balanced — no punt yet. | AST > 3PM > FT% | FT%:CRITICAL 3PM:CRITICAL PTS:WEAK AST:CRITICAL STL:WEAK | Tate Dunmore (DRAFT_NOW) | Tate Dunmore 92 DRAFT_NOW; Cyrus Ingram 100 DRAFT_NOW; Hugo Corvell 87 DRAFT_NOW |
+| 2 | 39 | balanced — no punt yet. | AST > 3PM > PTS | FT%:CRITICAL 3PM:WEAK PTS:WEAK AST:CRITICAL STL:WEAK | Yuri Ravensworth (DRAFT_NOW) | Yuri Ravensworth 96 DRAFT_NOW; Orin Wolcott 92 LEAN_DRAFT; Quincy Fairbourne 99 DRAFT_NOW |
+| 4 | 67 | balanced — no punt yet. | 3PM > PTS > AST | FT%:WEAK 3PM:WEAK PTS:WEAK AST:CRITICAL | Florian Yarrow (LEAN_DRAFT) | Florian Yarrow 100 LEAN_DRAFT; Hugo Kestrel 98 SAFE_WAIT; Eli Birchwell 89 WAIT |
+| 6 | 95 | balanced — no punt yet. | 3PM > PTS > AST | 3PM:WEAK PTS:WEAK AST:WEAK | Idris Pembrook (LEAN_DRAFT) | Idris Pembrook 87 LEAN_DRAFT; Emeka Corvell 80 LEAN_DRAFT; Hugo Kestrel 100 WAIT |
+| 9 | 130 | balanced — no punt yet. | 3PM > PTS > AST | 3PM:WEAK | Eli Zeller (LEAN_DRAFT) | Eli Zeller 100 LEAN_DRAFT; Eli Fairbourne 70 WAIT; Hollis Quill 54 WAIT |
+| 12 | 179 | balanced — no punt yet. | 3PM > PTS > AST | — | Rowan Hartwell (DRAFT_NOW) | Rowan Hartwell 100 DRAFT_NOW; Nico Fairbourne 82 LEAN_DRAFT; Kade Abernet 78 LEAN_DRAFT |
 
 ## Slot 11 — injuryRiskStars
 

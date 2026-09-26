@@ -33,7 +33,9 @@ export function candidateOf(p: PlayerEvaluation): DecisionCandidate {
     urgency: p.market.urgency,
     adp: p.market.adp,
     xrank: p.market.xrank,
-    risk: p.availability.risk,
+    risk: p.availability.displayRisk,
+    riskCalculated: p.availability.risk,
+    projectionGap: p.availability.projectionGap ?? null,
     fitTags: p.fitTags,
   };
 }

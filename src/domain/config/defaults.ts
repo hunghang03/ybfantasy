@@ -2,7 +2,7 @@ import { StrategyConfigSchema, type StrategyConfig } from './strategyConfig';
 
 /** Default strategy configuration. Mirrors docs/DESIGN.md §4 (revision 3). */
 export const DEFAULT_STRATEGY_CONFIG: StrategyConfig = {
-  version: 5,
+  version: 6,
   seasonGames: 82,
 
   numeric: { eps: 1e-9, minPopulationSize: 30, minSdSamples: 2 },
@@ -91,6 +91,8 @@ export const DEFAULT_STRATEGY_CONFIG: StrategyConfig = {
     { fromRound: 11, w: 0.05 },
   ],
   durabilityResidualWeight: 0.5,
+  // QA/display flag only (never scored): projected GP vs the player's recent GP rate.
+  availabilityGapFlag: { minSeasons: 2, gpDifference: 8 },
 
   playoffWeight: 0.03,
   playoffWeekWeights: { '18': 1, '19': 1, '20': 1, '21': 1 },
@@ -147,6 +149,7 @@ export function defaultConfig(): StrategyConfig {
 /**
  * Bring a config saved by an older version up to the current shape without touching values the user set.
  * v3 → v4: adds statusRisk.INJ (default value). v4 → v5: adds categoryStateMaturity (presentation only).
+ * v5 → v6: adds availabilityGapFlag (QA/display flag only).
  * Missing top-level keys take their default; every value the user set is kept.
  */
 export function upgradeStoredConfig(stored: StrategyConfig): StrategyConfig {

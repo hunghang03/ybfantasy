@@ -144,8 +144,8 @@
     {
      "name": "Orin Hartwell",
      "pos": "SG",
-     "ddp": 53,
-     "ddpRaw": 7.95,
+     "ddp": 52,
+     "ddpRaw": 7.9,
      "label": "WAIT",
      "rule": "W1",
      "band": "TOSSUP",
@@ -301,8 +301,8 @@
     {
      "name": "Orin Hartwell",
      "pos": "SG",
-     "ddp": 58,
-     "ddpRaw": 8.8,
+     "ddp": 57,
+     "ddpRaw": 8.76,
      "label": "WAIT",
      "rule": "W1",
      "band": "UNLIKELY",

@@ -118,6 +118,10 @@ export const StrategyConfigSchema = z.object({
   riskBands: z.object({ low: num, moderate: num, high: num }),
   riskWeightsByRound: roundWeights,
   durabilityResidualWeight: unit,
+  // Added in config v6 (QA/display flag only); older configs and backups get the shipped default.
+  availabilityGapFlag: z
+    .object({ minSeasons: z.number().int().min(1), gpDifference: z.number().min(0) })
+    .default({ minSeasons: 2, gpDifference: 8 }),
 
   playoffWeight: nonNeg,
   playoffWeekWeights: z.record(z.string(), nonNeg),

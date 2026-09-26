@@ -93,8 +93,24 @@ export interface AvailabilitySeason {
   season: string;
   importBatchId: string;
   gamesPlayed: number;
+  /** Season length (82, or the shortened schedule). */
   teamGames: number;
+  /**
+   * Games the player could have played (after joining the league, across all teams). Absent on older records,
+   * where it equals teamGames. Durability is measured against this, so games he could not play are not "missed".
+   */
+  gamesAvailable?: number;
+  /** Injury absences itemised by recurrence. Unexplained missed games are treated as UNCLASSIFIED at scoring. */
   absences: Absence[];
+  /** Games missed for suspension — never injury recurrence. */
+  suspensionGames?: number;
+  /** Other non-injury games (personal, not with team, …) — never injury recurrence. */
+  otherNonInjuryGames?: number;
+  /** Team(s) as written in the source (trades: several). Historical — never overwrites the identity's team. */
+  teams?: string[];
+  statusNote?: string;
+  meta?: SourceMeta;
+  raw?: Record<string, string>;
 }
 
 export interface PlayerContext {

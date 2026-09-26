@@ -15,7 +15,7 @@ export interface TableFilters {
   search: string;
   position: 'ALL' | Position | 'G' | 'F';
   label: 'ALL' | TimingLabel;
-  risk: 'ALL' | RiskLevel;
+  risk: 'ALL' | RiskLevel | 'UNKNOWN';
   favoritesOnly: boolean;
   lockedOnly: boolean;
   showDnd: boolean;
@@ -33,7 +33,13 @@ export const DEFAULT_FILTERS: TableFilters = {
   compact: false,
 };
 
-const RISK_ORDER: Record<RiskLevel, number> = { LOW: 0, MODERATE: 1, HIGH: 2, VERY_HIGH: 3 };
+const RISK_ORDER: Record<RiskLevel | 'UNKNOWN', number> = {
+  LOW: 0,
+  UNKNOWN: 1,
+  MODERATE: 2,
+  HIGH: 3,
+  VERY_HIGH: 4,
+};
 
 /**
  * Draft-day search: accent-, case- and punctuation-insensitive substring match on the name ("jok" → Jokic,
@@ -63,7 +69,7 @@ export function filterAndSort(
       matchesSearch(p.name, p.team, q) &&
       posOk(p) &&
       (f.label === 'ALL' || p.label === f.label) &&
-      (f.risk === 'ALL' || p.availability.risk === f.risk) &&
+      (f.risk === 'ALL' || p.availability.displayRisk === f.risk) &&
       (!f.favoritesOnly || p.flags.favorite) &&
       (!f.lockedOnly || p.flags.lockTarget) &&
       (f.showDnd || !p.flags.doNotDraft),
@@ -80,7 +86,7 @@ export function filterAndSort(
       case 'name':
         return p.name;
       case 'risk':
-        return RISK_ORDER[p.availability.risk];
+        return RISK_ORDER[p.availability.displayRisk];
       case 'neutral':
         return -p.stats.neutral9Cat;
     }
@@ -196,7 +202,7 @@ export function PlayerTable({
           className="py-0.5 text-xs"
         >
           <option value="ALL">All risk</option>
-          {(['LOW', 'MODERATE', 'HIGH', 'VERY_HIGH'] as RiskLevel[]).map((r) => (
+          {(['UNKNOWN', 'LOW', 'MODERATE', 'HIGH', 'VERY_HIGH'] as (RiskLevel | 'UNKNOWN')[]).map((r) => (
             <option key={r} value={r}>
               {r}
             </option>
@@ -305,8 +311,15 @@ export function PlayerTable({
                   </td>
                   <td className={cx('num px-1 text-right', pad)}>{p.market.adp ?? '—'}</td>
                   <td className={cx('num px-1 text-right', pad)}>{p.market.xrank ?? '—'}</td>
-                  <td className={cx('px-1 font-semibold', pad, RISK_CLASS[p.availability.risk])}>
-                    {RISK_TEXT[p.availability.risk]}
+                  <td
+                    className={cx('px-1 font-semibold', pad, RISK_CLASS[p.availability.displayRisk])}
+                    title={
+                      p.availability.terms.historyKnown
+                        ? `Availability score ${p.availability.score}`
+                        : 'No availability history: durability not observed (default risk used in the calculation)'
+                    }
+                  >
+                    {RISK_TEXT[p.availability.displayRisk]}
                   </td>
                   <td className={cx('px-1 text-[10px] text-slate-600 dark:text-slate-300', pad)}>
                     {p.fitTags.map((c) => CATEGORY_LABEL[c]).join(' ')}

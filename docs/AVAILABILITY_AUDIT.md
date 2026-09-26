@@ -1,6 +1,6 @@
 # Availability / durability audit (no code or calibration changes)
 
-Status: audit only, requested before the #67 pick-pair investigation. Nothing here changes a formula, weight or threshold. Real-data player values (Yahoo-derived) are kept out of this public file; they are summarised in the Codex prompt and in `reports/private/` (git-ignored).
+Status: audit (§1–7) approved by Codex; availability-history import implemented (§8). No weight or threshold changed: `durabilityResidualWeight` 0.5 and `unknownHistoryRisk` 0.10 stay; history is residual risk only. Real-data player values (Yahoo-derived) are kept out of this public file; they are summarised in the Codex prompt and in `reports/private/` (git-ignored).
 
 ## 1. Current data flow
 
@@ -107,3 +107,31 @@ Source, Captured At, Confidence, Review Fields, QA Note
 ## 7. Not changed
 
 No formula, weight, threshold, BPV, DDP or data file was changed by this audit.
+
+## 8. Implementation (approved)
+
+- **Import:** kind AVAILABILITY, template `data/templates/availability-history.template.csv`:
+
+  ```
+  Player ID,Player,Team(s),Season,GP,Games Available,Team Games,Missed LOW,Missed MODERATE,Missed HIGH,Missed Unclassified,Suspension Games,Other Non-Injury Games,Status Note,Source,Captured At,Confidence,Review Fields,QA Note
+  ```
+
+- **Validation:** Confidence HIGH | MEDIUM | LOW; Season `YYYY-YY` (consecutive years); GP ≤ Games Available; Games Available ≤ Team Games + 4 (trades); missed LOW + MODERATE + HIGH + Unclassified + Suspension + Other ≤ Games Available − GP; GP flagged in Review Fields → row rejected; duplicate player-season → rejected as duplicate. Blank Games Available → Team Games (warning). Raw cells and provenance are stored.
+- **Scoring per season:** share = (Σ itemised injury games × recurrence weight + unexplained × 0.75) / Games Available, where unexplained = Games Available − GP − itemised − suspension − other non-injury. Suspension and other non-injury games never count (nor toward the chronic pattern). Unexplained games stay UNCLASSIFIED — never assumed to be a known injury type.
+- **Window & shrinkage:** seasons are placed by their distance from the most recent history season in the dataset (weights .5/.3/.2). A season with no row keeps its weight at `unknownHistoryRisk` (sophomores / returners). No row at all → the unknown default, as before. Seasons outside the window are ignored.
+- **Identity:** the existing matcher and confirmed alias table only (provider id → name + team → alias → unique name → review). Several teams (trade) are tried one by one; history never changes the identity's current team or eligibility, and never creates an identity. A real `Player ID` is recorded for that source; blank IDs are never filled.
+- **Presentation:** without any season of history a LOW score is shown as **NO HIST / UNKNOWN** (numbers unchanged; a status-driven MODERATE+ still shows). Player detail shows history coverage.
+- **`AVAILABILITY_PROJECTION_GAP`:** player warning when |projected GP − recent GP rate| ≥ 8 with ≥ 2 seasons (rate = GP × 82 / Games Available, averaged). Config `availabilityGapFlag` (v6). Flag only — never changes BPV, DDP or risk.
+- **Tests:** `tests/unit/availability-history.test.ts` (Anthony Davis 76/51/20 → H = 0.3796, score 59 HIGH with DTD; BPV unchanged; gap flag 58 vs 49), `tests/unit/availability.test.ts`.
+
+### Notes for whoever transcribes the history file
+
+1. **Names:** use the Yahoo market spelling. Other spellings match only through `data/aliases.csv`; anything else goes to the review queue (history never creates players).
+2. **One row per player per season** for 2023-24, 2024-25 and 2025-26 only. Traded player: ONE row, `Team(s)` like `BKN/PHX`, GP summed across teams, Games Available = games while he was in the league (may exceed 82 by up to 4).
+3. **No row** for a season the player was not in the NBA (college, overseas, unsigned). A season in the NBA but fully injured: a row with GP 0.
+4. **Games Available** is the key partial-season field (signed mid-season, two-way limits, called up): count only games he could have played.
+5. **Blank means unknown.** Leave missed-by-type columns blank when the reason is unknown; the remainder becomes UNCLASSIFIED. Put suspensions and non-injury absences (personal, not with team) in their own columns — they never count as injury.
+6. **Player ID:** only a stable ID printed by the source (e.g. an NBA.com / Basketball-Reference ID), same source for every row; otherwise blank. Import with one provider id (e.g. `nba_history`).
+7. **Confidence** HIGH | MEDIUM | LOW. Unsure rows: LOW + `Review Fields` + `QA Note`. Unreadable GP → leave blank, list `GP` in Review Fields (the row is rejected, not guessed).
+8. **Rookies (2026-27 first year):** no rows at all — they show NO HISTORY.
+9. Keep the real file in `data/private/` (git-ignored); the repository is public.

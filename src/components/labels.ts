@@ -58,14 +58,16 @@ export const STATE_BAR: Record<DisplayState, string> = {
   PUNT: 'bg-violet-600',
 };
 
-export const RISK_CLASS: Record<RiskLevel, string> = {
+export const RISK_CLASS: Record<RiskLevel | 'UNKNOWN', string> = {
+  UNKNOWN: 'text-slate-500 dark:text-slate-400',
   LOW: 'text-emerald-700 dark:text-emerald-400',
   MODERATE: 'text-amber-700 dark:text-amber-400',
   HIGH: 'text-orange-700 dark:text-orange-400',
   VERY_HIGH: 'text-red-700 dark:text-red-400',
 };
 
-export const RISK_TEXT: Record<RiskLevel, string> = {
+export const RISK_TEXT: Record<RiskLevel | 'UNKNOWN', string> = {
+  UNKNOWN: 'NO HIST',
   LOW: 'LOW',
   MODERATE: 'MOD',
   HIGH: 'HIGH',

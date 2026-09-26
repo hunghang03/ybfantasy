@@ -154,7 +154,10 @@ export function PlayerDetail({ p, ctx }: { p: PlayerEvaluation; ctx: StaticConte
           <h4 className="mb-1 font-semibold uppercase text-slate-500">Availability / durability</h4>
           <table>
             <tbody>
-              <Row k="Availability score" v={`${p.availability.score} (${p.availability.risk})`} />
+              <Row
+                k="Availability score"
+                v={`${p.availability.score} (${p.availability.displayRisk === 'UNKNOWN' ? 'NO HISTORY — calculated ' + p.availability.risk : p.availability.risk})${p.availability.terms.historyKnown ? ` · history coverage ${Math.round(100 * p.availability.terms.historyCoverage)}%` : ''}`}
+              />
               <Row
                 k="History H (weighted)"
                 v={fmt(p.availability.terms.history, 3)}
@@ -178,7 +181,7 @@ export function PlayerDetail({ p, ctx }: { p: PlayerEvaluation; ctx: StaticConte
               />
             </tbody>
           </table>
-          <p className={RISK_CLASS[p.availability.risk]}>
+          <p className={RISK_CLASS[p.availability.displayRisk]}>
             Risk is not an injury prediction; it is an explainable history/status index.
           </p>
         </div>

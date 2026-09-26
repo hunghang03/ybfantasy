@@ -34,10 +34,11 @@ describe('availability score', () => {
       cfg,
     );
     expect(high.score).toBeLessThan(low.score);
-    expect(low.rhoHist).toBeCloseTo((20 * 0.25) / 82);
+    // one season of history: the two missing seasons keep their weight at the unknown default (shrinkage)
+    expect(low.rhoHist).toBeCloseTo(0.5 * ((20 * 0.25) / 82) + 0.5 * cfg.unknownHistoryRisk);
   });
 
-  it('three-season weighting 50/30/20 (renormalized when fewer seasons)', () => {
+  it('three-season weighting 50/30/20 (missing seasons shrink toward the unknown default)', () => {
     const h = computeAvailability(
       [season('2025', 82), season('2024', 82 - 41), season('2023', 82)].map((s) =>
         s.gamesPlayed < 82 ? { ...s, absences: [{ games: 41, recurrence: 'HIGH' as const }] } : s,
@@ -53,12 +54,12 @@ describe('availability score', () => {
       null,
       cfg,
     );
-    expect(two.terms.history).toBeCloseTo((0.3 * 0.5) / 0.8);
+    expect(two.terms.history).toBeCloseTo(0.3 * 0.5 + 0.2 * cfg.unknownHistoryRisk);
   });
 
   it('no detail → unclassified weight; no history → default risk flagged', () => {
     const nd = computeAvailability([season('2025', 62)], ctx(), null, cfg);
-    expect(nd.terms.history).toBeCloseTo((20 / 82) * 0.75);
+    expect(nd.terms.history).toBeCloseTo(0.5 * (20 / 82) * 0.75 + 0.5 * cfg.unknownHistoryRisk);
     const none = computeAvailability([], ctx(), null, cfg);
     expect(none.terms.historyKnown).toBe(false);
     expect(none.terms.history).toBe(cfg.unknownHistoryRisk);
